@@ -1,0 +1,137 @@
+<style>
+  body {
+    font-family: workbench, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f9fafb;
+    color: #1f2937;
+  }
+
+  #container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 5rem 2rem 3rem;
+    gap: 1.75rem;
+    margin: 5rem 5rem;
+  }
+
+  #title {
+    font-size: clamp(5rem, 10vw, 12rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin: 0;
+    text-shadow: 0 0 1rem rgba(0, 0, 0, 0.75);
+  }
+
+  #descriptors {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 0.75rem;
+  }
+
+  #descriptor0,
+  #descriptor1 {
+    font-size: clamp(1rem, 2.4vw, 1.5rem);
+    font-weight: 400;
+    margin: 0;
+  }
+
+  #btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .btn {
+    border: 1px solid rgb(85, 85, 85);
+    background: rgba(255, 255, 255, 0.1);
+    color: black;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 0.75rem;
+    padding: 0.75rem 0.6rem;
+    cursor: pointer;
+    min-width: 6rem;
+    transition: transform 0.14s ease, background 0.14s ease, box-shadow 0.14s ease;
+    text-decoration: none;
+    text-align: center;
+  }
+
+  .btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  }
+
+  .btn:focus-visible {
+    outline: 3px solid #8adfff;
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 750px) {
+    #container {
+      align-items: stretch;
+      padding: 2rem 1rem;
+    }
+
+    #title {
+      font-size: clamp(4rem, 14vw, 7rem);
+    }
+
+    #btns {
+      justify-content: center;
+    }
+
+    .btn {
+      width: 100%;
+      max-width: 260px;
+      text-align: center;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      background: #0c0f1a;
+      color: #f3f4f6;
+    }
+
+    .btn {
+      border-color: rgba(255, 255, 255, 0.30);
+      background: rgba(255, 255, 255, 0.1);
+      color: #f3f4f6;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+    }
+  }
+</style>
+
+
+<div id="container">
+    <div class="workbench" id="title">Issued</div>
+    
+    <br id="break">
+
+    <div id="container2">
+        <div id="descriptors">
+            <div class="offside" id="descriptor0">Make Clothes Hackclub Designs</div>
+            <div class="offside" id="descriptor1">Get Custom Apparel</div>
+        </div>
+        <div id="btns">
+            <% if !signed_in? %>
+              <%= link_to "Start", login_path(redirect: request.fullpath), class: "btn" %>
+            <% else %>
+              <%= link_to "Start", dashboard_path, class: "btn" %>
+            <% end %>
+            <%= link_to "About", about_path, class: "btn" %>
+            <%= link_to "FAQ", faq_path, class: "btn" %>
+        </div>
+    </div>
+</div>

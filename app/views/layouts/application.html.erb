@@ -21,9 +21,131 @@
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Workbench&display=swap" rel="stylesheet">
+
+    <style>
+      body {
+        background: #f9fafb;
+        color: #1f2937;
+        transition: background 0.3s ease, color 0.3s ease;
+        padding-top: 4.2rem;
+      }
+
+      header {
+        background: rgba(255, 255, 255, 1);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid #fff;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        z-index: 50;
+        overflow: hidden;
+      }
+
+      header::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 3px;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.8));
+        background-size: 200% 100%;
+        animation: running-line 2.5s linear infinite;
+        z-index: 51;
+      }
+
+      @keyframes running-line {
+        0% { background-position: 0% 0%; }
+        100% { background-position: -200% 0%; }
+      }
+
+      nav {
+        width: 100%;
+        margin: 0 auto;
+        padding: 0.75rem 1rem;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 1rem;
+        left: 1rem;
+      }
+
+      .nav-link {
+        font-family: Workbench, sans-serif;
+        color: #111827;
+        text-decoration: none;
+        font-weight: 600;
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.55rem;
+        transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+      }
+
+      .nav-link:hover,
+      .nav-link:focus-visible {
+        text-shadow: 0 0 0.75rem rgba(255, 255, 255, 1);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: #000000;
+          color: #f3f4f6;
+        }
+
+        header {
+          background: rgba(15, 23, 42, 0.86);
+          border-bottom: rgba(255, 255, 255, 0.55);
+        }
+
+        .nav-link {
+          color: #f3f4f6;
+        }
+
+        .nav-link:hover,
+        .nav-link:focus-visible {
+          background: rgba(147, 197, 253, 0.2);
+          color: #bfdbfe;
+        }
+
+        .btn {
+          border-color: rgba(255, 255, 255, 0.30);
+          background: rgba(255, 255, 255, 0.1);
+          color: #f3f4f6;
+        }
+
+        .btn:hover {
+          background: rgba(255, 255, 255, 0.2);
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+        }
+      }
+
+      .btn {
+        transition: background 0.14s ease, box-shadow 0.14s ease, color 0.14s ease;
+      }
+    </style>
   </head>
 
   <body>
+    <% if @nav != nil %>
+      <header>
+        <nav>
+          <%= link_to "Home", root_path, class: "nav-link" %>
+          <%= link_to "About", about_path, class: "nav-link" %>
+          <%= link_to "FAQ", faq_path, class: "nav-link" %>
+          <% if signed_in? %>
+            <%= link_to "Dashboard", dashboard_path, class: "nav-link" %>
+            <%= link_to "Logout", logout_path, method: :delete, class: "nav-link" %>
+          <% else %>
+            <%= link_to "Login", login_path(redirect: request.fullpath), class: "nav-link" %>
+          <% end %>
+        </nav>
+      </header>
+    <% end %>
     <%= yield %>
   </body>
 </html>

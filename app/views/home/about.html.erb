@@ -1,0 +1,98 @@
+<style>
+  body {
+    font-family: JetbrainsMono, sans-serif;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    background: #f9fafb;
+    color: #1f2937;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+
+  h1 {
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin: 0;
+    margin-top: 3rem;
+    text-shadow: 0 0 1rem rgba(0, 0, 0, 0.75);
+  }
+
+  #container {
+    max-width: 800px;
+    padding: 2rem;
+    text-align: center;
+    width: 40%;
+  }
+
+  .YSWS-container {
+    display: block;
+    margin: 2rem;
+    padding-bottom: 1rem;
+    border-radius: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .YSWS-container p {
+    display: block;
+    margin-top: 2rem;
+    overflow: wrap;
+    wrap: break-word;
+    margin: 1rem;
+  }
+
+  .YSWS-container h3 {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1rem;
+  }
+
+  #about-header {
+    font-family: workbench, sans-serif;
+  }
+
+  .YSWS-container {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  h1 {
+    text-shadow: 0 0 1rem rgba(255, 255, 255, 0.42);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      background: #0c0f1a;
+      color: #f3f4f6;
+    }
+  }
+  @media (max-width: 768px) {
+    body {
+      padding: 1rem;
+    }
+
+    #container {
+      width: 100%;
+      padding: 1rem;
+      margin: 0;
+    }
+  }
+</style>
+
+<div id="container">
+  <div id="about-header">
+    <h1>Issued</h1>
+    <p>What About Issued!?</p>
+  </div>
+
+  <div class="YSWS-container">
+    <h3>YS Designs</h3>
+    <p>YS Designs made with code</p>
+  </div>
+
+  <div class="YSWS-container">
+    <h3>WS Clothes</h3>
+    <p>WS Clothes made with your designs</p>
+  </div>
+</div>

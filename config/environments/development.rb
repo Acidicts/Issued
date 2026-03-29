@@ -12,6 +12,9 @@ Rails.application.configure do
   # Show full error reports.
   config.consider_all_requests_local = true
 
+  # Allow dev.bing-bong.uk in development host authorization.
+  config.hosts << "dev.bing-bong.uk"
+
   # Enable server timing.
   config.server_timing = true
 
