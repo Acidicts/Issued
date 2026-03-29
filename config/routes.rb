@@ -12,5 +12,5 @@ Rails.application.routes.draw do
 
   get "/login", to: "sessions#new", as: :login
   get "/auth/hackclub/callback", to: "sessions#callback", as: :hackclub_callback
-  match "/logout", to: "sessions#destroy", via: [:delete, :get], as: :logout
+  match "/logout", to: "sessions#destroy", via: [ :delete, :get ], as: :logout
 end

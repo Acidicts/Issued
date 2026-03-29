@@ -7,7 +7,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
     get login_url
 
-    assert_redirected_to %r{https://auth.hackclub.com/oauth/authorize\?} , "Expected redirect to Hack Club OAuth authorize"
+    assert_redirected_to %r{https://auth.hackclub.com/oauth/authorize\?}, "Expected redirect to Hack Club OAuth authorize"
   end
 
   test "callback creates user and signs in" do
