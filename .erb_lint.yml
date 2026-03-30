@@ -1,0 +1,25 @@
+---
+glob: "app/views/**/*.erb"
+exclude:
+  - "node_modules/**/*"
+  - "vendor/**/*"
+
+linters:
+  Indentation:
+    enabled: true
+  Final Newline:
+    enabled: true
+  Whitespace:
+    enabled: true
+  DeprecatedClasses:
+    enabled: true
+  ParserErrors:
+    enabled: true
+  AllowedScriptType:
+    enabled: true
+  ClosingErbTagIndent:
+    enabled: true
+  InlineComments:
+    enabled: false
+  MultilineLine:
+    enabled: false
