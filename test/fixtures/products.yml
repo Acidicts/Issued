@@ -1,11 +1,9 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  name: MyString
-  verified: 1
-  slack_id: U123456
+  type: 
+  cost: 1
 
 two:
-  name: MyString
-  verified: 1
-  slack_id: U789012
+  type: 
+  cost: 1

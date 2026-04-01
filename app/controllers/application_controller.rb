@@ -7,6 +7,8 @@ class ApplicationController < ActionController::Base
 
   helper_method :current_user, :signed_in?
 
+  layout "application"
+
   def current_user
     return unless session[:user_id]
     @current_user ||= User.find_by(id: session[:user_id])

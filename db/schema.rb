@@ -10,13 +10,96 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_28_233000) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_01_204942) do
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.bigint "record_id", null: false
+    t.string "record_type", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.string "content_type"
+    t.datetime "created_at", null: false
+    t.string "filename", null: false
+    t.string "key", null: false
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "design_edit_sessions", force: :cascade do |t|
+    t.string "activity_type", default: "edit"
+    t.datetime "created_at", null: false
+    t.integer "design_id", null: false
+    t.integer "duration_seconds", default: 0, null: false
+    t.datetime "ended_at"
+    t.datetime "started_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["design_id", "created_at"], name: "index_design_edit_sessions_on_design_id_and_created_at"
+    t.index ["design_id"], name: "index_design_edit_sessions_on_design_id"
+    t.index ["user_id", "created_at"], name: "index_design_edit_sessions_on_user_id_and_created_at"
+    t.index ["user_id"], name: "index_design_edit_sessions_on_user_id"
+  end
+
+  create_table "designs", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "description", default: ""
+    t.string "name", default: "Untitled Design", null: false
+    t.integer "time"
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["name"], name: "index_designs_on_name"
+    t.index ["user_id"], name: "index_designs_on_user_id"
+  end
+
+  create_table "orders", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "design_id", null: false
+    t.integer "product_id", null: false
+    t.integer "status"
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["design_id"], name: "index_orders_on_design_id"
+    t.index ["product_id"], name: "index_orders_on_product_id"
+    t.index ["user_id"], name: "index_orders_on_user_id"
+  end
+
+  create_table "products", force: :cascade do |t|
+    t.integer "cost"
+    t.datetime "created_at", null: false
+    t.string "type"
+    t.datetime "updated_at", null: false
+  end
+
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.integer "credits"
     t.string "name"
     t.string "slack_id"
     t.datetime "updated_at", null: false
     t.integer "verified"
     t.boolean "ysws_eligible", default: false, null: false
   end
+
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "design_edit_sessions", "designs"
+  add_foreign_key "design_edit_sessions", "users"
+  add_foreign_key "designs", "users"
+  add_foreign_key "orders", "designs"
+  add_foreign_key "orders", "products"
+  add_foreign_key "orders", "users"
 end

@@ -1,16 +1,34 @@
 Rails.application.routes.draw do
-  get "dashboard/index"
-  get "/" => "home#index", as: :root
-  get "/about" => "home#about", as: :about
-  get "/faq" => "home#faq", as: :faq
-  # rails health check
-  get "up" => "rails/health#show", as: :rails_health_check
+  root "home#index"
 
-  resource :dashboard, path: "dashboard" do
-    get "/", as: :dashboard, to: "dashboard#index"
+  get "/about", to: "home#about", as: :about
+  get "/faq", to: "home#faq", as: :faq
+
+  get "up", to: "rails/health#show", as: :rails_health_check
+
+  get "/dashboard", to: "dashboard#index", as: :dashboard
+
+  namespace :admin do
+    get "/", to: "dashboard#index", as: :overview
+    resources :users, only: %i[index show new edit create update destroy]
+    resources :products, only: %i[index show new edit create update destroy]
+    resources :orders, only: %i[index show edit update destroy]
   end
 
+  resources :designs, only: %i[index show new create edit update] do
+    collection do
+      get :editor, action: :new, as: :editor
+    end
+  end
+
+  get "orders/index", to: "orders#index", as: :orders_index
+  get "orders/show", to: "orders#show", as: :orders_show
+  get "orders/new", to: "orders#new", as: :orders_new
+  get "orders/edit", to: "orders#edit", as: :orders_edit
+  get "orders/delete", to: "orders#delete", as: :orders_delete
+
   get "/login", to: "sessions#new", as: :login
-  get "/auth/hackclub/callback", to: "sessions#callback", as: :hackclub_callback
-  match "/logout", to: "sessions#destroy", via: [ :delete, :get ], as: :logout
+  get "/auth/:provider/callback", to: "sessions#create"
+  get "/auth/failure", to: "sessions#failure"
+  match "/logout", to: "sessions#destroy", via: %i[delete get], as: :logout
 end

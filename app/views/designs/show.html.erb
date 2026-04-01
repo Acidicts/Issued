@@ -1,0 +1,23 @@
+<style>
+  .design-detail { max-width: 980px; margin: 5rem auto 2rem; padding: 1rem; }
+  .design-detail h1 { margin-top: 0; }
+  .design-detail .stat { margin-top: 0.5rem; color: #4f637f; }
+  .design-preview { border: 1px solid #dce7f3; border-radius: 12px; padding: 1rem; background: #fff; }
+</style>
+
+<div class="design-detail">
+  <h1><%= @design.name %></h1>
+  <p class="stat"><%= @design.description %></p>
+  <p class="stat">Total time spent editing: <%= @design.elapsed_time_formatted %></p>
+  <p class="stat">Updated: <%= @design.updated_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+
+  <div class="design-preview">
+    <% if @design.svg.attached? %>
+      <%= raw @design.svg.download %>
+    <% else %>
+      <p>No SVG attached yet</p>
+    <% end %>
+  </div>
+
+  <p><%= link_to "Edit design", edit_design_path(@design), class: "btn-primary" %></p>
+</div>

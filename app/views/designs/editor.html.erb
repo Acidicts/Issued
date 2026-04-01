@@ -1,0 +1,456 @@
+<style>
+  :root {
+    --editor-bg: #eef4fc;
+    --editor-panel: #ffffff;
+    --editor-line: #d8e3f1;
+    --editor-text: #1d2a3f;
+    --editor-muted: #4d5f7d;
+    --editor-accent: #ec6724;
+    --editor-accent-2: #1f6fe5;
+    --editor-shadow: rgba(13, 31, 56, 0.12);
+    --editor-code-bg: #f5f9ff;
+    --editor-preview-bg: #f8fbff;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --editor-bg: #071325;
+      --editor-panel: #0f1c34;
+      --editor-line: #20365a;
+      --editor-text: #d7e7ff;
+      --editor-muted: #9eb4d7;
+      --editor-accent: #ff8d50;
+      --editor-accent-2: #4f98ff;
+      --editor-shadow: rgba(0, 0, 0, 0.45);
+      --editor-code-bg: #14223d;
+      --editor-preview-bg: #0d1b32;
+    }
+  }
+
+  .design-editor-page {
+    --accent: var(--editor-accent);
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 4.75rem 1rem 2rem;
+    color: var(--editor-text);
+    min-height: calc(100vh - 6rem);
+    background:
+      radial-gradient(circle at 3% 0%, rgba(31, 111, 229, 0.14), transparent 25%),
+      radial-gradient(circle at 93% 5%, rgba(236, 103, 36, 0.13), transparent 30%),
+      var(--editor-bg);
+  }
+
+  .editor-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+  }
+
+  .editor-top h1 {
+    margin: 0;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    letter-spacing: 0.02em;
+  }
+
+  .editor-top p {
+    margin: 0.3rem 0 0;
+    color: var(--editor-muted);
+    font-size: 0.95rem;
+  }
+
+  .autosave-pill {
+    border: 1px solid var(--editor-line);
+    background: color-mix(in srgb, var(--editor-panel) 80%, var(--editor-accent-2) 20%);
+    border-radius: 999px;
+    padding: 0.45rem 0.8rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--editor-text);
+  }
+
+  .editor-shell {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .panel {
+    background: var(--editor-panel);
+    border: 1px solid var(--editor-line);
+    border-radius: 14px;
+    box-shadow: 0 12px 24px var(--editor-shadow);
+    padding: 1rem;
+  }
+
+  .metadata-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+  }
+
+  .field label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--editor-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .field input,
+  .field textarea {
+    width: 100%;
+    border: 1px solid var(--editor-line);
+    background: color-mix(in srgb, var(--editor-panel) 85%, #ffffff 15%);
+    color: var(--editor-text);
+    border-radius: 10px;
+    padding: 0.6rem 0.7rem;
+    font: inherit;
+  }
+
+  .field input:focus,
+  .field textarea:focus {
+    outline: none;
+    border-color: color-mix(in srgb, var(--editor-accent-2) 55%, var(--editor-line) 45%);
+    box-shadow: 0 0 0 3px rgba(31, 111, 229, 0.17);
+  }
+
+  .editor-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 900px) {
+    .metadata-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .field-wide {
+      grid-column: span 2;
+    }
+
+    .editor-grid {
+      grid-template-columns: minmax(0, 1.45fr) minmax(360px, 1fr);
+      align-items: start;
+    }
+  }
+
+  .panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .panel h2,
+  .panel h3 {
+    margin-top: 0;
+    margin-bottom: 0.7rem;
+    font-size: 1.2rem;
+  }
+
+  .panel-sub {
+    font-size: 0.85rem;
+    color: var(--editor-muted);
+  }
+
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-bottom: 1rem;
+    align-items: center;
+  }
+
+  .toolbar button,
+  .toolbar input,
+  .toolbar select {
+    border: 1px solid var(--editor-line);
+    background: color-mix(in srgb, var(--editor-panel) 80%, #ffffff 20%);
+    color: var(--editor-text);
+    border-radius: 9px;
+    padding: 0.42rem 0.66rem;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+
+  .toolbar button:hover,
+  .toolbar input:focus,
+  .toolbar select:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 7px 14px rgba(15, 29, 52, 0.14);
+  }
+
+  .toolbar .tool-strong {
+    background: color-mix(in srgb, var(--editor-accent-2) 70%, white 30%);
+    color: #ffffff;
+    border-color: transparent;
+  }
+
+  #code-editor {
+    width: 100%;
+    min-height: 430px;
+    border: 1px solid var(--editor-line);
+    border-top: none;
+    border-bottom: none;
+    border-radius: 0;
+    font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    color: var(--editor-text);
+    padding: 0.85rem;
+    line-height: 1.4;
+    background: var(--editor-code-bg);
+    resize: vertical;
+    white-space: pre;
+    overflow: auto;
+  }
+
+  .code-shell {
+    border: 1px solid var(--editor-line);
+    border-radius: 11px;
+    overflow: hidden;
+    background: var(--editor-code-bg);
+  }
+
+  .root-lock {
+    font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 0.83rem;
+    line-height: 1.35;
+    padding: 0.55rem 0.85rem;
+    color: color-mix(in srgb, var(--editor-text) 70%, var(--editor-muted) 30%);
+    background: color-mix(in srgb, var(--editor-code-bg) 70%, var(--editor-accent-2) 30%);
+    border-bottom: 1px solid var(--editor-line);
+    white-space: pre-wrap;
+    word-break: break-word;
+    user-select: text;
+  }
+
+  .root-lock-close {
+    border-bottom: none;
+    border-top: 1px solid var(--editor-line);
+  }
+
+  #code-editor:focus {
+    outline: none;
+    border-color: color-mix(in srgb, var(--editor-accent-2) 55%, var(--editor-line) 45%);
+    box-shadow: 0 0 0 3px rgba(31, 111, 229, 0.16);
+  }
+
+  #preview-container {
+    width: 100%;
+    height: 440px;
+    border: 1px solid var(--editor-line);
+    border-radius: 12px;
+    background: var(--editor-preview-bg);
+    overflow: hidden;
+  }
+
+  .preview-panel {
+    width: 100%;
+    height: 100%;
+    background:
+      linear-gradient(45deg, rgba(45, 87, 145, 0.08) 25%, transparent 25%, transparent 75%, rgba(45, 87, 145, 0.08) 75%),
+      linear-gradient(45deg, rgba(45, 87, 145, 0.08) 25%, transparent 25%, transparent 75%, rgba(45, 87, 145, 0.08) 75%);
+    background-size: 24px 24px;
+    background-position: 0 0, 12px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .preview-panel::before {
+    content: "Live SVG Preview";
+    position: absolute;
+    top: 0.4rem;
+    left: 0.6rem;
+    color: var(--editor-muted);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    z-index: 1;
+    text-transform: uppercase;
+  }
+
+  #svg-preview {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    position: relative;
+  }
+
+  .status-line {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.8rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid var(--editor-line);
+    color: var(--editor-muted);
+    font-size: 0.88rem;
+    gap: 0.4rem;
+  }
+
+  .actions {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 0.6rem 0.95rem;
+    border-radius: 0.55rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+  }
+
+  .btn-primary:hover {
+    background: color-mix(in srgb, var(--accent) 82%, #000000 18%);
+    transform: translateY(-1px);
+    box-shadow: 0 7px 14px rgba(15, 29, 52, 0.2);
+  }
+
+  .btn-secondary {
+    background: color-mix(in srgb, var(--editor-panel) 70%, var(--editor-accent-2) 30%);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--editor-text);
+    border: 1px solid var(--editor-line);
+  }
+
+  .editor-force-dark {
+    --editor-panel: #0b162c;
+    --editor-line: #223a63;
+    --editor-text: #d5e7ff;
+    --editor-muted: #96b2da;
+    --editor-code-bg: #14213b;
+    --editor-preview-bg: #0f1d35;
+  }
+
+  @media (max-width: 899px) {
+    .design-editor-page {
+      padding-top: 4.1rem;
+    }
+
+    #preview-container {
+      height: 360px;
+    }
+
+    #code-editor {
+      min-height: 360px;
+    }
+  }
+</style>
+
+<div class="design-editor-page"
+     data-controller="design-editor"
+     data-design-editor-storage-key-value="<%= @design.persisted? ? "design-editor:#{@design.id}" : "design-editor:new" %>"
+     data-design-editor-autosave-url-value="<%= @design.persisted? ? design_path(@design) : "" %>"
+     data-design-editor-persisted-value="<%= @design.persisted? %>">
+  <div class="editor-top">
+    <div>
+      <h1><%= @design.persisted? ? "Edit Design" : "New Design" %></h1>
+    </div>
+  </div>
+
+  <%= form_with model: @design, local: true, data: { action: "submit->design-editor#submit" } do |form| %>
+    <div class="editor-shell">
+      <div class="panel">
+        <div class="metadata-grid">
+          <div class="field">
+            <%= form.label :name, "Design Name" %>
+            <%= form.text_field :name,
+                value: @design.name,
+                class: "form-control",
+                required: true,
+                data: {
+                  action: "input->design-editor#markDirty input->design-editor#persistDraft",
+                  "design-editor-target" => "name"
+                } %>
+          </div>
+          <div class="field field-wide">
+            <%= form.label :description, "Description" %>
+            <%= form.text_area :description,
+                value: @design.description,
+                rows: 2,
+                required: true,
+                placeholder: "Describe your design",
+                style: "resize: vertical; width:98%;",
+                data: {
+                  action: "input->design-editor#markDirty input->design-editor#persistDraft",
+                  "design-editor-target" => "description"
+                } %>
+          </div>
+        </div>
+
+        <% svg_initial = @design.respond_to?(:svg_content) ? @design.svg_content : ( @design.svg.attached? ? @design.svg.download : "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 480'></svg>" ) %>
+        <%= hidden_field_tag :design_svg_code, svg_initial, data: { "design-editor-target" => "svgCode" } %>
+        <%= hidden_field_tag :elapsed_seconds, 0, data: { "design-editor-target" => "elapsedSeconds" } %>
+      </div>
+
+      <div class="editor-grid">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>SVG Code Editor</h2>
+            <span class="panel-sub" data-design-editor-target="validation">No errors</span>
+          </div>
+
+          <div class="toolbar">
+            <button type="button" data-action="design-editor#insertElement" data-type="rect">Rect</button>
+            <button type="button" data-action="design-editor#insertElement" data-type="circle">Circle</button>
+            <button type="button" data-action="design-editor#insertElement" data-type="line">Line</button>
+            <button type="button" data-action="design-editor#insertElement" data-type="text">Text</button>
+            <select data-action="design-editor#setThemeColor" data-design-editor-target="colorSelect" aria-label="Change accent color">
+              <option value="#ec6724">Accent Orange</option>
+              <option value="#2467ef">Accent Blue</option>
+              <option value="#22c55e">Accent Green</option>
+            </select>
+            <button type="button" class="tool-strong" data-action="design-editor#toggleMode">Studio Mode</button>
+            <button type="button" data-action="design-editor#undo">Undo</button>
+            <button type="button" data-action="design-editor#redo">Redo</button>
+          </div>
+
+          <div class="code-shell">
+            <div class="root-lock" data-design-editor-target="rootOpen"></div>
+            <textarea id="code-editor" data-design-editor-target="code" data-action="input->design-editor#updatePreview change->design-editor#updatePreview"></textarea>
+            <div class="root-lock root-lock-close" data-design-editor-target="rootClose"></div>
+          </div>
+
+          <div class="status-line">
+            <span>Session time: <strong data-design-editor-target="timer">00:00:00</strong></span>
+            <span>Only inner SVG elements are editable. Root wrapper is locked.</span>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>Live Preview</h3>
+          <div id="preview-container" class="preview-panel" aria-live="polite" aria-label="SVG live preview">
+            <div id="svg-preview" data-design-editor-target="preview"></div>
+          </div>
+
+          <div class="actions">
+            <button type="button" class="btn-primary" data-action="design-editor#saveNow">Save Progress</button>
+            <button type="button" class="btn-primary btn-secondary" data-action="design-editor#downloadSvg">Download SVG</button>
+            <%= link_to "Back to Designs", designs_path, class: "btn-primary btn-ghost" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

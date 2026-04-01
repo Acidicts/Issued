@@ -1,2 +1,595 @@
-<h1>Dashboard#index</h1>
-<p>Find me in app/views/dashboard/index.html.erb</p>
+<% content_for :title, "Dashboard" %>
+
+<%
+    orders = @orders || []
+
+    designs = @designs || []
+
+	pipeline = [
+		{ label: "Awaiting Review", count: @pipeline[0] },
+		{ label: "Pending Fufillment", count: @pipeline[1] },
+		{ label: "Production", count: @pipeline[2] },
+		{ label: "Fufilled", count: @pipeline[3] }
+	]
+
+	total_order_units = orders.sum { |order| order[:quantity] }
+	in_progress_count = @pipeline[0]
+%>
+
+<style>
+	:root {
+		--paper: #f2f5fb;
+		--ink: #0f1d34;
+		--panel: #ffffff;
+		--line: #cdd8e7;
+		--accent: #ec6724;
+		--accent-soft: #ffe7da;
+		--muted: #4f637f;
+		--ok: #16806b;
+		--warn: #a05c12;
+		--radius: 18px;
+	}
+
+	.dashboard-shell {
+		padding: 2.3rem clamp(1rem, 2vw, 2rem) 2rem;
+		max-width: 1200px;
+		margin: 0 auto;
+		font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+		color: var(--ink);
+		line-height: 1.45;
+	}
+
+	.dashboard-hero {
+		background: radial-gradient(circle at top right, #fff8f3, #eef4ff 62%);
+		border: 1px solid #d6e2f0;
+		border-radius: var(--radius);
+		padding: 1.3rem 1.4rem;
+		margin-bottom: 1rem;
+		display: flex;
+		justify-content: space-between;
+		gap: 0.9rem;
+		flex-wrap: wrap;
+		box-shadow: 0 8px 24px rgba(20, 44, 82, 0.06);
+	}
+
+	.dashboard-hero h1 {
+		margin: 0;
+		font-family: "Workbench", sans-serif;
+		letter-spacing: 0.02em;
+		font-size: clamp(1.7rem, 5vw, 2.7rem);
+	}
+
+	.dashboard-hero p {
+		margin: 0.35rem 0 0;
+		color: var(--muted);
+		max-width: 55ch;
+		font-size: 0.97rem;
+	}
+
+	.pill {
+		align-self: flex-start;
+		background: var(--accent-soft);
+		color: #8f3d0f;
+		border-radius: 999px;
+		border: 1px solid #f7c6ae;
+		font-size: 0.83rem;
+		font-weight: 700;
+		padding: 0.35rem 0.72rem;
+	}
+
+	.kpis {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(120px, 1fr));
+		gap: 0.8rem;
+		margin-bottom: 1.1rem;
+	}
+
+	.kpi {
+		background: var(--panel);
+		border: 1px solid var(--line);
+		border-radius: 14px;
+		padding: 0.85rem 1rem;
+		box-shadow: 0 3px 14px rgba(15, 29, 52, 0.05);
+	}
+
+	.kpi label {
+		display: block;
+		font-size: 0.82rem;
+		color: var(--muted);
+		margin-bottom: 0.35rem;
+		font-weight: 600;
+	}
+
+	.kpi strong {
+		font-size: 1.4rem;
+		font-weight: 700;
+	}
+
+	.dashboard-grid {
+		display: grid;
+		grid-template-columns: 1.8fr 1fr;
+		gap: 0.95rem;
+		align-items: stretch;
+		min-height: 360px;
+	}
+
+	.dashboard-main-stack,
+	.sidebar-stack {
+		display: grid;
+		grid-template-rows: auto 1fr;
+		gap: 0.95rem;
+		min-height: 0;
+	}
+
+	.panel {
+		background: var(--panel);
+		border: 1px solid var(--line);
+		border-radius: var(--radius);
+		padding: 1rem;
+		box-shadow: 0 3px 14px rgba(15, 29, 52, 0.05);
+	}
+
+	.panel h2 {
+		margin: 0;
+		font-size: 1.06rem;
+		letter-spacing: 0.01em;
+	}
+
+	.panel-head {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 0.85rem;
+		gap: 0.8rem;
+	}
+
+	.muted {
+		color: var(--muted);
+		font-size: 0.9rem;
+	}
+
+	.design-list {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+		gap: 0.7rem;
+	}
+
+	.design-card {
+		border: 1px solid #d7e2f0;
+		border-radius: 14px;
+		padding: 0.8rem;
+		background: linear-gradient(170deg, #ffffff, #f8fbff);
+	}
+
+	.design-card h3 {
+		font-size: 0.98rem;
+		margin: 0;
+		color: #1a2b47;
+	}
+
+	.design-meta {
+		display: flex;
+		justify-content: space-between;
+		margin-top: 0.35rem;
+		font-size: 0.82rem;
+		color: var(--muted);
+	}
+
+	.progress {
+		margin-top: 0.7rem;
+		background: #eef2f8;
+		border-radius: 999px;
+		overflow: hidden;
+		height: 8px;
+	}
+
+	.progress > span {
+		display: block;
+		height: 100%;
+		background: linear-gradient(90deg, #f08f56, var(--accent));
+	}
+
+	.table-wrap {
+		overflow: auto;
+	}
+
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 0.92rem;
+		background: var(--panel);
+		color: var(--ink);
+		border: 1px solid var(--line);
+		border-radius: 14px;
+		overflow: hidden;
+	}
+
+	th,
+	td {
+		text-align: left;
+		padding: 0.62rem 0.45rem;
+		border-bottom: 1px solid var(--line);
+		white-space: nowrap;
+	}
+
+	th {
+		font-size: 0.79rem;
+		color: var(--muted);
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+		font-weight: 700;
+		position: sticky;
+		top: 0;
+		background: rgba(226, 235, 250, 0.85);
+		backdrop-filter: blur(4px);
+		z-index: 1;
+	}
+
+	tbody tr:nth-child(even) {
+		background: #f9fcff;
+	}
+
+	tbody tr:hover {
+		background: #eef5ff;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		table {
+			background: #112139;
+			color: #e2ecff;
+			border-color: #1f3353;
+		}
+
+		th,
+		td {
+			border-bottom: 1px solid #1e314e;
+		}
+
+		th {
+			background: rgba(16, 30, 50, 0.95);
+			color: #9cb2d1;
+		}
+
+		tbody tr:nth-child(even) {
+			background: #0f1a2a;
+		}
+
+		tbody tr:hover {
+			background: #162a47;
+		}
+	}
+
+	tbody tr:nth-child(even) {
+		background: #f9fcff;
+	}
+
+	tbody tr:hover {
+		background: #eef5ff;
+	}
+
+	.badge {
+		display: inline-block;
+		border-radius: 999px;
+		padding: 0.16rem 0.52rem;
+		font-size: 0.78rem;
+		border: 1px solid;
+	}
+
+	.badge.ready,
+	.badge.delivered {
+		color: var(--ok);
+		border-color: #9fd7ca;
+		background: #e8f8f4;
+	}
+
+	.badge.review,
+	.badge.packed,
+	.badge.production {
+		color: var(--warn);
+		border-color: #efcd96;
+		background: #fff5e4;
+	}
+
+	.badge.draft {
+		color: #365d8b;
+		border-color: #abc4ea;
+		background: #edf4ff;
+	}
+
+	.sidebar-stack {
+		align-content: stretch;
+	}
+
+	.recent-orders-panel {
+		display: flex;
+		flex-direction: column;
+		min-height: 0;
+	}
+
+	.recent-orders-panel .table-wrap {
+		flex: 1;
+		overflow: auto;
+		max-height: none;
+	}
+
+	.pipeline-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		gap: 0.5rem;
+	}
+
+	.pipeline-list li {
+		display: flex;
+		justify-content: space-between;
+		border: 1px solid #dce7f4;
+		padding: 0.52rem 0.65rem;
+		border-radius: 10px;
+		background: #f8fbff;
+	}
+
+	.quick-actions {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 0.55rem;
+	}
+
+	.quick-actions a {
+		border-radius: 10px;
+		border: 1px solid #c8d7ea;
+		text-decoration: none;
+		color: var(--ink);
+		padding: 0.52rem;
+		text-align: center;
+		font-weight: 600;
+		transition: transform 0.15s ease, box-shadow 0.15s ease;
+		background: #f4f8ff;
+	}
+
+	.quick-actions a:hover {
+		transform: translateY(-1px);
+		box-shadow: 0 8px 18px rgba(23, 40, 73, 0.08);
+	}
+
+	.dashboard-order-select,
+	.dashboard-order-select:focus {
+		width: 100%;
+		padding: 0.55rem 0.65rem;
+		margin: 0.4rem 0 0.85rem;
+		font-size: 0.92rem;
+		border: 1px solid #c8d7ea;
+		border-radius: 10px;
+		background: #f8fbff;
+		color: var(--ink);
+		box-shadow: inset 0 1px 2px rgba(15, 29, 52, 0.08);
+		transition: border-color 0.18s ease, box-shadow 0.18s ease;
+	}
+
+	.dashboard-order-select:focus {
+		border-color: #6c92d4;
+		box-shadow: inset 0 1px 2px rgba(15, 29, 52, 0.08), 0 0 0 3px rgba(108, 146, 212, 0.17);
+	}
+
+    .btn {
+        background: var(--accent);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 0.6rem 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+	@media (max-width: 980px) {
+		.dashboard-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.kpis {
+			grid-template-columns: repeat(2, minmax(120px, 1fr));
+		}
+	}
+
+	@media (max-width: 660px) {
+		.dashboard-shell {
+			padding-left: 0.75rem;
+			padding-right: 0.75rem;
+		}
+
+		.kpis {
+			grid-template-columns: 1fr;
+		}
+
+		.quick-actions {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (prefers-color-scheme: dark) {
+		:root {
+			--paper: #09101a;
+			--ink: #edf3ff;
+			--panel: #121d2b;
+			--line: #1e2f49;
+			--accent-soft: #3f2415;
+			--muted: #9cb2d1;
+		}
+
+		.dashboard-hero {
+			background: radial-gradient(circle at top right, #312013, #111f34 62%);
+			border-color: #223452;
+		}
+
+		.design-card {
+			background: linear-gradient(170deg, #121d2b, #142235);
+			border-color: #223959;
+		}
+
+		.progress {
+			background: #2a3952;
+		}
+
+		th,
+		td {
+			border-bottom-color: #1e314e;
+		}
+
+		.pipeline-list li {
+			background: #0f1a2a;
+			border-color: #243a5b;
+		}
+
+		.quick-actions a {
+			background: #10203a;
+			border-color: #274061;
+			color: #edf3ff;
+		}
+
+		thead {
+			background: #0f1a2a;
+		}
+
+		table {
+			background: #0f1a2a;
+		}
+	}
+</style>
+
+<main class="dashboard-shell">
+	<section class="dashboard-hero">
+		<div>
+			<h1>Dashboard</h1>
+			<p>
+				Welcome<%= current_user&.name.present? ? " #{current_user.name}" : "" %>. Track current designs, order status, and the production pipeline from one place.
+			</p>
+		</div>
+		<div class="pill">
+			<%= current_user&.ysws_eligible ? "YSWS Eligible" : "YSWS eligibility pending" %>
+		</div>
+	</section>
+
+	<section class="kpis">
+		<article class="kpi">
+			<label>Current Designs</label>
+			<strong><%= designs.count %></strong>
+		</article>
+		<article class="kpi">
+			<label>In Progress</label>
+			<strong><%= in_progress_count %></strong>
+		</article>
+		<article class="kpi">
+			<label>Open Orders</label>
+			<strong><%= orders.size %></strong>
+		</article>
+		<article class="kpi">
+			<label>Total Ordered</label>
+			<strong><%= total_order_units %></strong>
+		</article>
+	</section>
+
+	<section class="dashboard-grid">
+		<div class="dashboard-main-stack">
+			<article class="panel" style="margin-bottom: 0.95rem;">
+				<div class="panel-head">
+					<h2>Current Designs</h2>
+					<span class="muted">Updated live as files change</span>
+				</div>
+
+				<div class="design-list">
+					<% designs.each do |design| %>
+						<section class="design-card">
+							<h3><%= design[:name] %></h3>
+							<div class="design-meta">
+							<% design_status = design[:status].to_s.presence || "unknown" %>
+							<span class="badge <%= design_status.downcase %>"><%= design_status.titleize %></span>
+								<span><%= design[:updated_at] %></span>
+							</div>
+							<div class="progress" role="progressbar" aria-valuenow="<%= design[:progress] %>" aria-valuemin="0" aria-valuemax="100" aria-label="<%= design[:name] %> progress">
+								<span style="width: <%= design[:progress] %>%"></span>
+							</div>
+						</section>
+					<% end %>
+				</div>
+			</article>
+
+			<article class="panel recent-orders-panel">
+				<div class="panel-head">
+					<h2>Recent Orders</h2>
+					<span class="muted">Most recent purchase requests</span>
+				</div>
+
+				<div class="table-wrap">
+					<table>
+						<thead>
+							<tr>
+								<th>Order</th>
+								<th>Item</th>
+								<th>Qty</th>
+								<th>Status</th>
+								<th>ETA</th>
+							</tr>
+						</thead>
+						<tbody>
+							<% orders.each do |order| %>
+								<tr>
+									<td><%= order[:number] %></td>
+									<td><%= order[:item] %></td>
+									<td><%= order[:quantity] %></td>
+									<td>
+										<% badge_class = if order[:state].include?("Delivered")
+											"delivered"
+										elsif order[:state].include?("production")
+											"production"
+										else
+											"packed"
+										end %>
+										<span class="badge <%= badge_class %>"><%= order[:state] %></span>
+									</td>
+									<td><%= order[:eta] %></td>
+								</tr>
+							<% end %>
+						</tbody>
+					</table>
+                    <div style="align-items: center; display: flex; flex-direction: column; gap: 0.8rem; padding: 1.2rem;">
+                        <% if orders.empty? && designs.empty? %>
+							<p>No orders or designs found.</p>
+							<button class="btn" onclick="location.href='<%= new_design_path %>'">Start your design here!</button>
+                        <% end %>
+				    </div>
+				</div>
+			</article>
+		</div>
+
+		<aside class="sidebar-stack">
+			<article class="panel">
+				<div class="panel-head">
+					<h2>Production Pipeline</h2>
+				</div>
+				<ul class="pipeline-list">
+					<% pipeline.each do |stage| %>
+						<li>
+							<span><%= stage[:label] %></span>
+							<strong><%= stage[:count] %></strong>
+						</li>
+					<% end %>
+				</ul>
+			</article>
+
+			<article class="panel">
+				<div class="panel-head">
+					<h2>New Order</h2>
+					<%= form_with url: orders_new_path, local: true do |form| %>
+						<%= form.label :design_id, "Select Design" %>
+				<%= form.select :design_id, options_from_collection_for_select(@designs, :id, :name), { prompt: "Choose a design" }, { class: "dashboard-order-select" } %>
+				<%= form.label :product_id, "Select Product" %>
+				<%= form.select :product_id, options_from_collection_for_select(@products, :id, :name), { prompt: "Choose a product" }, { class: "dashboard-order-select" } %>
+						<% cheapest_product = @products.min_by(&:cost) %>
+						<%= form.submit "Create Order", class: "btn", disabled: @user.nil? || cheapest_product.nil? || @user.credits < cheapest_product.cost %>
+					<% end %>
+				</div>
+			</article>
+		</aside>
+	</section>
+</main>

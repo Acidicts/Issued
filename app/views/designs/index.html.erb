@@ -1,0 +1,268 @@
+<style>
+    :root {
+      --panel: #ffffff;
+      --line: #dce7f3;
+      --muted: #4f637f;
+      --accent: #ec6724;
+      --background: #f4f7fb;
+      --text: #1f2f45;
+    }
+
+    #container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem;
+      background: var(--background);
+      min-height: calc(100vh - 12rem);
+    }
+
+    #your-designs-heading {
+      font-family: Workbench, sans-serif;
+      font-size: clamp(2.2rem, 5vw, 3rem);
+      color: var(--text);
+      margin-bottom: 1.5rem;
+      text-align: center;
+      letter-spacing: 0.03em;
+    }
+
+    .designs-list {
+      display: grid;
+      gap: 0.9rem;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+
+    .design-item {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 0.95rem;
+      align-items: start;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 0.95rem;
+      box-shadow: 0 12px 20px rgba(15, 29, 52, 0.1);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      min-height: 170px;
+    }
+
+    .design-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 26px rgba(15, 29, 52, 0.18);
+      border-color: #aecbf8;
+    }
+
+    .design-item .design-preview {
+      grid-row: 1 / -1;
+      grid-column: 1;
+      width: 150px;
+      height: 150px;
+      padding: 0;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: inset 0 0 0 1px #ffffff, 0 3px 8px rgba(15, 29, 52, 0.08);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .design-item .design-preview svg,
+    .design-preview svg {
+      width: 100% !important;
+      height: 100% !important;
+      max-width: 100% !important;
+      max-height: 100% !important;
+      object-fit: contain;
+      display: block;
+    }
+
+    .design-details {
+      grid-column: 2;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.35rem;
+    }
+
+    .design-item h2 {
+      margin: 0;
+      font-size: 1.2rem;
+      line-height: 1.2;
+      color: #10203a;
+      font-weight: 700;
+    }
+
+.design-preview {
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      margin-bottom: 0;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .design-preview svg {
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .design-item p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.4;
+    }
+
+    .design-meta {
+      display: flex;
+		  flex-direction: column;
+      margin-top: 0.35rem;
+      padding: 0.45rem 0.6rem;
+      background: #f9fbff;
+      border: 1px solid #e3eefe;
+      border-radius: 10px;
+      display: inline-flex;
+      gap: 0.65rem;
+      font-size: 0.85rem;
+      color: #5f6f8d;
+    }
+
+    .design-meta span {
+      font-weight: 600;
+      color: #37445e;
+    }
+
+    .design-actions {
+      margin-top: 0.75rem;
+      display: flex;
+      gap: 0.58rem;
+      flex-wrap: wrap;
+    }
+
+    .design-actions .edit-link,
+    .design-actions .create-link {
+      padding: 0.42rem 0.72rem;
+      border-radius: 0.45rem;
+      font-size: 0.84rem;
+      letter-spacing: 0.02em;
+    }
+
+    .edit-link,
+    .create-link {
+      display: inline-block;
+      font-weight: 600;
+      color: #ffffff;
+      background: var(--accent);
+      border-radius: 0.5rem;
+      padding: 0.46rem 0.8rem;
+      text-decoration: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .edit-link:hover,
+    .create-link:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(236, 103, 36, 0.3);
+      background: #d75a00;
+    }
+
+    .empty-state {
+      text-align: center;
+      margin-top: 2rem;
+      color: var(--muted);
+    }
+
+    .empty-state p {
+      margin-bottom: 0.75rem;
+    }
+
+    .empty-state {
+        align-self: center;
+        margin: auto;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --panel: #112039;
+        --line: #1f3353;
+        --muted: #9cb2d1;
+        --background: #0c1729;
+        --text: #d6e7ff;
+      }
+
+      br {
+        color: #ffffff16;
+      }
+
+      hr {
+        color: #ffffff16;
+      }
+
+      body {
+        background: #030814;
+      }
+
+      #your-designs-heading {
+        color: var(--text);
+      }
+
+      .design-item {
+        background: #0f1b2f;
+        border-color: var(--line);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+      }
+
+      .edit-link,
+      .create-link {
+        background: #2467ef;
+      }
+
+      .edit-link:hover,
+      .create-link:hover {
+        background: #1b5ecd;
+      }
+    }
+</style>
+
+<div id="container">
+  <div style="display:inline-flex justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
+    <h1 id="your-designs-heading">Your Designs</h1>
+    <a href="<%= editor_designs_path %>" class="create-link" style="margin-bottom: 1.5rem; display: inline-block;">Create New Design</a>
+  </div>
+  <hr>
+  <div class="designs-list">
+    <% @designs.each do |design| %>
+      <div class="design-item">
+        <div class="design-preview">
+          <%= svg_scaled(design.svg_content) %>
+        </div>
+        <div class="design-details">
+          <h2><%= design.name %></h2>
+          <div class="design-meta">
+            <div><span>Last edited:</span> <%= design.updated_at.strftime("%b %d, %Y") %></div>
+            <div><span>Time:</span> <%= design.elapsed_time_formatted %></div>
+          </div>
+          <div class="design-actions">
+            <%= link_to "Edit", edit_design_path(design), class: "edit-link" %>
+            <%= link_to "View", design_path(design), class: "create-link" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+    <% if @designs.empty? %>
+      <div class="empty-state">
+        <p>You haven't created any designs yet.</p>
+        <a href="<%= editor_design_path %>" class="create-link">Create your first design</a>
+      </div>
+    <% end %>
+  </div>
+</div>

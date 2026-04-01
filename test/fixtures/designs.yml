@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  name: Existing Design
+  description: Sample design fixture
+  time: 120
+
+two:
+  user: two
+  name: Another Design
+  description: Another sample
+  time: 90

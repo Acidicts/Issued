@@ -1,32 +1,38 @@
 require "test_helper"
+require "securerandom"
 
 class SessionsControllerTest < ActionDispatch::IntegrationTest
-  test "login redirects to hackclub authorize" do
+  def auth_hash_for(uid: "U#{SecureRandom.hex(4)}", name: "Hack Club User", verification_status: true, ysws_eligible: true)
+    OmniAuth::AuthHash.new(
+      provider: "hackclub",
+      uid: uid,
+      info: {
+        name: name,
+        slack_id: uid,
+        verification_status: verification_status,
+        ysws_eligible: ysws_eligible
+      },
+      credentials: {
+        token: "fake-token",
+        refresh_token: "fake-refresh"
+      }
+    )
+  end
+
+  test "login redirects to omniauth hackclub path" do
     ENV["HACKCLUB_CLIENT_ID"] = "test-client-id"
     ENV["HACKCLUB_CLIENT_SECRET"] = "test-client-secret"
 
     get login_url
-
-    assert_redirected_to %r{https://auth.hackclub.com/oauth/authorize\?}, "Expected redirect to Hack Club OAuth authorize"
+    assert_redirected_to %r{/auth/hackclub}, "Expected redirect to OmniAuth hackclub path"
   end
 
   test "callback creates user and signs in" do
-    ENV["HACKCLUB_CLIENT_ID"] = "test-client-id"
-    ENV["HACKCLUB_CLIENT_SECRET"] = "test-client-secret"
-
-    exchange_original = SessionsController.instance_method(:exchange_code_for_token)
-    fetch_original = SessionsController.instance_method(:fetch_hackclub_me)
-
-    SessionsController.define_method(:exchange_code_for_token) do |_code|
-      { "access_token" => "fake-token", "refresh_token" => "fake-refresh" }
-    end
-
-    SessionsController.define_method(:fetch_hackclub_me) do |_token|
-      { "slack_id" => "U123", "name" => "Hack Club User", "verification_status" => 1, "ysws_eligible" => true }
-    end
-
     initial_user_count = User.count
-    get hackclub_callback_url, params: { code: "abc123" }
+
+    OmniAuth.config.test_mode = true
+    OmniAuth.config.mock_auth[:hackclub] = auth_hash_for(uid: "U123")
+    get "/auth/hackclub/callback"
 
     assert_redirected_to root_url
     assert_equal initial_user_count + 1, User.count
@@ -34,10 +40,12 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Hack Club User", user.name
     assert_equal "U123", user.slack_id
     assert_equal true, user.ysws_eligible
+    assert_equal 1, user.verified
+    assert_equal user.id, session[:user_id]
 
   ensure
-    SessionsController.define_method(:exchange_code_for_token, exchange_original)
-    SessionsController.define_method(:fetch_hackclub_me, fetch_original)
+    OmniAuth.config.test_mode = false
+    OmniAuth.config.mock_auth.delete(:hackclub)
   end
 
   test "login stores redirect in session" do
@@ -47,40 +55,35 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     get login_url, params: { redirect: dashboard_path }
 
     assert_equal dashboard_path, session[:return_to]
-    assert_redirected_to %r{https://auth.hackclub.com/oauth/authorize\?}
+    assert_redirected_to %r{/auth/hackclub\?origin=}
   end
 
-  test "callback redirects to requested path when provided" do
-    ENV["HACKCLUB_CLIENT_ID"] = "test-client-id"
-    ENV["HACKCLUB_CLIENT_SECRET"] = "test-client-secret"
+  test "callback redirects to requested path via omniauth origin" do
+    OmniAuth.config.test_mode = true
+    OmniAuth.config.mock_auth[:hackclub] = auth_hash_for(uid: "U123")
+    get "/auth/hackclub/callback", env: { "omniauth.origin" => dashboard_path }
 
-    exchange_original = SessionsController.instance_method(:exchange_code_for_token)
-    fetch_original = SessionsController.instance_method(:fetch_hackclub_me)
-
-    SessionsController.define_method(:exchange_code_for_token) do |_code|
-      { "access_token" => "fake-token", "refresh_token" => "fake-refresh" }
-    end
-
-    SessionsController.define_method(:fetch_hackclub_me) do |_token|
-      { "slack_id" => "U123", "name" => "Hack Club User", "verification_status" => 1, "ysws_eligible" => true }
-    end
-
-    get hackclub_callback_url, params: { code: "abc123", redirect: dashboard_path }
     assert_redirected_to dashboard_path
 
   ensure
-    SessionsController.define_method(:exchange_code_for_token, exchange_original)
-    SessionsController.define_method(:fetch_hackclub_me, fetch_original)
+    OmniAuth.config.test_mode = false
+    OmniAuth.config.mock_auth.delete(:hackclub)
   end
 
-  test "callback handles missing code" do
-    get hackclub_callback_url
+  test "callback handles missing auth hash" do
+    OmniAuth.config.test_mode = true
+    OmniAuth.config.mock_auth[:hackclub] = nil
+    get "/auth/hackclub/callback"
+
     assert_redirected_to root_url
-    assert_equal "Authorization code missing from Hack Club callback", flash[:alert]
+
+  ensure
+    OmniAuth.config.test_mode = false
+    OmniAuth.config.mock_auth.delete(:hackclub)
   end
 
   test "destroy redirects to root" do
-    user = User.create!(name: "x", slack_id: "U123", verified: 1)
+    user = User.create!(name: "x", slack_id: "U123", verified: true, ysws_eligible: false)
     cookies[:user_id] = user.id
     delete logout_url
     assert_redirected_to root_url
