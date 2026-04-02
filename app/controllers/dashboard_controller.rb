@@ -1,6 +1,7 @@
 class DashboardController < ApplicationController
   layout "application"
   before_action :set_nav
+  before_action :require_login
 
   def index
     @user = current_user

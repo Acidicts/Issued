@@ -32,6 +32,7 @@
         color: #1f2937;
         transition: background 0.3s ease, color 0.3s ease;
         padding-top: 4.2rem;
+        margin-top: 3rem;
       }
 
       header {
@@ -140,6 +141,20 @@
         z-index: 49;
       }
 
+      .dashboard-subnav-parent {
+        display: inline-flex;
+        justify-content: space-between;
+        width: 100%;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.55rem 1.25rem;
+        background: #f4f7fb;
+        border-top: 1px solid #dfe7f2;
+        border-bottom: 1px solid #dfe7f2;
+        position: relative;
+        z-index: 49;
+      }
+
       .dashboard-link {
         font-family: Workbench, sans-serif;
         font-size: 0.88rem;
@@ -165,6 +180,12 @@
 
       @media (prefers-color-scheme: dark) {
         .dashboard-subnav {
+          background: rgba(23, 35, 56, 0.95);
+          border-top: 1px solid #1a2b45;
+          border-bottom: 1px solid #1a2b45;
+        }
+
+        .dashboard-subnav-parent {
           background: rgba(23, 35, 56, 0.95);
           border-top: 1px solid #1a2b45;
           border-bottom: 1px solid #1a2b45;
@@ -209,15 +230,29 @@
           </div>
         </nav>
         <% if @nav == "dashboard" %>
-          <div class="dashboard-subnav">
-            <%= link_to "Overview", dashboard_path, class: "dashboard-link" %>
-            <%= link_to "Designs", designs_path, class: "dashboard-link" %>
-            <%= link_to "Orders", dashboard_path(anchor: "orders"), class: "dashboard-link" %>
-            <%= link_to "Settings", "#", class: "dashboard-link" %>
+          <div class="dashboard-subnav-parent">
+            <div class="dashboard-subnav">
+              <%= link_to "Overview", dashboard_path, class: "dashboard-link" %>
+              <%= link_to "Designs", designs_path, class: "dashboard-link" %>
+              <%= link_to "Orders", dashboard_path(anchor: "orders"), class: "dashboard-link" %>
+              <%= link_to "Settings", "#", class: "dashboard-link" %>
+            </div>
+            <div class="dashboard-subnav">
+              <% if current_user.admin? %>
+                <%= link_to "Admin", admin_overview_path, class: "dashboard-link" %>
+              <% end %>
+            </div>
           </div>
         <% end %>
       </header>
     <% end %>
+
+    <div id="flash-container" aria-live="polite" aria-atomic="true">
+      <% flash.each do |type, message| %>
+        <div class="flash-message flash-<%= type %>"><%= message %></div>
+      <% end %>
+    </div>
+
     <%= yield %>
   </body>
 </html>
