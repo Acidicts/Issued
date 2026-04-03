@@ -9,6 +9,8 @@ class ApplicationController < ActionController::Base
 
   layout "application"
 
+  before_action :set_current_oauth_tokens
+
   def current_user
     return unless session[:user_id]
     @current_user ||= User.find_by(id: session[:user_id])
@@ -16,6 +18,13 @@ class ApplicationController < ActionController::Base
 
   def signed_in?
     current_user.present?
+  end
+
+  private
+
+  def set_current_oauth_tokens
+    Current.hackclub_access_token = session[:hackclub_access_token]
+    Current.hackclub_refresh_token = session[:hackclub_refresh_token]
   end
 
   def require_login

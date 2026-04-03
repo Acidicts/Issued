@@ -1,2 +1,98 @@
+<style>
+    h1 {
+        font-family: Workbench, sans-serif;
+        font-size: 3rem;
+    }
+    
+    .user-table th, .user-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+    
+    .user-table th {
+        background-color: #f2f2f2;
+        text-align: left;
+    }
+    
+    .action-buttons a {
+        margin-right: 5px;
+        padding: 5px 10px;
+        text-decoration: none;
+        color: white;
+        background-color: #007bff;
+        border-radius: 4px;
+    }
+    
+    .action-buttons a.delete {
+        background-color: #dc3545;
+    }
+
+    .action-buttons {
+        padding: 5px;
+    }
+
+    th {
+        font-family: Workbench, sans-serif;
+        font-size: 1.25rem;
+    }
+
+    td {
+        font-family: monospace, sans-serif;
+        font-size: 1.4rem;
+    }
+
+    table {
+        margin: 0 5%;
+        width: 90%;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .user-table th {
+            background-color: #333;
+            color: #fff;
+        }
+
+        .user-table td {
+            background-color: #222;
+            color: #fff;
+        }
+
+        .action-buttons a {
+            background-color: #007bff;
+        }
+
+        .action-buttons a.delete {
+            background-color: #dc3545;
+        }
+    }
+</style>
+
 <h1>User Management</h1>
-<p>List all users, with edit/remove actions (placeholder).</p>
+<div class="users-container">
+    <table class="user-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Slack ID</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% @users.each do |user| %>
+                <tr>
+                    <td><%= user.id %></td>
+                    <td><%= user.name %></td>
+                    <td><%= user.slack_id.to_s.humanize %></td>
+                    <td><%= user.role %></td>
+                    <td class="action-buttons">
+                        <%= link_to 'Edit', edit_admin_user_path(user), class: 'edit' %>
+                        <%= link_to 'Delete', admin_user_path(user), method: :delete, data: { confirm: 'Are you sure?' }, class: 'delete' %>
+                    </td>
+                </tr>
+            <% end %>
+        </tbody>
+    </table>
+</div>
+

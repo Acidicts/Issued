@@ -1,7 +1,5 @@
 module Admin
-  class OrdersController < ApplicationController
-    layout "application"
-
+  class OrdersController < Admin::DashboardController
     def index
       # Admin order & fulfillment list stub
     end

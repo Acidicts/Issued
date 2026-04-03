@@ -42,10 +42,6 @@ class SessionsController < ApplicationController
     user.verified = ActiveModel::Type::Boolean.new.cast(
       info["verification_status"] || info[:verification_status] || info["verified"] || info[:verified]
     )
-    user.ysws_eligible = ActiveModel::Type::Boolean.new.cast(
-      info["ysws_eligible"] || info[:ysws_eligible] || info["yws_eligible"] || info[:yws_eligible] || info["yws_eligible?"] || info[:"yws_eligible?"]
-    )
-    user.ysws_eligible = false if user.ysws_eligible.nil?
     user.slack_id = slack_id if slack_id
     user.save!
 
@@ -53,6 +49,9 @@ class SessionsController < ApplicationController
     if auth.credentials
       session[:hackclub_access_token] = auth.credentials.token if auth.credentials.token.present?
       session[:hackclub_refresh_token] = auth.credentials.refresh_token if auth.credentials.refresh_token.present?
+      Current.hackclub_access_token = session[:hackclub_access_token]
+      Current.hackclub_refresh_token = session[:hackclub_refresh_token]
+      user.refresh_ysws_eligibility!
     end
 
     redirect_path = safe_redirect_path(request.env["omniauth.origin"]) || safe_redirect_path(session.delete(:return_to)) || safe_redirect_path(params[:origin]) || root_path

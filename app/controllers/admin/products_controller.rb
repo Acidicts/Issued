@@ -1,7 +1,5 @@
 module Admin
-  class ProductsController < ApplicationController
-    layout "application"
-
+  class ProductsController < Admin::DashboardController
     def index
       # Admin product management list stub
     end

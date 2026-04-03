@@ -1,0 +1,142 @@
+<%= form_with model: [:admin, @user], local: true, class: "admin-user-form" do |f| %>
+  <% if @user.errors.any? %>
+    <div class="form-errors">
+      <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
+      <ul>
+        <% @user.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :name, class: "field-label" %>
+    <%= f.text_field :name, class: "field-input", placeholder: "Full name" %>
+  </div>
+
+  <div class="field">
+    <%= f.label :slack_id, class: "field-label" %>
+    <%= f.text_field :slack_id, class: "field-input", placeholder: "U12345678" %>
+  </div>
+
+  <div class="field">
+    <%= f.label :role, class: "field-label" %>
+    <%= f.select :role, User.roles.keys.map { |r| [r.titleize, r] }, {}, class: "field-input" %>
+  </div>
+
+  <div class="field"> 
+    <%= f.label :ysws_eligible, class: "field-label" do %>
+      <%= f.check_box :ysws_eligible %> Eligible for YSWS
+    <% end %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit @user.persisted? ? "Update User" : "Create User", class: "btn" %>
+    <%= link_to "Back", admin_users_path, class: "btn btn-secondary" %>
+  </div>
+<% end %>
+
+<style>
+.admin-user-form {
+  width: min(42rem, 95vw);
+  margin: 1.5rem auto;
+  background: #ffffff;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.09);
+}
+
+.admin-user-form .field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.field-label {
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.field-input {
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  padding: 0.7rem 0.85rem;
+  font-size: 1rem;
+}
+
+.field-input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.form-errors {
+  border: 1px solid #dc2626;
+  background: rgba(220, 38, 38, 0.08);
+  border-radius: 0.5rem;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.form-errors h2 {
+  margin: 0 0 0.35rem 0;
+  color: #991b1b;
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem 1rem;
+  border: 1px solid #2563eb;
+  border-radius: 0.55rem;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.btn:hover {
+  background: #1d4ed8;
+}
+
+.btn-secondary {
+  border-color: #6b7280;
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.btn-secondary:hover {
+  background: #d1d5db;
+}
+
+@media (prefers-color-scheme: dark) {
+  .admin-user-form {
+    background: rgba(15, 23, 42, 0.8);
+    color: #e5e7eb;
+    border: 1px solid #374151;
+  }
+
+  .field-input {
+    background: #0f172a;
+    color: #e5e7eb;
+    border-color: #4b5563;
+  }
+
+  .field-input:focus {
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.35);
+  }
+
+  .btn-secondary {
+    background: #374151;
+    color: #e5e7eb;
+  }
+}
+</style>
