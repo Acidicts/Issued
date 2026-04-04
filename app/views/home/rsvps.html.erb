@@ -1,3 +1,10 @@
+<%= content_for :title, "RSVP | Issued" %>
+<%= content_for :og_title, "RSVP | Issued" %>
+<%= content_for :og_description, @rsvp_count.to_s + " people have RSVP'd for Issued!" %>
+<%= content_for :og_image, rsvps_og_image_url %>
+<%= content_for :twitter_card, "summary_large_image" %>
+<%= content_for :og_author, "Alex Hayes" %>
+
 <style>
 	  .rsvp-summary {
 	background-color: var(--background);
