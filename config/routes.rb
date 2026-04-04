@@ -13,6 +13,9 @@ Rails.application.routes.draw do
   get "/dashboard", to: "dashboard#index", as: :dashboard
 
   namespace :admin do
+    get "rsvp/index", as: :rsvp
+    delete "rsvp/delete/:id", to: "rsvp#delete", as: :rsvp_delete
+
     get "/", to: "dashboard#index", as: :overview
     resources :users, only: %i[index show new edit create update destroy]
     resources :products, only: %i[index show new edit create update destroy]

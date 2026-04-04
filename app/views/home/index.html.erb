@@ -125,9 +125,9 @@
             <div class="offside" id="descriptor1">Get Custom Apparel</div>
         </div>
         <div id="btns">
-            <% if !signed_in? && ENV['RUNNING'] == 'true' %>
+            <% if !signed_in? && ENV['RUNNING'] == 'true' && ENV['RSVP_OPEN'] == 'false' %>
               <%= link_to "Start", login_path(redirect: request.fullpath), class: "btn" %>
-            <% elsif ENV['RUNNING'] == 'true' %>
+            <% elsif ENV['RUNNING'] == 'true' && ENV['RSVP_OPEN'] == 'false' %>
               <%= link_to "Start", dashboard_path, class: "btn" %>
             <% else %>
               <%= link_to "RSVP", rsvp_path, class: "btn disabled", disabled: true %>
