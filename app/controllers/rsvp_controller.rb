@@ -5,7 +5,7 @@ class RsvpController < ApplicationController
     @already_rsvped = signed_in? && Rsvp.exists?(user: current_user)
     @can_rsvp = signed_in? && !@running && !@ended && !@already_rsvped
 
-    render "rsvp/index", layout: false
+    render "rsvp/index"
   end
 
   def submit
@@ -26,7 +26,7 @@ class RsvpController < ApplicationController
 
   def thanks
     @open = ENV["RUNNING"] != "true" && ENV["ENDED"] != "true"
-    render "rsvp/thanks", layout: false
+    render "rsvp/thanks"
   end
 
   def submit_after_login

@@ -1,0 +1,12 @@
+<section class="rsvp-summary" aria-labelledby="rsvp-summary-title">
+	<p class="rsvp-summary__eyebrow">Event attendance</p>
+	<h1 id="rsvp-summary-title" class="rsvp-summary__title">RSVP Dashboard</h1>
+	<p class="rsvp-summary__subtitle">A live snapshot of confirmed guests.</p>
+
+	<div class="rsvp-summary__stat" role="status" aria-live="polite">
+		<span class="rsvp-summary__count"><%= @rsvp_count %></span>
+		<span class="rsvp-summary__label">
+			<%= @rsvp_count == 1 ? "Person RSVPed" : "People RSVPed" %>
+		</span>
+	</div>
+</section>

@@ -31,13 +31,59 @@
         background-color: #f1f5f9;
     }
 
+    .page-header {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 1rem;
+        align-items: flex-start;
+        margin-bottom: 1.25rem;
+    }
+
+    .page-header h1 {
+        margin: 0;
+        font-size: 2.8rem;
+        font-family: Workbench, sans-serif;
+    }
+
+    .page-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: center;
+        color: #475569;
+        font-size: 1rem;
+    }
+
+    .rsvp-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.55rem 0.95rem;
+        border-radius: 0.55rem;
+        background: #1f7a8c;
+        color: white;
+        text-decoration: none;
+        transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .rsvp-link:hover {
+        background: #175f70;
+        transform: translateY(-1px);
+    }
+
     .action-buttons {
         display: flex;
         gap: 0.5rem;
         align-items: center;
     }
 
-    .action-buttons a {
+    .action-buttons form {
+        margin: 0;
+    }
+
+    .action-buttons a,
+    .action-buttons button {
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -47,12 +93,37 @@
         font-weight: 600;
         color: white;
         background-color: #ef4444;
+        border: none;
+        cursor: pointer;
         transition: background-color 0.2s ease, transform 0.2s ease;
     }
 
-    .action-buttons a:hover {
+    .action-buttons a:hover,
+    .action-buttons button:hover {
         background-color: #dc2626;
         transform: translateY(-1px);
+    }
+
+    .rsvp-table th,
+    .rsvp-table td {
+        border: 1px solid #e2e8f0;
+        padding: 1rem 1.1rem;
+        vertical-align: middle;
+    }
+
+    @media (max-width: 860px) {
+        .rsvp-table {
+            width: 100%;
+        }
+
+        .page-header {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .page-meta {
+            justify-content: flex-start;
+        }
     }
 
     @media (prefers-color-scheme: dark) {
@@ -72,10 +143,15 @@
     }
 </style>
 
-<h1>RSVPs</h1>
-
-<p><%= @rsvps.count %> total RSVPs</p>
-<a href="<%= ENV['APP_URL']+rsvp_path %>" target="_blank">RSVP Page</a>
+<div class="page-header">
+  <div>
+    <h1>RSVPs</h1>
+    <div class="page-meta">
+      <span><%= @rsvps.count %> total RSVPs</span>
+      <%= link_to "RSVP Page", ENV['APP_URL'] + rsvp_path, target: "_blank", rel: "noopener", class: "rsvp-link" %>
+    </div>
+  </div>
+</div>
 
 <table class="rsvp-table">
   <thead>

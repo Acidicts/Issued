@@ -6,6 +6,24 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Issued">
     <meta name="mobile-web-app-capable" content="yes">
+    <% if content_for?(:og_description) %>
+      <meta name="description" content="<%= content_for(:og_description) %>">
+    <% end %>
+    <% if content_for?(:og_title) %>
+      <meta property="og:title" content="<%= content_for(:og_title) %>">
+    <% end %>
+    <% if content_for?(:og_description) %>
+      <meta property="og:description" content="<%= content_for(:og_description) %>">
+    <% end %>
+    <% if content_for?(:og_image) %>
+      <meta property="og:image" content="<%= asset_path(content_for(:og_image)) %>">
+    <% end %>
+    <% if content_for?(:twitter_card) %>
+      <meta name="twitter:card" content="<%= content_for(:twitter_card) %>">
+    <% end %>
+    <% if content_for?(:og_author) %>
+      <meta name="twitter:creator" content="<%= content_for(:og_author) %>">
+    <% end %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -31,6 +49,10 @@
         background: #f9fafb;
         color: #1f2937;
         transition: background 0.3s ease, color 0.3s ease;
+        margin: 0;
+      }
+
+      body.has-nav {
         padding-top: 4.2rem;
         margin-top: 3rem;
       }
@@ -209,7 +231,7 @@
     </style>
   </head>
 
-  <body>
+  <body class="<%= @nav != nil ? 'has-nav' : '' %>">
     <% if @nav != nil %>
       <header>
         <nav>

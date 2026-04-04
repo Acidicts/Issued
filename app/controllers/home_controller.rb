@@ -11,6 +11,10 @@ class HomeController < ApplicationController
   def faq
   end
 
+  def rsvps
+    @rsvp_count = Rsvp.count
+  end
+
   private
   def set_nav
     @nav = "home"
