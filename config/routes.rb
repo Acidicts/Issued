@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   get "/about", to: "home#about", as: :about
   get "/faq", to: "home#faq", as: :faq
   get "/rsvps", to: "home#rsvps", as: :rsvps
+  get "/rsvps/og-image.svg", to: "home#rsvps_og_image", as: :rsvps_og_image
 
   get "up", to: "rails/health#show", as: :rails_health_check
 
