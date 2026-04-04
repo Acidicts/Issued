@@ -11,7 +11,7 @@ class CreateDesignEditSessions < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :design_edit_sessions, [:design_id, :created_at]
-    add_index :design_edit_sessions, [:user_id, :created_at]
+    add_index :design_edit_sessions, [ :design_id, :created_at ]
+    add_index :design_edit_sessions, [ :user_id, :created_at ]
   end
 end

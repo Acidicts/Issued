@@ -3,9 +3,11 @@
 one:
   user: one
   design: one
+  product: one
   status: 1
 
 two:
   user: two
   design: two
+  product: two
   status: 1

@@ -49,7 +49,7 @@ class Design < ApplicationRecord
   def svg_attached_and_valid_format
     return unless svg.attached?
 
-    allowed_types = ["image/svg+xml", "image/png"]
+    allowed_types = [ "image/svg+xml", "image/png" ]
     unless allowed_types.include?(svg.content_type)
       errors.add(:svg, "must be an SVG or PNG file")
     end

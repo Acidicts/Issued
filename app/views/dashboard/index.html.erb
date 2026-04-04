@@ -12,7 +12,7 @@
 		{ label: "Fufilled", count: @pipeline[3] }
 	]
 
-	total_order_units = orders.sum { |order| order[:quantity] }
+	total_order_units = orders.sum { |order| order[:quantity].to_i }
 	in_progress_count = @pipeline[0]
 %>
 
@@ -538,14 +538,15 @@
 									<td><%= order[:item] %></td>
 									<td><%= order[:quantity] %></td>
 									<td>
-										<% badge_class = if order[:state].include?("Delivered")
+										<% state = order[:state].to_s
+										badge_class = if state.include?("Delivered")
 											"delivered"
-										elsif order[:state].include?("production")
+										elsif state.include?("production")
 											"production"
 										else
 											"packed"
 										end %>
-										<span class="badge <%= badge_class %>"><%= order[:state] %></span>
+										<span class="badge <%= badge_class %>"><%= state %></span>
 									</td>
 									<td><%= order[:eta] %></td>
 								</tr>
@@ -584,9 +585,10 @@
 						<%= form.label :design_id, "Select Design" %>
 				<%= form.select :design_id, options_from_collection_for_select(@designs, :id, :name), { prompt: "Choose a design" }, { class: "dashboard-order-select" } %>
 				<%= form.label :product_id, "Select Product" %>
-				<%= form.select :product_id, options_from_collection_for_select(@products, :id, :name), { prompt: "Choose a product" }, { class: "dashboard-order-select" } %>
+				<% product_options = @products.map { |product| [product.type.presence || "Product ##{product.id}", product.id] } %>
+				<%= form.select :product_id, options_for_select(product_options), { prompt: "Choose a product" }, { class: "dashboard-order-select" } %>
 						<% cheapest_product = @products.min_by(&:cost) %>
-						<%= form.submit "Create Order", class: "btn", disabled: @user.nil? || cheapest_product.nil? || @user.credits < cheapest_product.cost %>
+						<%= form.submit "Create Order", class: "btn", disabled: @user.nil? || cheapest_product.nil? || @user.credits.to_i < cheapest_product.cost.to_i %>
 					<% end %>
 				</div>
 			</article>

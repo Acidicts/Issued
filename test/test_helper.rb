@@ -13,3 +13,24 @@ module ActiveSupport
     # Add more helper methods to be used by all tests here...
   end
 end
+
+class ActionDispatch::IntegrationTest
+  def sign_in_as(user)
+    OmniAuth.config.test_mode = true
+    OmniAuth.config.mock_auth[:hackclub] = OmniAuth::AuthHash.new(
+      provider: "hackclub",
+      uid: user.slack_id,
+      info: {
+        name: user.name,
+        slack_id: user.slack_id,
+        verification_status: user.verified.present? && user.verified.to_i == 1,
+        ysws_eligible: user.ysws_eligible
+      }
+    )
+
+    get "/auth/hackclub/callback"
+  ensure
+    OmniAuth.config.mock_auth.delete(:hackclub)
+    OmniAuth.config.test_mode = false
+  end
+end

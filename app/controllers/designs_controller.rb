@@ -2,7 +2,7 @@ class DesignsController < ApplicationController
   layout "application"
   before_action :set_nav
   before_action :ensure_signed_in
-  before_action :find_design, only: [:show, :edit, :update]
+  before_action :find_design, only: [ :show, :edit, :update ]
 
   def index
     @designs = current_user.designs.order(updated_at: :desc)

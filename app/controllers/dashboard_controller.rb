@@ -6,7 +6,7 @@ class DashboardController < ApplicationController
   def index
     @user = current_user
     @orders = @user ? @user.orders : []
-    @designs = Design.all
+    @designs = current_user.designs
     @products = Product.all
 
     # Pipeline stuff needs doing

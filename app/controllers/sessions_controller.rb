@@ -42,6 +42,7 @@ class SessionsController < ApplicationController
     user.verified = ActiveModel::Type::Boolean.new.cast(
       info["verification_status"] || info[:verification_status] || info["verified"] || info[:verified]
     )
+    user.update_ysws_eligibility_from_auth_info(info)
     user.slack_id = slack_id if slack_id
     user.save!
 
@@ -51,7 +52,11 @@ class SessionsController < ApplicationController
       session[:hackclub_refresh_token] = auth.credentials.refresh_token if auth.credentials.refresh_token.present?
       Current.hackclub_access_token = session[:hackclub_access_token]
       Current.hackclub_refresh_token = session[:hackclub_refresh_token]
-      user.refresh_ysws_eligibility!
+      begin
+        user.refresh_ysws_eligibility!
+      rescue StandardError => e
+        logger.warn("Skipping Hack Club profile refresh: #{e.class} #{e.message}")
+      end
     end
 
     redirect_path = safe_redirect_path(request.env["omniauth.origin"]) || safe_redirect_path(session.delete(:return_to)) || safe_redirect_path(params[:origin]) || root_path

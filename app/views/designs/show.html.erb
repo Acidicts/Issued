@@ -13,7 +13,7 @@
 
   <div class="design-preview">
     <% if @design.svg.attached? %>
-      <%= raw @design.svg.download %>
+      <%= image_tag @design.svg, alt: "Preview of #{@design.name}" %>
     <% else %>
       <p>No SVG attached yet</p>
     <% end %>

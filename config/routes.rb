@@ -1,8 +1,8 @@
 Rails.application.routes.draw do
-  get "rsvp/index", as: :rsvp
+  get "rsvp/", to: "rsvp#index", as: :rsvp
   post "rsvp/submit", to: "rsvp#submit", as: :rsvp_submit
   get "rsvp/submit_after_login", to: "rsvp#submit_after_login", as: :rsvp_submit_after_login
-  get "rsvp/thanks", as: :rsvp_thanks
+  get "rsvp/thanks", to: "rsvp#thanks", as: :rsvp_thanks
   root "home#index"
 
   get "/about", to: "home#about", as: :about

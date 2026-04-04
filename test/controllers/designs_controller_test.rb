@@ -30,7 +30,7 @@ class DesignsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get new via editor path" do
-    get editor_design_path
+    get editor_designs_path
     assert_response :success
   end
 

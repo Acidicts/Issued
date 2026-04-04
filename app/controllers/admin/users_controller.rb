@@ -16,6 +16,8 @@ module Admin
     end
 
     def update
+      assign_role_if_allowed
+
       if @user.update(user_params)
         redirect_to admin_users_path, notice: "User updated successfully."
       else
@@ -36,7 +38,17 @@ module Admin
     end
 
     def user_params
-      params.require(:user).permit(:name, :slack_id, :role, :ysws_eligible, :verified, :credits)
+      params.require(:user).permit(:name, :slack_id, :ysws_eligible, :verified, :credits)
+    end
+
+    def assign_role_if_allowed
+      return unless current_user&.superadmin?
+
+      requested_role = params.dig(:user, :role).to_s
+      return if requested_role.blank?
+      return unless User.roles.key?(requested_role)
+
+      @user.role = requested_role
     end
   end
 end

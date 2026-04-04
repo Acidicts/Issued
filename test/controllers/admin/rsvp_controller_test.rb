@@ -4,10 +4,11 @@ require "stringio"
 class Admin::RsvpControllerTest < ActionDispatch::IntegrationTest
   setup do
     @admin = User.create!(name: "Admin", slack_id: "UADMIN", verified: 1, ysws_eligible: false, role: :admin)
+    sign_in_as(@admin)
   end
 
   test "should get index" do
-    get admin_rsvp_url, headers: admin_session_headers
+    get admin_rsvp_url
     assert_response :success
   end
 
@@ -22,7 +23,7 @@ class Admin::RsvpControllerTest < ActionDispatch::IntegrationTest
     upload = uploaded_csv(csv)
 
     assert_difference("Rsvp.count", 2) do
-      post admin_rsvp_import_path, params: { csv_file: upload }, headers: admin_session_headers
+      post admin_rsvp_import_path, params: { csv_file: upload }
     end
 
     assert_redirected_to admin_rsvp_path
@@ -33,17 +34,11 @@ class Admin::RsvpControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "import requires a file" do
-    post admin_rsvp_import_path, headers: admin_session_headers
+    post admin_rsvp_import_path
 
     assert_redirected_to admin_rsvp_path
     follow_redirect!
     assert_match("Please choose a CSV file to import.", response.body)
-  end
-
-  private
-
-  def admin_session_headers
-    { "rack.session" => { user_id: @admin.id } }
   end
 
   def uploaded_csv(content)
