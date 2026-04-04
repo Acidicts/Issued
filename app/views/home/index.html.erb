@@ -125,10 +125,12 @@
             <div class="offside" id="descriptor1">Get Custom Apparel</div>
         </div>
         <div id="btns">
-            <% if !signed_in? %>
+            <% if !signed_in? && ENV['RUNNING'] == 'true' %>
               <%= link_to "Start", login_path(redirect: request.fullpath), class: "btn" %>
-            <% else %>
+            <% elsif ENV['RUNNING'] == 'true' %>
               <%= link_to "Start", dashboard_path, class: "btn" %>
+            <% else %>
+              <%= link_to "RSVP", rsvp_path, class: "btn disabled", disabled: true %>
             <% end %>
             <%= link_to "About", about_path, class: "btn" %>
             <%= link_to "FAQ", faq_path, class: "btn" %>
