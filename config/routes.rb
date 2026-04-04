@@ -15,6 +15,7 @@ Rails.application.routes.draw do
 
   namespace :admin do
     get "rsvp/index", as: :rsvp
+    post "rsvp/import", to: "rsvp#import", as: :rsvp_import
     delete "rsvp/delete/:id", to: "rsvp#delete", as: :rsvp_delete
 
     get "/", to: "dashboard#index", as: :overview

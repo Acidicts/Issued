@@ -55,6 +55,45 @@
         font-size: 1rem;
     }
 
+    .import-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.75rem;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+        padding: 1rem;
+        margin: 0 auto 1.25rem;
+        width: 90%;
+        max-width: 1200px;
+    }
+
+    .import-form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: center;
+    }
+
+    .import-form input[type="file"] {
+        flex: 1;
+        min-width: 240px;
+    }
+
+    .import-button {
+        border: none;
+        background: #0f766e;
+        color: #ffffff;
+        border-radius: 0.55rem;
+        padding: 0.55rem 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .import-help {
+        margin-top: 0.6rem;
+        color: #475569;
+        font-size: 0.95rem;
+    }
+
     .rsvp-link {
         display: inline-flex;
         align-items: center;
@@ -151,6 +190,14 @@
       <%= link_to "RSVP Page", ENV['APP_URL'] + rsvp_path, target: "_blank", rel: "noopener", class: "rsvp-link" %>
     </div>
   </div>
+</div>
+
+<div class="import-card">
+    <%= form_with url: admin_rsvp_import_path, method: :post, local: true, html: { class: "import-form", multipart: true } do %>
+        <%= file_field_tag :csv_file, accept: ".csv", required: true %>
+        <%= submit_tag "Import CSV", class: "import-button" %>
+    <% end %>
+    <p class="import-help">CSV headers: <strong>slack_id</strong> (required), <strong>name</strong> (optional).</p>
 </div>
 
 <table class="rsvp-table">
