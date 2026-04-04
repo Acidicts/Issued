@@ -1,7 +1,72 @@
+<style>
+	  .rsvp-summary {
+	background-color: var(--background);
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	padding: 20px;
+	max-width: 400px;
+	margin: 20px auto;
+	text-align: center;
+  }
+
+  .rsvp-summary__title {
+	font-size: 1.5rem;
+	margin-bottom: 10px;
+	color: var(--primary);
+  }
+
+  .rsvp-summary__stat {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+  }
+
+  .rsvp-summary__count {
+	font-size: 2.5rem;
+	font-weight: bold;
+	color: var(--accent);
+  }
+
+  .rsvp-summary__label {
+	font-size: 1rem;
+	color: var(--text-secondary);
+  }
+  .card,
+	.tag,
+	.subtitle,
+	.meta {
+	  color: var(--ink);
+	}
+
+	.actions .btn,
+	.actions button.btn {
+	  border-color: var(--border);
+	  background: #ffffff;
+	  color: var(--ink);
+	}
+
+	.actions .btn.primary,
+	.actions button.btn.primary {
+	  background: linear-gradient(120deg, var(--accent), #48a9a6);
+	  color: #ffffff;
+	}
+
+	.tag {
+	  font-size: 0.75rem;
+	  font-weight: 600;
+	  text-transform: uppercase;
+	  letter-spacing: 0.02em;
+	  opacity: 0.8;
+	}
+
+	.subtitle {
+	  font-size: 0.95rem;
+	  opacity: 0.9;
+	}
+</style>
+
 <section class="rsvp-summary" aria-labelledby="rsvp-summary-title">
-	<p class="rsvp-summary__eyebrow">Event attendance</p>
-	<h1 id="rsvp-summary-title" class="rsvp-summary__title">RSVP Dashboard</h1>
-	<p class="rsvp-summary__subtitle">A live snapshot of confirmed guests.</p>
+	<h1 id="rsvp-summary-title" class="rsvp-summary__title">RSVPs</h1>
 
 	<div class="rsvp-summary__stat" role="status" aria-live="polite">
 		<span class="rsvp-summary__count"><%= @rsvp_count %></span>
