@@ -187,7 +187,8 @@
     <h1>RSVPs</h1>
     <div class="page-meta">
       <span><%= @rsvps.count %> total RSVPs</span>
-      <%= link_to "RSVP Page", ENV['APP_URL'] + rsvp_path, target: "_blank", rel: "noopener", class: "rsvp-link" %>
+            <% rsvp_page_url = ENV["APP_URL"].present? ? "#{ENV["APP_URL"]}#{rsvp_path}" : rsvp_path %>
+            <%= link_to "RSVP Page", rsvp_page_url, target: "_blank", rel: "noopener", class: "rsvp-link" %>
     </div>
   </div>
 </div>
