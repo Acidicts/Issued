@@ -61,6 +61,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "fetch_live_hackclub_oauth_info falls back to persisted user token" do
     user = User.new(name: "Token User", slack_id: "UTOKEN1", verified: true, ysws_eligible: false, hackclub_access_token: "db-access-token")
+    user.save!(validate: false)
     parsed_payload = { "identity" => { "name" => "Token User" } }
     fake_response = Struct.new(:parsed).new(parsed_payload)
     fake_token = Struct.new(:response) do
