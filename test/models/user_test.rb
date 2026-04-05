@@ -59,9 +59,8 @@ class UserTest < ActiveSupport::TestCase
     Current.hackclub_refresh_token = nil
   end
 
-  test "fetch_live_hackclub_oauth_info falls back to persisted user token" do
-    user = User.create!(name: "Token User", slack_id: "UTOKEN1", verified: true, ysws_eligible: false)
-    user.update!(hackclub_access_token: "db-access-token")
+  test "fetch_live_hackclub_oauth_info falls back to in-memory user token" do
+    user = User.new(name: "Token User", slack_id: "UTOKEN1", verified: true, ysws_eligible: false, hackclub_access_token: "db-access-token")
     parsed_payload = { "identity" => { "name" => "Token User" } }
     fake_response = Struct.new(:parsed).new(parsed_payload)
     fake_token = Struct.new(:response) do
@@ -107,5 +106,9 @@ class UserTest < ActiveSupport::TestCase
 
     user.update_veri_level
     assert_equal "verified", user.veri_level
+  end
+
+  test "veri_level enum has a declared attribute type" do
+    assert_kind_of ActiveRecord::Enum::EnumType, User.attribute_types["veri_level"]
   end
 end
