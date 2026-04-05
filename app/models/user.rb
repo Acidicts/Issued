@@ -7,6 +7,7 @@ class User < ApplicationRecord
   enum :role, { user: 0, admin: 1, superadmin: 2 }, prefix: :role, default: :user
   attribute :trust, :integer
   enum :trust, { unknown: 0, red: 1, yellow: 2, blue: 3, green: 4 }, default: :unknown
+  attribute :veri_level, :integer
   enum :veri_level, { unknown: 0, needs_submission: 1, pending: 2, verified: 3, ineligible: 4 }, prefix: :veri_level, default: :unknown
 
   validate :trust_level_correct
