@@ -69,9 +69,57 @@
     margin-top: 0.35rem;
     font-size: 0.95rem;
   }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 95%;
+  }
+
+  h1 {
+    font-family: Workbench, sans-serif;
+    color: #1f2f45;
+    font-weight: 400;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .design-form {
+      background: #1e293b;
+      box-shadow: 0 22px 60px rgba(15, 30, 60, 0.12);
+    }
+
+    .design-form label {
+      color: #f8f9fa;
+    }
+
+    .design-form input[type="text"],
+    .design-form textarea,
+    .design-form select {
+      background: #2d3748;
+      border-color: #4a5568;
+      color: #e2e8f0;
+    }
+
+    .design-form input[type="submit"] {
+      background: #3f71f3;
+    }
+
+    .design-form input[type="submit"]:hover {
+      background: #315ccd;
+    }
+
+    .design-form .muted {
+      color: #a0aec0;
+    }
+
+    h1 {
+      color: #fff;
+    }
+  }
 </style>
 
-<div class="design-form">
+<div class="design-form" style="margin-top: 2rem;">
     <h1>New Design</h1>
     <%= form_with model: @design, local: true do |f| %>
         <div class="field">
