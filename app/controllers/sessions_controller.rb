@@ -92,6 +92,10 @@ class SessionsController < ApplicationController
       result = parsed.path
       result += "?#{parsed.query}" if parsed.query.present?
       result
+    elsif parsed.scheme.in?(%w[http https]) && parsed.host == request.host && parsed.path.present? && parsed.path.start_with?("/")
+      result = parsed.path
+      result += "?#{parsed.query}" if parsed.query.present?
+      result
     else
       nil
     end

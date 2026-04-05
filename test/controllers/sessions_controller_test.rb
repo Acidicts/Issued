@@ -84,7 +84,8 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
   test "destroy redirects to root" do
     user = User.create!(name: "x", slack_id: "U123", verified: true, ysws_eligible: false)
-    cookies[:user_id] = user.id
+    sign_in_as(user)
+
     delete logout_url
     assert_redirected_to root_url
   end

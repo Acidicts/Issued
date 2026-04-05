@@ -13,9 +13,13 @@ class User < ApplicationRecord
 
   def trust_level_correct
     t = get_trusted_status(slack_id: slack_id)
+    if t.present?
+      t = t.is_a?(Array) ? t[0] : t
+      self.trust = t if t.present?
+    end
 
-    self.trust = t.is_a?(Array) ? t[0] : t
-    save!(validate: false) if persisted?
+    self.trust ||= :unknown
+    save!(validate: false) if persisted? && saved_change_to_attribute?(:trust)
   end
 
   def update_veri_level
