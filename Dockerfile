@@ -1,74 +1,73 @@
-# This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
-# docker build -t issued .
-# docker run -d -p 3031:3000 -e SECRET_KEY_BASE=<long random string> --name issued issued
+# syntax=docker/dockerfile:1
 
-# For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
-
-# Make sure RUBY_VERSION matches the Ruby version in .ruby-version
+# Production image for Coolify and Cloudflare Tunnel deployments.
+# Make sure RUBY_VERSION matches the version in .ruby-version.
 ARG RUBY_VERSION=3.4.9
 FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 
-# Rails app lives here
 WORKDIR /rails
 
-# Install base packages
+# Runtime dependencies only.
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl wget libjemalloc2 libvips sqlite3 && \
-    ln -s /usr/lib/$(uname -m)-linux-gnu/libjemalloc.so.2 /usr/local/lib/libjemalloc.so && \
+    apt-get install --no-install-recommends -y \
+      ca-certificates \
+      curl \
+      libjemalloc2 \
+      libvips \
+      sqlite3 \
+      tzdata \
+      wget && \
+    ln -sf /usr/lib/$(uname -m)-linux-gnu/libjemalloc.so.2 /usr/local/lib/libjemalloc.so && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-# Set production environment variables and enable jemalloc for reduced memory usage and latency.
 ENV RAILS_ENV="production" \
+    RACK_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
-    BUNDLE_WITHOUT="development" \
+    BUNDLE_WITHOUT="development:test" \
+    RAILS_LOG_TO_STDOUT="1" \
+    RAILS_SERVE_STATIC_FILES="true" \
+    PORT="3000" \
     LD_PRELOAD="/usr/local/lib/libjemalloc.so"
 
-# Throw-away build stage to reduce size of final image
 FROM base AS build
 
-# Install packages needed to build gems
+# Build dependencies for native gems.
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential git libyaml-dev pkg-config && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-# Install application gems
-COPY vendor/* ./vendor/
 COPY Gemfile Gemfile.lock ./
+COPY vendor ./vendor
 
 RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
-    # -j 1 disable parallel compilation to avoid a QEMU bug: https://github.com/rails/bootsnap/issues/495
+    # -j 1 disables parallel compilation to avoid QEMU build issues.
     bundle exec bootsnap precompile -j 1 --gemfile
 
-# Copy application code
 COPY . .
 
-# Precompile bootsnap code for faster boot times.
-# -j 1 disable parallel compilation to avoid a QEMU bug: https://github.com/rails/bootsnap/issues/495
 RUN bundle exec bootsnap precompile -j 1 app/ lib/
 
-# Precompiling assets for production without requiring secret RAILS_MASTER_KEY
+# Precompile assets without needing RAILS_MASTER_KEY at build time.
 RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
+FROM base AS app
 
-
-
-# Final stage for app image
-FROM base
-
-# Run and own only the runtime files as a non-root user for security
 RUN groupadd --system --gid 1000 rails && \
     useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash
-USER 1000:1000
 
-# Copy built artifacts: gems, application
 COPY --chown=rails:rails --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
 COPY --chown=rails:rails --from=build /rails /rails
 
-# Entrypoint prepares the database.
+USER rails:rails
+
+# Entrypoint prepares the database on startup.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
-# Listen on the container port expected by Coolify (e.g. 3031:3000)
+# Coolify can use this to detect readiness.
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+  CMD ["sh", "-c", "wget -q -O /dev/null http://127.0.0.1:${PORT:-3000}/up || exit 1"]
+
 EXPOSE 3000
-CMD ["./bin/rails", "server", "-b", "0.0.0.0", "-p", "3000"]
+CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
