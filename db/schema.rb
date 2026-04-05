@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_05_203348) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_05_220643) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -98,10 +98,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_05_203348) do
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "credits"
+    t.text "hackclub_access_token"
+    t.text "hackclub_refresh_token"
     t.string "name"
     t.integer "role"
     t.string "slack_id"
+    t.integer "trust", default: 0, null: false
     t.datetime "updated_at", null: false
+    t.integer "veri_level"
     t.integer "verified"
     t.boolean "ysws_eligible", default: false, null: false
   end

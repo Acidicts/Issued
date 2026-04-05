@@ -25,6 +25,17 @@ class ApplicationController < ActionController::Base
   def set_current_oauth_tokens
     Current.hackclub_access_token = session[:hackclub_access_token]
     Current.hackclub_refresh_token = session[:hackclub_refresh_token]
+
+    return unless current_user
+    return if session[:hackclub_access_token].blank? && session[:hackclub_refresh_token].blank?
+
+    needs_access_update = session[:hackclub_access_token].present? && current_user.hackclub_access_token != session[:hackclub_access_token]
+    needs_refresh_update = session[:hackclub_refresh_token].present? && current_user.hackclub_refresh_token != session[:hackclub_refresh_token]
+    return unless needs_access_update || needs_refresh_update
+
+    current_user.hackclub_access_token = session[:hackclub_access_token] if needs_access_update
+    current_user.hackclub_refresh_token = session[:hackclub_refresh_token] if needs_refresh_update
+    current_user.save!(validate: false)
   end
 
   def require_login

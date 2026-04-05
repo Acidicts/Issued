@@ -18,24 +18,26 @@
 
 <style>
 	:root {
-		--paper: #f2f5fb;
-		--ink: #0f1d34;
+		--paper: #f4f7fc;
+		--ink: #0d1b31;
 		--panel: #ffffff;
-		--line: #cdd8e7;
+		--line: #d4deec;
 		--accent: #ec6724;
-		--accent-soft: #ffe7da;
-		--muted: #4f637f;
+		--accent-soft: #ffebdf;
+		--muted: #445b79;
 		--ok: #16806b;
 		--warn: #a05c12;
-		--text-subtle: #6a7d98;
+		--text-subtle: #5f7492;
 		--card-shell-start: #ffffff;
-		--card-shell-end: #f4f8ff;
-		--card-shell-border: #d2dff0;
-		--card-shell-shadow: 0 8px 18px rgba(17, 37, 66, 0.07);
-		--card-shell-shadow-hover: 0 12px 24px rgba(17, 37, 66, 0.12);
-		--progress-track: #e6edf8;
+		--card-shell-end: #f6f9ff;
+		--card-shell-border: #d6e2f2;
+		--card-shell-shadow: 0 10px 20px rgba(15, 35, 64, 0.07);
+		--card-shell-shadow-hover: 0 16px 30px rgba(15, 35, 64, 0.13);
+		--progress-track: #e8eef8;
 		--progress-fill-start: #ff9a5d;
 		--progress-fill-end: #ec6724;
+		--panel-shadow: 0 8px 24px rgba(15, 35, 64, 0.06);
+		--panel-shadow-strong: 0 14px 30px rgba(15, 35, 64, 0.09);
 		--radius: 18px;
 	}
 
@@ -46,11 +48,20 @@
 		font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
 		color: var(--ink);
 		line-height: 1.45;
+		background:
+			radial-gradient(circle at top right, rgba(255, 172, 121, 0.15), transparent 44%),
+			radial-gradient(circle at bottom left, rgba(138, 177, 235, 0.16), transparent 42%),
+			var(--paper);
+		border: 1px solid #dde6f3;
+		border-radius: 24px;
+		box-shadow: 0 18px 36px rgba(18, 42, 74, 0.08);
 	}
 
 	.dashboard-hero {
-		background: radial-gradient(circle at top right, #fff8f3, #eef4ff 62%);
-		border: 1px solid #d6e2f0;
+		background:
+			linear-gradient(125deg, rgba(255, 246, 239, 0.98), rgba(238, 245, 255, 0.98)),
+			radial-gradient(circle at top right, #ffd7bf 0%, rgba(255, 215, 191, 0) 56%);
+		border: 1px solid #d5e1f1;
 		border-radius: var(--radius);
 		padding: 1.3rem 1.4rem;
 		margin-bottom: 1rem;
@@ -58,7 +69,7 @@
 		justify-content: space-between;
 		gap: 0.9rem;
 		flex-wrap: wrap;
-		box-shadow: 0 8px 24px rgba(20, 44, 82, 0.06);
+		box-shadow: 0 12px 30px rgba(20, 44, 82, 0.09);
 	}
 
 	.dashboard-hero h1 {
@@ -98,7 +109,20 @@
 		border: 1px solid var(--line);
 		border-radius: 14px;
 		padding: 0.85rem 1rem;
-		box-shadow: 0 3px 14px rgba(15, 29, 52, 0.05);
+		box-shadow: 0 6px 16px rgba(15, 29, 52, 0.06);
+		position: relative;
+		overflow: hidden;
+	}
+
+	.kpi::before {
+		content: "";
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 3px;
+		background: linear-gradient(90deg, #ffba8f, #ec6724);
+		opacity: 0.85;
 	}
 
 	.kpi label {
@@ -135,7 +159,8 @@
 		border: 1px solid var(--line);
 		border-radius: var(--radius);
 		padding: 1rem;
-		box-shadow: 0 3px 14px rgba(15, 29, 52, 0.05);
+		box-shadow: var(--panel-shadow);
+		backdrop-filter: blur(2px);
 	}
 
 	.panel h2 {
@@ -146,7 +171,7 @@
 
 	.panel-head {
 		display: flex;
-		flex-direction: column;
+		flex-direction: row;
 		justify-content: space-between;
 		align-items: center;
 		margin-bottom: 0.85rem;
@@ -173,14 +198,32 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.55rem;
-		transition: transform 0.18s ease, box-shadow 0.18s ease;
+		transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
 		cursor: pointer;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.design-card::after {
+		content: "";
+		position: absolute;
+		inset: 0 0 auto 0;
+		height: 2px;
+		background: linear-gradient(90deg, rgba(236, 103, 36, 0.65), rgba(255, 173, 122, 0.7));
+		opacity: 0;
+		transition: opacity 0.18s ease;
 	}
 
 	.design-card:hover,
 	.design-card:focus-within {
-		transform: translateY(-1px);
+		transform: translateY(-2px);
 		box-shadow: var(--card-shell-shadow-hover);
+		border-color: #c5d6ee;
+	}
+
+	.design-card:hover::after,
+	.design-card:focus-within::after {
+		opacity: 1;
 	}
 
 	.design-card-header {
@@ -219,7 +262,7 @@
 		background: var(--progress-track);
 		border-radius: 999px;
 		overflow: hidden;
-		height: 10px;
+		height: 11px;
 		border: 1px solid color-mix(in srgb, var(--line) 78%, transparent);
 	}
 
@@ -243,6 +286,7 @@
 		border: 1px solid var(--line);
 		border-radius: 14px;
 		overflow: hidden;
+		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
 	}
 
 	th,
@@ -261,17 +305,17 @@
 		font-weight: 700;
 		position: sticky;
 		top: 0;
-		background: rgba(226, 235, 250, 0.85);
+		background: rgba(227, 236, 250, 0.94);
 		backdrop-filter: blur(4px);
 		z-index: 1;
 	}
 
 	tbody tr:nth-child(even) {
-		background: #f9fcff;
+		background: #f7faff;
 	}
 
 	tbody tr:hover {
-		background: #eef5ff;
+		background: #edf4ff;
 	}
 
 	@media (prefers-color-scheme: dark) {
@@ -317,6 +361,73 @@
 		font-weight: 700;
 		letter-spacing: 0.01em;
 		white-space: nowrap;
+	}
+
+	.status-box {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		padding: 0.2rem 0.55rem;
+		border-radius: 12px;
+		font-size: 0.82rem;
+		font-weight: 700;
+		border: 1px solid transparent;
+		line-height: 1.4rem;
+		min-height: 1.4rem;
+	}
+
+	.status-box .status-icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 1.4rem;
+		height: 1.4rem;
+		border-radius: 999px;
+		font-size: 0.95rem;
+	}
+
+	.status-box.green {
+		background: #e8f8f4;
+		color: #0f6b56;
+		border-color: #9fd7ca;
+	}
+
+	.status-box.green .status-icon {
+		background: #9fd7ca;
+		color: #0f4b39;
+	}
+
+	.status-box.blue {
+		background: #e5f3ff;
+		color: #0f4b75;
+		border-color: #9cc9f2;
+	}
+
+	.status-box.blue .status-icon {
+		background: #9cc9f2;
+		color: #0f3f5f;
+	}
+
+	.status-box.yellow {
+		background: #fff7db;
+		color: #9b550e;
+		border-color: #efcd96;
+	}
+
+	.status-box.yellow .status-icon {
+		background: #efcd96;
+		color: #7e4a12;
+	}
+
+	.status-box.red {
+		background: #fdecea;
+		color: #8b1d15;
+		border-color: #f5c2b4;
+	}
+
+	.status-box.red .status-icon {
+		background: #f5c2b4;
+		color: #7a1410;
 	}
 
 	.badge.ready,
@@ -376,10 +487,11 @@
 	.pipeline-list li {
 		display: flex;
 		justify-content: space-between;
-		border: 1px solid #dce7f4;
+		border: 1px solid #d8e3f2;
 		padding: 0.52rem 0.65rem;
 		border-radius: 10px;
-		background: #f8fbff;
+		background: linear-gradient(180deg, #fbfdff, #f5f9ff);
+		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
 	}
 
 	.quick-actions {
@@ -397,12 +509,12 @@
 		text-align: center;
 		font-weight: 600;
 		transition: transform 0.15s ease, box-shadow 0.15s ease;
-		background: #f4f8ff;
+		background: linear-gradient(180deg, #ffffff, #f2f7ff);
 	}
 
 	.quick-actions a:hover {
-		transform: translateY(-1px);
-		box-shadow: 0 8px 18px rgba(23, 40, 73, 0.08);
+		transform: translateY(-2px);
+		box-shadow: var(--panel-shadow-strong);
 	}
 
 	.dashboard-order-select,
@@ -425,14 +537,21 @@
 	}
 
     .btn {
-        background: var(--accent);
+		background: linear-gradient(120deg, #ff8d4f, var(--accent));
         color: white;
         border: none;
         border-radius: 10px;
         padding: 0.6rem 1.1rem;
         font-weight: 600;
         cursor: pointer;
+		box-shadow: 0 8px 18px rgba(236, 103, 36, 0.28);
+		transition: transform 0.16s ease, box-shadow 0.16s ease;
     }
+
+	.btn:hover {
+		transform: translateY(-1px);
+		box-shadow: 0 12px 24px rgba(236, 103, 36, 0.33);
+	}
 
 	@media (max-width: 980px) {
 		.dashboard-grid {
@@ -448,6 +567,11 @@
 		.dashboard-shell {
 			padding-left: 0.75rem;
 			padding-right: 0.75rem;
+		}
+
+		.panel-head {
+			flex-direction: column;
+			align-items: flex-start;
 		}
 
 		.kpis {
@@ -721,33 +845,47 @@
 			<article class="panel">
 				<div class="panel-head">
 					<h2>Hackatime</h2>
+					<% if current_user.present? && current_user.slack_id.present? && HackatimeService.available? %>
+						<%
+						status_color = if current_user.trust == "red"
+							"red"
+						elsif current_user.trust == "green"
+							"blue"
+						elsif current_user.trust == "blue"
+							"green"
+						else
+							"yellow"
+						end
+						status_icon = { "green" => "✓", "blue" => "✓", "yellow" => "—", "red" => "✕" }[status_color]
+						status_label = {
+							"green" => "YSWS Eligible",
+							"blue" => "YSWS Eligible (Hackatime green)",
+							"yellow" => "Pending Eligibility",
+							"red" => "YSWS Ineligible"
+						}[status_color]
+						%>
+						<div class="status-box <%= status_color %>">
+							<span class="status-icon"><%= status_icon %></span>
+							<span><%= status_label %></span>
+						</div>
+					<% end %>
 				</div>
 				<% if current_user&.slack_id.blank? %>
 					<p class="muted">Hackatime needs your Hack Club Slack ID to resolve stats.</p>
 				<% elsif !HackatimeService.available? %>
 					<p class="muted">Enable Hackatime by setting <code>HACKATIME_API_KEY</code>.</p>
-				<% elsif @hackatime_projects.present? %>
-					<p class="muted">Recent tracked Hackatime activity for <%= current_user.slack_id %>.</p>
-					<dl class="hackatime-summary">
-						<div>
-							<dt>Total projects</dt>
-							<dd><%= @hackatime_projects.size %></dd>
-						</div>
-						<div>
-							<dt>Trust level</dt>
-							<dd><%= @hackatime_trust&.fetch("trust_level", "unknown") %></dd>
-						</div>
-					</dl>
-					<ul class="hackatime-project-list">
-						<% @hackatime_projects.first(3).each do |project| %>
-							<li>
-								<strong><%= project["name"] %></strong>
-								<span><%= format("%d:%02d:%02d", project["seconds"].to_i / 3600, (project["seconds"].to_i / 60) % 60, project["seconds"].to_i % 60) %> tracked</span>
-							</li>
-						<% end %>
-					</ul>
+				<% elsif current_user.trust == "red" %>
+					<p class="muted">Not eligible for YSWS because your Hackatime trust level is red.</p>
 				<% else %>
-					<p class="muted">No Hackatime activity found yet for <%= current_user.slack_id %>.</p>
+					<% reasons = [] %>
+					<% reasons << "Trust must be green or blue (current: #{current_user.trust})" unless current_user.trust.in?(%w[blue green]) %>
+					<% reasons << "Verification must be completed (current: #{current_user.veri_level})" unless current_user.veri_level == "verified" %>
+					<% reasons << "YSWS eligibility is false" unless current_user.ysws_eligible %>
+					<% if current_user.verified_for_ysws? %>
+						<p class="muted">Hackatime is already set up.</p>
+					<% else %>
+						<p class="muted"><%= reasons.to_sentence %>.</p>
+					<% end %>
 				<% end %>
 			</article>
 
