@@ -49,6 +49,35 @@ class DesignsControllerTest < ActionDispatch::IntegrationTest
     assert design.svg.attached?
   end
 
+  test "should create design with hackatime project selection" do
+    fake_service = Object.new
+    def fake_service.get_all_projects
+      [{ "name" => "Project X", "seconds" => 900 }]
+    end
+
+    original_available = HackatimeService.method(:available?)
+    original_new = HackatimeService.method(:new)
+
+    HackatimeService.singleton_class.define_method(:available?) { true }
+    HackatimeService.singleton_class.define_method(:new) { |*| fake_service }
+
+    assert_difference("Design.count", 1) do
+      post designs_path, params: {
+        design: { name: "Hack Time", description: "With hackatime", hackatime_project: "Project X" },
+        design_svg_code: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'><rect x='0' y='0' width='10' height='10' fill='black'/></svg>",
+        elapsed_seconds: 5
+      }
+    end
+
+    design = Design.order(:created_at).last
+    assert_equal "Project X", design.hackatime_project
+    assert_equal 900, design.hackatime_seconds
+    assert_equal 905, design.total_time_seconds
+  ensure
+    HackatimeService.singleton_class.define_method(:available?, original_available.to_proc)
+    HackatimeService.singleton_class.define_method(:new, original_new.to_proc)
+  end
+
   test "should update design" do
     patch design_path(@design), params: {
       design: { name: "Updated" },

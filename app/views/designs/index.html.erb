@@ -236,7 +236,7 @@
 <div id="container">
   <div style="display:inline-flex justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
     <h1 id="your-designs-heading">Your Designs</h1>
-    <a href="<%= editor_designs_path %>" class="create-link" style="margin-bottom: 1.5rem; display: inline-block;">Create New Design</a>
+    <a href="<%= new_design_path %>" class="create-link" style="margin-bottom: 1.5rem; display: inline-block;">Create New Design</a>
   </div>
   <hr>
   <div class="designs-list">
@@ -249,6 +249,9 @@
           <h2><%= design.name %></h2>
           <div class="design-meta">
             <div><span>Last edited:</span> <%= design.updated_at.strftime("%b %d, %Y") %></div>
+            <% if design.hackatime_project.present? %>
+              <div><span>Hackatime:</span> <%= design.hackatime_project %> (<%= design.hackatime_time_formatted %>)</div>
+            <% end %>
             <div><span>Time:</span> <%= design.elapsed_time_formatted %></div>
           </div>
           <div class="design-actions">
@@ -261,7 +264,7 @@
     <% if @designs.empty? %>
       <div class="empty-state">
         <p>You haven't created any designs yet.</p>
-        <a href="<%= editor_design_path %>" class="create-link">Create your first design</a>
+        <%= link_to "Create your first design", editor_designs_path, class: "create-link" %>
       </div>
     <% end %>
   </div>

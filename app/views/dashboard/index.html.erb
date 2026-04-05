@@ -79,7 +79,7 @@
 
 	.kpis {
 		display: grid;
-		grid-template-columns: repeat(4, minmax(120px, 1fr));
+		grid-template-columns: repeat(3, minmax(120px, 1fr));
 		gap: 0.8rem;
 		margin-bottom: 1.1rem;
 	}
@@ -402,6 +402,47 @@
 			grid-template-columns: 1fr;
 		}
 
+		.hackatime-summary {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 0.75rem;
+			margin-bottom: 1rem;
+		}
+
+		.hackatime-summary dt {
+			font-size: 0.82rem;
+			color: var(--muted);
+			margin-bottom: 0.25rem;
+		}
+
+		.hackatime-summary dd {
+			margin: 0;
+			font-size: 1.15rem;
+			font-weight: 700;
+		}
+
+		.hackatime-project-list {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+			display: grid;
+			gap: 0.75rem;
+		}
+
+		.hackatime-project-list li {
+			padding: 0.9rem 1rem;
+			border-radius: 14px;
+			background: #f7f8fb;
+			border: 1px solid #dce7f4;
+		}
+
+		.hackatime-project-list span {
+			display: block;
+			font-size: 0.88rem;
+			color: var(--muted);
+			margin-top: 0.25rem;
+		}
+
 		.quick-actions {
 			grid-template-columns: 1fr;
 		}
@@ -474,10 +515,6 @@
 		<article class="kpi">
 			<label>Current Designs</label>
 			<strong><%= designs.count %></strong>
-		</article>
-		<article class="kpi">
-			<label>In Progress</label>
-			<strong><%= in_progress_count %></strong>
 		</article>
 		<article class="kpi">
 			<label>Open Orders</label>
@@ -576,6 +613,39 @@
 						</li>
 					<% end %>
 				</ul>
+			</article>
+
+			<article class="panel">
+				<div class="panel-head">
+					<h2>Hackatime</h2>
+				</div>
+				<% if current_user&.slack_id.blank? %>
+					<p class="muted">Hackatime needs your Hack Club Slack ID to resolve stats.</p>
+				<% elsif !HackatimeService.available? %>
+					<p class="muted">Enable Hackatime by setting <code>HACKATIME_API_KEY</code>.</p>
+				<% elsif @hackatime_projects.present? %>
+					<p class="muted">Recent tracked Hackatime activity for <%= current_user.slack_id %>.</p>
+					<dl class="hackatime-summary">
+						<div>
+							<dt>Total projects</dt>
+							<dd><%= @hackatime_projects.size %></dd>
+						</div>
+						<div>
+							<dt>Trust level</dt>
+							<dd><%= @hackatime_trust&.fetch("trust_level", "unknown") %></dd>
+						</div>
+					</dl>
+					<ul class="hackatime-project-list">
+						<% @hackatime_projects.first(3).each do |project| %>
+							<li>
+								<strong><%= project["name"] %></strong>
+								<span><%= format("%d:%02d:%02d", project["seconds"].to_i / 3600, (project["seconds"].to_i / 60) % 60, project["seconds"].to_i % 60) %> tracked</span>
+							</li>
+						<% end %>
+					</ul>
+				<% else %>
+					<p class="muted">No Hackatime activity found yet for <%= current_user.slack_id %>.</p>
+				<% end %>
 			</article>
 
 			<article class="panel">

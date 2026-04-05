@@ -9,6 +9,10 @@
   <h1><%= @design.name %></h1>
   <p class="stat"><%= @design.description %></p>
   <p class="stat">Total time spent editing: <%= @design.elapsed_time_formatted %></p>
+  <% if @design.hackatime_project.present? %>
+    <p class="stat">Hackatime project: <%= @design.hackatime_project %></p>
+    <p class="stat">Hackatime time: <%= @design.hackatime_time_formatted %></p>
+  <% end %>
   <p class="stat">Updated: <%= @design.updated_at.strftime("%B %d, %Y at %I:%M %p") %></p>
 
   <div class="design-preview">

@@ -6,10 +6,23 @@ class Design < ApplicationRecord
 
   validates :name, presence: true
   validates :description, presence: true
+  validates :hackatime_project, uniqueness: { allow_blank: true }
+  validates :hackatime_seconds, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
+  validate :hackatime_project_not_used_by_other_design
   validate :svg_attached_and_valid_format
 
   def elapsed_time_formatted
-    formatted_time(time || 0)
+    formatted_time(total_time_seconds)
+  end
+
+  def total_time_seconds
+    (time || 0) + (hackatime_seconds || 0)
+  end
+
+  def hackatime_time_formatted
+    return "00:00:00" unless hackatime_seconds.present? && hackatime_seconds.positive?
+
+    formatted_time(hackatime_seconds)
   end
 
   def attach_svg_from_text(svg_text)
@@ -37,6 +50,13 @@ class Design < ApplicationRecord
   end
 
   private
+
+  def hackatime_project_not_used_by_other_design
+    return if hackatime_project.blank?
+
+    existing_design = Design.where(hackatime_project: hackatime_project).where.not(id: id).exists?
+    errors.add(:hackatime_project, "is already linked to another design") if existing_design
+  end
 
   def formatted_time(seconds)
     seconds ||= 0

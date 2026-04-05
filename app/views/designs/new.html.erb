@@ -1,0 +1,104 @@
+<style>
+  .design-form {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    background: #ffffff;
+    border-radius: 22px;
+    box-shadow: 0 22px 60px rgba(15, 30, 60, 0.08);
+  }
+
+  .design-form h1 {
+    margin-bottom: 1.2rem;
+    font-size: clamp(1.85rem, 2vw, 2.2rem);
+  }
+
+  .design-form .field {
+    display: grid;
+    gap: 0.5rem;
+    margin-bottom: 1.15rem;
+  }
+
+  .design-form label {
+    font-weight: 600;
+    color: #12192d;
+  }
+
+  .design-form input[type="text"],
+  .design-form textarea,
+  .design-form select {
+    width: 100%;
+    padding: 0.95rem 1rem;
+    border: 1px solid #d8dee9;
+    border-radius: 14px;
+    background: #f7f9ff;
+    color: #152039;
+    font: inherit;
+  }
+
+  .design-form textarea {
+    min-height: 11rem;
+    resize: vertical;
+  }
+
+  .design-form .actions {
+    margin-top: 1rem;
+  }
+
+  .design-form input[type="submit"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.95rem 1.5rem;
+    border: none;
+    border-radius: 999px;
+    background: #3f71f3;
+    color: #ffffff;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.16s ease, background 0.16s ease;
+  }
+
+  .design-form input[type="submit"]:hover {
+    background: #315ccd;
+    transform: translateY(-1px);
+  }
+
+  .design-form .muted {
+    color: #6f7f9a;
+    margin-top: 0.35rem;
+    font-size: 0.95rem;
+  }
+</style>
+
+<div class="design-form">
+    <h1>New Design</h1>
+    <%= form_with model: @design, local: true do |f| %>
+        <div class="field">
+            <%= f.label :name %>
+            <%= f.text_field :name %>
+        </div>
+
+        <div class="field">
+            <%= f.label :description %>
+            <%= f.text_area :description %>
+        </div>
+
+        <% if @hackatime_projects.present? %>
+            <div class="field">
+            <%= f.label :hackatime_project, "Hackatime project" %>
+            <%= f.select :hackatime_project,
+                options_for_select(@hackatime_projects.map { |project| ["#{project['name']} (#{format("%02d:%02d:%02d", project['seconds'].to_i / 3600, (project['seconds'].to_i / 60) % 60, project['seconds'].to_i % 60)})", project['name']] }, @design.hackatime_project),
+                { prompt: "Select a Hackatime project" },
+                class: "field-input" %>
+            <p class="muted">Selected Hackatime project time will be added to this design.</p>
+            </div>
+        <% elsif current_user&.slack_id.present? && HackatimeService.available? %>
+            <p class="muted">No Hackatime projects were found for your account.</p>
+        <% end %>
+
+        <div class="actions">
+            <%= f.submit "Create Design" %>
+        </div>
+    <% end %>
+</div>

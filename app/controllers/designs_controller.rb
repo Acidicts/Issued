@@ -3,6 +3,7 @@ class DesignsController < ApplicationController
   before_action :set_nav
   before_action :ensure_signed_in
   before_action :find_design, only: [ :show, :edit, :update ]
+  before_action :load_hackatime_projects, only: [ :new, :edit, :create, :update ]
 
   def index
     @designs = current_user.designs.order(updated_at: :desc)
@@ -13,7 +14,7 @@ class DesignsController < ApplicationController
 
   def new
     @design = current_user.designs.new(name: "Untitled Design", description: "Draft description", time: 0)
-    render :editor
+    render "designs/new"
   end
 
   def create
@@ -21,6 +22,7 @@ class DesignsController < ApplicationController
     @design.time ||= 0
     @design.description = "Draft description" if @design.description.blank?
 
+    sync_hackatime_project
     svg_code = params[:design_svg_code].presence || @design.svg_content
     @design.attach_svg_from_text(svg_code) if svg_code.present?
 
@@ -45,6 +47,7 @@ class DesignsController < ApplicationController
 
   def update
     @design.assign_attributes(design_params)
+    sync_hackatime_project
 
     if params[:design_svg_code].present?
       @design.attach_svg_from_text(params[:design_svg_code])
@@ -84,7 +87,32 @@ class DesignsController < ApplicationController
   end
 
   def design_params
-    params.fetch(:design, {}).permit(:name, :description)
+    params.fetch(:design, {}).permit(:name, :description, :hackatime_project)
+  end
+
+  def load_hackatime_projects
+    if current_user&.slack_id.present? && HackatimeService.available?
+      @hackatime_projects = HackatimeService.new(slack_id: current_user.slack_id).get_all_projects
+    else
+      @hackatime_projects = []
+    end
+  rescue StandardError => e
+    Rails.logger.warn("Hackatime projects load failed: #{e.class} #{e.message}")
+    @hackatime_projects = []
+  end
+
+  def sync_hackatime_project
+    return unless params[:design]&.key?(:hackatime_project)
+
+    project_name = params[:design][:hackatime_project].presence
+    if project_name.present? && current_user&.slack_id.present? && HackatimeService.available?
+      project = @hackatime_projects.find { |p| p["name"] == project_name } || HackatimeService.new(slack_id: current_user.slack_id).get_all_projects.find { |p| p["name"] == project_name }
+      @design.hackatime_project = project_name
+      @design.hackatime_seconds = project ? project["seconds"].to_i : 0
+    else
+      @design.hackatime_project = nil
+      @design.hackatime_seconds = nil
+    end
   end
 
   def create_edit_session(design, elapsed_seconds)

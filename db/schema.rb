@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_04_160433) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_05_120000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -57,10 +57,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_04_160433) do
   create_table "designs", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "description", default: ""
+    t.string "hackatime_project"
+    t.integer "hackatime_seconds"
     t.string "name", default: "Untitled Design", null: false
     t.integer "time"
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
+    t.index ["hackatime_project"], name: "index_designs_on_hackatime_project", unique: true
     t.index ["name"], name: "index_designs_on_name"
     t.index ["user_id"], name: "index_designs_on_user_id"
   end
