@@ -27,6 +27,15 @@
 		--muted: #4f637f;
 		--ok: #16806b;
 		--warn: #a05c12;
+		--text-subtle: #6a7d98;
+		--card-shell-start: #ffffff;
+		--card-shell-end: #f4f8ff;
+		--card-shell-border: #d2dff0;
+		--card-shell-shadow: 0 8px 18px rgba(17, 37, 66, 0.07);
+		--card-shell-shadow-hover: 0 12px 24px rgba(17, 37, 66, 0.12);
+		--progress-track: #e6edf8;
+		--progress-fill-start: #ff9a5d;
+		--progress-fill-end: #ec6724;
 		--radius: 18px;
 	}
 
@@ -156,38 +165,69 @@
 	}
 
 	.design-card {
-		border: 1px solid #d7e2f0;
+		border: 1px solid var(--card-shell-border);
 		border-radius: 14px;
-		padding: 0.8rem;
-		background: linear-gradient(170deg, #ffffff, #f8fbff);
+		padding: 0.85rem;
+		background: linear-gradient(160deg, var(--card-shell-start), var(--card-shell-end));
+		box-shadow: var(--card-shell-shadow);
+		display: flex;
+		flex-direction: column;
+		gap: 0.55rem;
+		transition: transform 0.18s ease, box-shadow 0.18s ease;
+		cursor: pointer;
+	}
+
+	.design-card:hover,
+	.design-card:focus-within {
+		transform: translateY(-1px);
+		box-shadow: var(--card-shell-shadow-hover);
+	}
+
+	.design-card-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: start;
+		gap: 0.6rem;
 	}
 
 	.design-card h3 {
-		font-size: 0.98rem;
+		font-size: 1rem;
 		margin: 0;
-		color: #1a2b47;
+		color: var(--ink);
+		line-height: 1.25;
 	}
 
 	.design-meta {
 		display: flex;
 		justify-content: space-between;
-		margin-top: 0.35rem;
-		font-size: 0.82rem;
+		align-items: center;
+		font-size: 0.8rem;
 		color: var(--muted);
+		gap: 0.5rem;
+	}
+
+	.design-updated {
+		color: var(--text-subtle);
+	}
+
+	.design-progress-value {
+		font-weight: 700;
+		color: var(--ink);
 	}
 
 	.progress {
-		margin-top: 0.7rem;
-		background: #eef2f8;
+		background: var(--progress-track);
 		border-radius: 999px;
 		overflow: hidden;
-		height: 8px;
+		height: 10px;
+		border: 1px solid color-mix(in srgb, var(--line) 78%, transparent);
 	}
 
 	.progress > span {
 		display: block;
 		height: 100%;
-		background: linear-gradient(90deg, #f08f56, var(--accent));
+		background: linear-gradient(90deg, var(--progress-fill-start), var(--progress-fill-end));
+		transition: width 0.2s ease;
 	}
 
 	.table-wrap {
@@ -271,30 +311,42 @@
 	.badge {
 		display: inline-block;
 		border-radius: 999px;
-		padding: 0.16rem 0.52rem;
+		padding: 0.2rem 0.55rem;
 		font-size: 0.78rem;
 		border: 1px solid;
+		font-weight: 700;
+		letter-spacing: 0.01em;
+		white-space: nowrap;
 	}
 
 	.badge.ready,
 	.badge.delivered {
-		color: var(--ok);
+		color: #0f6b56;
 		border-color: #9fd7ca;
 		background: #e8f8f4;
 	}
 
 	.badge.review,
 	.badge.packed,
-	.badge.production {
-		color: var(--warn);
+	.badge.production,
+	.badge.awaiting-review,
+	.badge.pending-fulfillment {
+		color: #9b550e;
 		border-color: #efcd96;
 		background: #fff5e4;
 	}
 
-	.badge.draft {
+	.badge.draft,
+	.badge.in-design {
 		color: #365d8b;
 		border-color: #abc4ea;
 		background: #edf4ff;
+	}
+
+	.badge.unknown {
+		color: var(--text-subtle);
+		border-color: #cfd9e8;
+		background: #f3f6fb;
 	}
 
 	.sidebar-stack {
@@ -456,6 +508,15 @@
 			--line: #1e2f49;
 			--accent-soft: #3f2415;
 			--muted: #9cb2d1;
+			--text-subtle: #b3c5df;
+			--card-shell-start: #162235;
+			--card-shell-end: #101b2c;
+			--card-shell-border: #2a3f60;
+			--card-shell-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+			--card-shell-shadow-hover: 0 14px 24px rgba(0, 0, 0, 0.45);
+			--progress-track: #263650;
+			--progress-fill-start: #ffb17f;
+			--progress-fill-end: #ff8a4d;
 		}
 
 		.dashboard-hero {
@@ -463,13 +524,34 @@
 			border-color: #223452;
 		}
 
-		.design-card {
-			background: linear-gradient(170deg, #121d2b, #142235);
-			border-color: #223959;
+		.badge.ready,
+		.badge.delivered {
+			color: #85e8cf;
+			border-color: #2f7b69;
+			background: #113a31;
 		}
 
-		.progress {
-			background: #2a3952;
+		.badge.review,
+		.badge.packed,
+		.badge.production,
+		.badge.awaiting-review,
+		.badge.pending-fulfillment {
+			color: #ffd59e;
+			border-color: #7f5a2b;
+			background: #3f2b14;
+		}
+
+		.badge.draft,
+		.badge.in-design {
+			color: #b8d3ff;
+			border-color: #3f5f93;
+			background: #1a2a43;
+		}
+
+		.badge.unknown {
+			color: #c7d5e8;
+			border-color: #41566f;
+			background: #1b2738;
 		}
 
 		th,
@@ -535,19 +617,40 @@
 				</div>
 
 				<div class="design-list">
-					<% designs.each do |design| %>
-						<section class="design-card">
-							<h3><%= design[:name] %></h3>
-							<div class="design-meta">
-							<% design_status = design[:status].to_s.presence || "unknown" %>
-							<span class="badge <%= design_status.downcase %>"><%= design_status.titleize %></span>
-								<span><%= design[:updated_at] %></span>
+					<% designs.order(updated_at: :desc).limit(3).each do |design| %>
+						<% raw_status = design.respond_to?(:status) ? design.status : design[:status] %>
+						<% design_status = if raw_status.is_a?(Integer) && design.class.respond_to?(:statuses)
+							design.class.statuses.key(raw_status)
+							else
+							raw_status.to_s
+							end.presence || "unknown" %>
+						<% design_status_key = design_status.parameterize(separator: "-") %>
+					<% design_progress = ((design.status.to_i / 3.0).floor(2) * 100).to_i %>
+						<section class="design-card" id="design-<%= design[:id] %>">
+							<div class="design-card-header">
+								<h3><%= design[:name] %></h3>
+								<span class="badge <%= design_status_key %>"><%= design_status.titleize %></span>
 							</div>
-							<div class="progress" role="progressbar" aria-valuenow="<%= design[:progress] %>" aria-valuemin="0" aria-valuemax="100" aria-label="<%= design[:name] %> progress">
-								<span style="width: <%= design[:progress] %>%"></span>
+							<div class="design-meta">
+								<span class="design-updated">Updated <%= design[:updated_at] %></span>
+								<span class="design-progress-value"><%= design_progress %>%</span>
+							</div>
+							<div class="progress" role="progressbar" aria-valuenow="<%= design_progress %>" aria-valuemin="0" aria-valuemax="100" aria-label="<%= design[:name] %> progress">
+								<span style="width: <%= design_progress %>%"></span>
 							</div>
 						</section>
 					<% end %>
+					<script>
+						// Make them take you to the project on click
+						document.addEventListener("DOMContentLoaded", function() {
+							document.querySelectorAll(".design-card").forEach(function(card) {
+								card.addEventListener("click", function() {
+									var designId = this.id.split("-")[1];
+									window.location.href = "/designs/" + designId;
+								});
+							});
+						});
+					</script>
 				</div>
 			</article>
 
@@ -603,7 +706,7 @@
 		<aside class="sidebar-stack">
 			<article class="panel">
 				<div class="panel-head">
-					<h2>Production Pipeline</h2>
+					<h2>Order Data</h2>
 				</div>
 				<ul class="pipeline-list">
 					<% pipeline.each do |stage| %>
