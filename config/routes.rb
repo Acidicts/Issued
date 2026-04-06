@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get "/favicon.ico", to: redirect("/icon.png")
+
   get "rsvp/", to: "rsvp#index", as: :rsvp
   post "rsvp/submit", to: "rsvp#submit", as: :rsvp_submit
   get "rsvp/submit_after_login", to: "rsvp#submit_after_login", as: :rsvp_submit_after_login

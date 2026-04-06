@@ -134,8 +134,8 @@ class User < ApplicationRecord
     Current.hackclub_access_token = new_token.token
     Current.hackclub_refresh_token = new_token.refresh_token if new_token.refresh_token.present?
 
-    self.hackclub_access_token = Current.hackclub_access_token
-    if Current.hackclub_refresh_token.present?
+    self.hackclub_access_token = Current.hackclub_access_token if has_attribute?(:hackclub_access_token)
+    if Current.hackclub_refresh_token.present? && has_attribute?(:hackclub_refresh_token)
       self.hackclub_refresh_token = Current.hackclub_refresh_token
     end
     save!(validate: false) if persisted? && changed?

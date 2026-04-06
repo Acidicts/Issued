@@ -28,6 +28,8 @@ class ApplicationController < ActionController::Base
 
     return unless current_user
     return if session[:hackclub_access_token].blank? && session[:hackclub_refresh_token].blank?
+    return unless current_user.respond_to?(:hackclub_access_token) && current_user.respond_to?(:hackclub_refresh_token)
+    return unless current_user.respond_to?(:hackclub_access_token=) && current_user.respond_to?(:hackclub_refresh_token=)
 
     needs_access_update = session[:hackclub_access_token].present? && current_user.hackclub_access_token != session[:hackclub_access_token]
     needs_refresh_update = session[:hackclub_refresh_token].present? && current_user.hackclub_refresh_token != session[:hackclub_refresh_token]
