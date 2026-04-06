@@ -1,15 +1,21 @@
 class Design < ApplicationRecord
+  attr_accessor :svg_code
+
   belongs_to :user
   has_many :design_edit_sessions, dependent: :destroy
 
   has_one_attached :svg
+  has_one_attached :image
 
   validates :name, presence: true
   validates :description, presence: true
   validates :hackatime_project, uniqueness: { allow_blank: true }
   validates :hackatime_seconds, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
+
+  before_validation :process_svg_code
   validate :hackatime_project_not_used_by_other_design
   validate :svg_attached_and_valid_format
+  validate :image_attached_and_valid_format
 
   attribute :status, :integer, default: 0
   enum :status, { unshipped: 0, pending: 1, submitted: 2, approved: 3, rejected: 4 }
@@ -36,6 +42,16 @@ class Design < ApplicationRecord
       filename: "design.svg",
       content_type: "image/svg+xml"
     )
+  end
+
+  def process_svg_code
+    return unless svg_code.present? || svg_code == ""
+
+    if svg_code.present?
+      attach_svg_from_text(svg_code)
+    else
+      svg.purge if svg.attached?
+    end
   end
 
   def svg_content
@@ -75,6 +91,15 @@ class Design < ApplicationRecord
     allowed_types = [ "image/svg+xml", "image/png" ]
     unless allowed_types.include?(svg.content_type)
       errors.add(:svg, "must be an SVG or PNG file")
+    end
+  end
+
+  def image_attached_and_valid_format
+    return unless image.attached?
+
+    allowed_types = [ "image/png", "image/jpeg" ]
+    unless allowed_types.include?(image.content_type)
+      errors.add(:image, "must be a PNG or JPEG file")
     end
   end
 end

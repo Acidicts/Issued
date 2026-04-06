@@ -1,2 +1,132 @@
-<h1>Designs#edit</h1>
-<p>Find me in app/views/designs/edit.html.erb</p>
+<style>
+    .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 12px 20px rgba(15, 29, 52, 0.08);
+    }
+    
+    .field {
+        margin-bottom: 15px;
+        display:flex;
+        flex-direction: column;
+    }
+
+    .field textarea {
+        margin: 0 0.5rem;
+        resize: vertical;
+    }
+
+    .field input[type="text"] {
+        margin: 0 0.5rem;
+    }
+    
+    .actions {
+        margin-top: 20px;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.85rem 1.25rem;
+        border-radius: 9999px;
+        border: 1px solid transparent;
+        font-weight: 600;
+        text-decoration: none;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+    }
+
+    .button-primary {
+        background: #3f71f3;
+        color: #ffffff;
+        box-shadow: 0 10px 25px rgba(63, 113, 243, 0.18);
+    }
+
+    .button-primary:hover,
+    .button-primary:focus {
+        transform: translateY(-1px);
+        box-shadow: 0 14px 30px rgba(63, 113, 243, 0.24);
+    }
+
+    .button-secondary {
+        background: transparent;
+        color: #2d3748;
+        border-color: #cbd5e1;
+    }
+
+    .button-secondary:hover,
+    .button-secondary:focus {
+        background: rgba(66, 153, 225, 0.08);
+        border-color: #a0aec0;
+    }
+
+    h1 {
+        font-family: Workbench, monospace;
+        font-size: 2.5rem;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .container {
+            background: #2d3748;
+        }
+
+        .button-primary {
+            background: #3f71f3;
+            color: #ffffff;
+            box-shadow: 0 10px 25px rgba(63, 113, 243, 0.18);
+        }
+
+        .button-secondary {
+            background: transparent;
+            color: #e2e8f0;
+            border-color: #4a5568;
+        }
+    }
+</style>
+
+<div class="container">
+    <h1>Edit Design</h1>
+    
+    <%= form_with(model: @design, local: true, html: { multipart: true }) do |form| %>
+        <% if @design.errors.any? %>
+        <div id="error_explanation">
+            <h2><%= pluralize(@design.errors.count, "error") %> prohibited this design from being saved:</h2>
+    
+            <ul>
+            <% @design.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+            <% end %>
+            </ul>
+        </div>
+        <% end %>
+    
+        <div class="field">
+            <%= form.label :name %>
+            <%= form.text_field :name %>
+        </div>
+    
+        <div class="field">
+            <%= form.label :description %>
+            <%= form.text_area :description %>
+        </div>
+
+        <%= hidden_field_tag :origin, "edit" %>
+
+        <% if !@design.svg.attached? %>
+            <div class="field">
+                <%= form.label :image, "Optional image" %>
+                <%= form.file_field :image %>
+            </div>
+        <% end %>
+
+        <div class="actions">
+            <%= form.submit "Update Design", class: "button button-primary" %>
+            <%= link_to 'Back', designs_path, class: "button button-secondary" %>
+        </div>
+    <% end %>

@@ -23,8 +23,7 @@ class DesignsController < ApplicationController
     @design.description = "Draft description" if @design.description.blank?
 
     sync_hackatime_project
-    svg_code = params[:design_svg_code].presence || @design.svg_content
-    @design.attach_svg_from_text(svg_code) if svg_code.present?
+    @design.svg_code = params[:design_svg_code] if params.key?(:design_svg_code)
 
     if params[:elapsed_seconds].present?
       @design.time = (@design.time || 0) + params[:elapsed_seconds].to_i
@@ -41,17 +40,13 @@ class DesignsController < ApplicationController
   end
 
   def edit
-    # reuse editor UI (pre-filled by @design)
-    render :editor
+    render "designs/edit"
   end
 
   def update
     @design.assign_attributes(design_params)
     sync_hackatime_project
-
-    if params[:design_svg_code].present?
-      @design.attach_svg_from_text(params[:design_svg_code])
-    end
+    @design.svg_code = params[:design_svg_code] if params.key?(:design_svg_code)
 
     if params[:elapsed_seconds].present?
       elapsed = params[:elapsed_seconds].to_i
@@ -61,7 +56,10 @@ class DesignsController < ApplicationController
     if @design.save
       create_edit_session(@design, params[:elapsed_seconds])
       respond_to do |format|
-        format.html { redirect_to edit_design_path(@design), notice: "Design updated successfully." }
+        format.html do
+          target = params["origin"] == "edit" ? design_path(@design) : edit_design_path(@design)
+          redirect_to target, notice: "Design updated successfully."
+        end
         format.json { render json: { success: true, time: @design.time } }
       end
     else
@@ -87,7 +85,7 @@ class DesignsController < ApplicationController
   end
 
   def design_params
-    params.fetch(:design, {}).permit(:name, :description, :hackatime_project)
+    params.fetch(:design, {}).permit(:name, :description, :hackatime_project, :image)
   end
 
   def load_hackatime_projects

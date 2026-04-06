@@ -121,7 +121,7 @@
 
 <div class="design-form" style="margin-top: 2rem;">
     <h1>New Design</h1>
-    <%= form_with model: @design, local: true do |f| %>
+    <%= form_with model: @design, local: true, html: { multipart: true } do |f| %>
         <div class="field">
             <%= f.label :name %>
             <%= f.text_field :name %>
@@ -130,6 +130,11 @@
         <div class="field">
             <%= f.label :description %>
             <%= f.text_area :description %>
+        </div>
+
+        <div class="field">
+            <%= f.label :image, "Optional image" %>
+            <%= f.file_field :image %>
         </div>
 
         <% if @hackatime_projects.present? %>
