@@ -50,11 +50,15 @@ class SessionsController < ApplicationController
     if auth.credentials
       session[:hackclub_access_token] = auth.credentials.token if auth.credentials.token.present?
       session[:hackclub_refresh_token] = auth.credentials.refresh_token if auth.credentials.refresh_token.present?
-      user.hackclub_access_token = session[:hackclub_access_token] if session[:hackclub_access_token].present?
-      user.hackclub_refresh_token = session[:hackclub_refresh_token] if session[:hackclub_refresh_token].present?
-      user.save!(validate: false) if user.changed?
       Current.hackclub_access_token = session[:hackclub_access_token]
       Current.hackclub_refresh_token = session[:hackclub_refresh_token]
+      # Guard DB column assignment: the migration may not yet have been applied
+      # in all environments, so only write to these columns when they exist.
+      if user.respond_to?(:hackclub_access_token=)
+        user.hackclub_access_token = session[:hackclub_access_token] if session[:hackclub_access_token].present?
+        user.hackclub_refresh_token = session[:hackclub_refresh_token] if session[:hackclub_refresh_token].present?
+        user.save!(validate: false) if user.changed?
+      end
       begin
         user.refresh_ysws_eligibility!
       rescue StandardError => e

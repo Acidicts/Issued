@@ -57,8 +57,10 @@ class User < ApplicationRecord
   end
 
   def fetch_live_hackclub_oauth_info(access_token: nil, refresh_token: nil)
-    token_value = access_token.presence || Current.hackclub_access_token.presence || hackclub_access_token.presence || ENV["HACKCLUB_ACCESS_TOKEN"].presence
-    refresh_value = refresh_token.presence || Current.hackclub_refresh_token.presence || hackclub_refresh_token.presence || ENV["HACKCLUB_REFRESH_TOKEN"].presence
+    stored_token   = has_attribute?(:hackclub_access_token)  ? hackclub_access_token  : nil
+    stored_refresh = has_attribute?(:hackclub_refresh_token) ? hackclub_refresh_token : nil
+    token_value   = access_token.presence   || Current.hackclub_access_token.presence   || stored_token.presence   || ENV["HACKCLUB_ACCESS_TOKEN"].presence
+    refresh_value = refresh_token.presence  || Current.hackclub_refresh_token.presence  || stored_refresh.presence || ENV["HACKCLUB_REFRESH_TOKEN"].presence
     return unless token_value.present?
 
     response = hackclub_oauth_access_token(token: token_value, refresh_token: refresh_value).get("/api/v1/me")
