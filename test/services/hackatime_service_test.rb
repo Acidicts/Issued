@@ -2,6 +2,9 @@ require "test_helper"
 
 class HackatimeServiceTest < ActiveSupport::TestCase
   test "fetch_stats returns structured project totals and banned state" do
+    old_api_key = ENV["HACKATIME_API_KEY"]
+    ENV["HACKATIME_API_KEY"] = "dummy-key"
+
     payload = {
       "data" => {
         "projects" => [
@@ -23,6 +26,7 @@ class HackatimeServiceTest < ActiveSupport::TestCase
     assert_equal({ "Project A" => 3600, "Project B" => 1800 }, result[:projects])
     assert_equal false, result[:banned]
   ensure
+    ENV["HACKATIME_API_KEY"] = old_api_key
     singleton_class.class_eval do
       define_method(:get_json, instance_method(:original_get_json))
       remove_method :original_get_json

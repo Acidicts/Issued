@@ -58,7 +58,7 @@ class HackatimeService
         "seconds" => total_seconds,
         "recent_seconds" => recent_projects[name] || 0
       }
-    end.sort_by { |project| [-project["recent_seconds"].to_i, -project["seconds"].to_i, project["name"].to_s.downcase] }
+    end.sort_by { |project| [ -project["recent_seconds"].to_i, -project["seconds"].to_i, project["name"].to_s.downcase ] }
   end
 
   def self.fetch_stats(hackatime_uid, start_date: nil, end_date: nil)

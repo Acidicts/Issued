@@ -52,7 +52,7 @@ class DesignsControllerTest < ActionDispatch::IntegrationTest
   test "should create design with hackatime project selection" do
     fake_service = Object.new
     def fake_service.get_all_projects
-      [{ "name" => "Project X", "seconds" => 900 }]
+      [ { "name" => "Project X", "seconds" => 900 } ]
     end
 
     original_available = HackatimeService.method(:available?)
