@@ -11,8 +11,8 @@ class Design < ApplicationRecord
   validate :hackatime_project_not_used_by_other_design
   validate :svg_attached_and_valid_format
 
-  enum :status, { unshipped: 0, pending: 1, submitted: 2, approved: 3, rejected: 4 }
   attribute :status, :integer, default: 0
+  enum :status, { unshipped: 0, pending: 1, submitted: 2, approved: 3, rejected: 4 }
 
   def elapsed_time_formatted
     formatted_time(total_time_seconds)
