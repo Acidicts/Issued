@@ -243,7 +243,13 @@
     <% @designs.each do |design| %>
       <div class="design-item">
         <div class="design-preview">
-          <%= svg_scaled(design.svg_content) %>
+          <% if !design.svg_empty? %>
+            <%= svg_scaled(design.svg_content) %>
+          <% elsif design.image.attached? %>
+            <%= image_tag design.image, alt: design.name %>
+          <% else %>
+            <p>No preview available.</p>
+          <% end %>
         </div>
         <div class="design-details">
           <h2><%= design.name %></h2>

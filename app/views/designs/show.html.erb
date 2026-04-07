@@ -135,7 +135,7 @@
 
 <div class="design-detail design-detail-container">
   <div class="design-image-preview">
-    <% if @design.svg_code.present? %>
+    <% if !@design.svg_empty? %>
       <div class="design-preview svg-preview">
           <%= svg_scaled(@design.svg_content) %>
       </div>

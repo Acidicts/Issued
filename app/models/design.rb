@@ -24,6 +24,10 @@ class Design < ApplicationRecord
     formatted_time(total_time_seconds)
   end
 
+  def svg_empty?
+    svg_content.to_s.strip == '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480"></svg>'
+  end
+
   def total_time_seconds
     (time || 0) + (hackatime_seconds || 0)
   end
@@ -62,6 +66,17 @@ class Design < ApplicationRecord
     # If blob metadata exists but storage file is missing, soft-recover to default
     svg.purge rescue nil
     default_svg
+  end
+
+  def svg_preview_source
+    return svg_code if svg_code.present?
+    return nil unless svg.attached?
+    return nil unless svg.blob&.content_type == "image/svg+xml"
+
+    svg.download.presence
+  rescue ActiveStorage::FileNotFoundError, Errno::ENOENT
+    svg.purge rescue nil
+    nil
   end
 
   def default_svg
