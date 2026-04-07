@@ -1,0 +1,9 @@
+<h1>Order Created</h1>
+<p>Your order has been created successfully.</p>
+<ul>
+  <li>Order ID: <%= @order.id %></li>
+  <li>Product: <%= @order.product&.name || "Unknown product" %></li>
+  <li>Design: <%= @order.design&.name || "Unknown design" %></li>
+  <li>Status: <%= @order.status %></li>
+</ul>
+<%= link_to "Back to dashboard", dashboard_path, class: "btn" %>

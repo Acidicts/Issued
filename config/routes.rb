@@ -29,13 +29,17 @@ Rails.application.routes.draw do
 
   resources :designs, only: %i[index show new create edit update] do
     collection do
-      get :editor, action: :new, as: :editor
+      get :editor, action: :editor, as: :editor
+    end
+
+    member do
+      get :editor, action: :editor, as: :editor
     end
   end
 
-  get "orders/index", to: "orders#index", as: :orders_index
+  get "orders", to: "orders#index", as: :orders
   get "orders/show", to: "orders#show", as: :orders_show
-  get "orders/new", to: "orders#new", as: :orders_new
+  match "orders/new", to: "orders#new", via: %i[get post], as: :orders_new
   get "orders/edit", to: "orders#edit", as: :orders_edit
   get "orders/delete", to: "orders#delete", as: :orders_delete
 

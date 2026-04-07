@@ -34,6 +34,11 @@ class DesignsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "should get editor for existing design" do
+    get editor_design_path(@design)
+    assert_response :success
+  end
+
   test "should create design" do
     assert_difference("Design.count", 1) do
       post designs_path, params: {

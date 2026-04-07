@@ -27,6 +27,13 @@
     margin-bottom: 1.75rem;
   }
 
+  .design-image-preview {
+    display: grid;
+    gap: 1rem;
+    justify-content: center;
+    align-items: start;
+  }
+
   .design-preview {
     border: 1px solid #dce7f3;
     border-radius: 18px;
@@ -34,6 +41,7 @@
     background: #f8fbff;
     margin-bottom: 1rem;
     overflow: hidden;
+    box-sizing: border-box;
   }
 
   .svg-preview {
@@ -52,10 +60,17 @@
     height: 100%;
   }
 
-  .design-preview img {
+  .design-preview:not(.svg-preview) {
+    width: 200px;
+    height: 200px;
+    padding: 0.5rem;
+    margin: 0 auto 1rem;
+  }
+
+  .design-preview:not(.svg-preview) img {
     display: block;
     width: 100%;
-    max-height: 540px;
+    height: 100%;
     object-fit: contain;
     border-radius: 14px;
   }
@@ -120,13 +135,11 @@
 
 <div class="design-detail design-detail-container">
   <div class="design-image-preview">
-    <div class="design-preview svg-preview">
-      <% if @design.svg.attached? %>
-        <%= svg_scaled(@design.svg_content) %>
-      <% else %>
-        <p>No SVG attached yet</p>
-      <% end %>
-    </div>
+    <% if @design.svg_code.present? %>
+      <div class="design-preview svg-preview">
+          <%= svg_scaled(@design.svg_content) %>
+      </div>
+    <% end %>
 
     <% if @design.image.attached? %>
       <div class="design-preview">
@@ -149,5 +162,6 @@
 
   <div class="design-actions">
     <p><%= link_to "Edit design", edit_design_path(@design), class: "button-primary" %></p>
+    <p><%= link_to "Edit in Editor", editor_design_path(@design), class: "button-primary" %></p>
   </div>
 </div>

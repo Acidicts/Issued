@@ -1,6 +1,11 @@
 class OrdersController < ApplicationController
+  before_action :require_login
+  before_action :set_nav
+  layout "application"
+
   def index
     @orders = current_user.orders
+    render :index, layout: "application"
   end
 
   def show
@@ -14,6 +19,7 @@ class OrdersController < ApplicationController
     @order.status = :pending
     @order.product = Product.find(params[:product_id])
     @order.save
+    redirect_to orders_path
   end
 
   def destroy
@@ -23,5 +29,11 @@ class OrdersController < ApplicationController
 
   def edit
     @order = Order.find(params[:id])
+  end
+
+  private
+
+  def set_nav
+    @nav = "dashboard"
   end
 end

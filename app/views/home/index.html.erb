@@ -131,6 +131,9 @@
         <div id="btns">
             <% if !signed_in? && (ENV["RUNNING"] == "true" && ENV["RSVP_OPEN"] == "false") || params["demo"]=="true" %>
               <%= link_to "Start", login_path(redirect: dashboard_path), class: "btn" %>
+              <% if params["demo"] == "true" %>
+                <%= link_to "RSVP", rsvp_path, class: "btn disabled", disabled: true %>
+              <% end %>
             <% elsif (ENV["RUNNING"] == "true" && ENV["RSVP_OPEN"]) == "false" || params["demo"]=="true" %>
               <%= link_to "Start", dashboard_path, class: "btn" %>
             <% else %>

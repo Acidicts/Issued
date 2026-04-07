@@ -2,8 +2,13 @@ class DesignsController < ApplicationController
   layout "application"
   before_action :set_nav
   before_action :ensure_signed_in
-  before_action :find_design, only: [ :show, :edit, :update ]
-  before_action :load_hackatime_projects, only: [ :new, :edit, :create, :update ]
+  before_action :find_design, only: [ :show, :edit, :update, :editor ]
+  before_action :load_hackatime_projects, only: [ :new, :edit, :create, :update, :editor ]
+
+  def editor
+    @design ||= current_user.designs.new(name: "Untitled Design", description: "Draft description", time: 0)
+    render "designs/editor"
+  end
 
   def index
     @designs = current_user.designs.order(updated_at: :desc)

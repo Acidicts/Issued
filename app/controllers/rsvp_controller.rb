@@ -1,4 +1,6 @@
 class RsvpController < ApplicationController
+  before_action :require_login, except: [ :index ]
+
   def index
     @running = ENV["RUNNING"] == "true"
     @ended = ENV["ENDED"] == "true"

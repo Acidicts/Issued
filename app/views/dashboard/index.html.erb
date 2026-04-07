@@ -892,7 +892,7 @@
 			<article class="panel">
 				<div class="panel-head" style="flex-direction: column;">
 					<h2>New Order</h2>
-					<%= form_with url: orders_new_path, local: true do |form| %>
+					<%= form_with url: orders_new_path, local: true, data: { turbo: false } do |form| %>
 						<%= form.label :design_id, "Select Design" %>
 				<%= form.select :design_id, options_from_collection_for_select(@designs, :id, :name), { prompt: "Choose a design" }, { class: "dashboard-order-select" } %>
 				<%= form.label :product_id, "Select Product" %>

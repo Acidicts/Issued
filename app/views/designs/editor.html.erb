@@ -242,7 +242,7 @@
 
   #preview-container {
     width: 100%;
-    height: 440px;
+    height: 660px;
     border: 1px solid var(--editor-line);
     border-radius: 12px;
     background: var(--editor-preview-bg);
@@ -397,21 +397,6 @@
                   "design-editor-target" => "description"
                 } %>
           </div>
-
-          <% if @hackatime_projects.present? %>
-            <div class="field field-wide">
-              <%= form.label :hackatime_project, "Hackatime project" %>
-              <%= form.select :hackatime_project,
-                  options_for_select(@hackatime_projects.map { |project| ["#{project['name']} (#{format('%02d:%02d:%02d', project['seconds'].to_i / 3600, (project['seconds'].to_i / 60) % 60, project['seconds'].to_i % 60)})", project['name']] }, @design.hackatime_project),
-                  { prompt: "Select a Hackatime project" },
-                  class: "form-control" %>
-              <p class="muted">Selected Hackatime project time will be added to this design.</p>
-            </div>
-          <% elsif current_user&.slack_id.present? && HackatimeService.available? %>
-            <p class="muted">No Hackatime projects were found for your account.</p>
-          <% elsif current_user&.slack_id.present? %>
-            <p class="muted">Hackatime is not available. Set HACKATIME_API_KEY in your environment.</p>
-          <% end %>
         </div>
 
         <% svg_initial = @design.respond_to?(:svg_content) ? @design.svg_content : ( @design.svg.attached? ? @design.svg.download : "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 480'></svg>" ) %>

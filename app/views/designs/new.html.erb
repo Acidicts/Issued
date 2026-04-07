@@ -139,12 +139,12 @@
 
         <% if @hackatime_projects.present? %>
             <div class="field">
-            <%= f.label :hackatime_project, "Hackatime project" %>
-            <%= f.select :hackatime_project,
-                options_for_select(@hackatime_projects.map { |project| ["#{project['name']} (#{format("%02d:%02d:%02d", project['seconds'].to_i / 3600, (project['seconds'].to_i / 60) % 60, project['seconds'].to_i % 60)})", project['name']] }, @design.hackatime_project),
-                { prompt: "Select a Hackatime project" },
-                class: "field-input" %>
-            <p class="muted">Selected Hackatime project time will be added to this design.</p>
+              <%= f.label :hackatime_project, "Hackatime project" %>
+              <%= f.select :hackatime_project,
+                  options_for_select(@hackatime_projects.map { |project| ["#{project['name']} (#{format("%02d:%02d:%02d", project['seconds'].to_i / 3600, (project['seconds'].to_i / 60) % 60, project['seconds'].to_i % 60)})", project['name']] }, @design.hackatime_project),
+                  { prompt: "Select a Hackatime project" },
+                  class: "field-input" %>
+              <p class="muted">Selected Hackatime project time will be added to this design.</p>
             </div>
         <% elsif current_user&.slack_id.present? && HackatimeService.available? %>
             <p class="muted">No Hackatime projects were found for your account.</p>
