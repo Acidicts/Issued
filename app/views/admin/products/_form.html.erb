@@ -1,0 +1,23 @@
+<%= form_for [:admin, @product], html: { multipart: true, class: 'admin-product-form' } do |f| %>
+  <div class="form-group">
+    <%= f.label :type %>
+    <%= f.text_field :type, class: 'form-control' %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :cost_gbp, "Cost (GBP)" %>
+    <%= f.number_field :cost_gbp, step: 0.01, class: 'form-control' %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :image, "Product image" %>
+    <%= f.file_field :image, accept: 'image/*', class: 'form-control-file' %>
+    <% if @product&.image&.attached? %>
+      <div class="mt-2">
+        <%= image_tag @product.image, alt: "Product image", class: "img-thumbnail", style: "max-width: 180px;" %>
+      </div>
+    <% end %>
+  </div>
+
+  <%= f.submit class: 'btn btn-primary' %>
+<% end %>

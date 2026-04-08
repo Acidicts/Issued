@@ -1,2 +1,12 @@
 <h1>Product Management</h1>
-<p>List all products, with create/edit/remove and inventory controls (placeholder).</p>
+<%= link_to 'Add New Product', new_admin_product_path, class: 'btn btn-primary' %>
+
+<div class="admin-product-grid">
+    <% @products.each do |product| %>
+        <%= render 'product', product: product %>
+    <% end %>
+    <% if @products.empty? %>
+        <p>No products found.</p>
+        <%= link_to 'Add New Product', new_admin_product_path, class: 'btn btn-primary' %>
+    <% end %>
+</div>
