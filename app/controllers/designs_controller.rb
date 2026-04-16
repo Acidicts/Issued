@@ -36,7 +36,7 @@ class DesignsController < ApplicationController
 
     if @design.save
       create_edit_session(@design, params[:elapsed_seconds])
-      redirect_to edit_design_path(@design), notice: "Design saved successfully."
+      redirect_to editor_design_path(@design), notice: "Design saved successfully."
     else
       error_text = @design.errors.full_messages.to_sentence.presence || "Unknown reason"
       flash.now[:alert] = "Unable to save design: #{error_text}."
