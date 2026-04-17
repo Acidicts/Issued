@@ -3,9 +3,6 @@ module Admin
     before_action :set_user, only: %i[show edit update destroy]
 
     def index
-      User.all.each do |user|
-        user.validate
-      end
       @users = User.order(:id)
     end
 

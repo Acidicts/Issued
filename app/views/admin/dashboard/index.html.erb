@@ -1,0 +1,229 @@
+<% content_for :title, "Admin Dashboard" %>
+
+<style>
+	.admin-dashboard {
+		--shell-bg: #f5f8ff;
+		--shell-border: #d5e2f8;
+		--card-bg: #ffffff;
+		--card-border: #dce7f8;
+		--ink: #0f1c33;
+		--muted: #476083;
+		--accent: #1d4ed8;
+		--accent-soft: #dbe8ff;
+		--ok: #0d8b63;
+		--warn: #a45a18;
+
+		max-width: 1120px;
+		margin: 1.5rem auto 2rem;
+		padding: 1.25rem;
+		border-radius: 1rem;
+		border: 1px solid var(--shell-border);
+		background:
+			radial-gradient(circle at top right, rgba(72, 116, 255, 0.14), transparent 45%),
+			radial-gradient(circle at bottom left, rgba(16, 185, 129, 0.1), transparent 45%),
+			var(--shell-bg);
+		box-shadow: 0 14px 30px rgba(15, 29, 56, 0.08);
+	}
+
+	.admin-dashboard h1,
+	.admin-dashboard h2 {
+		font-family: Workbench, sans-serif;
+		margin: 0;
+	}
+
+	.dashboard-header {
+		margin-bottom: 1.1rem;
+	}
+
+	.dashboard-header h1 {
+		font-size: clamp(2rem, 4vw, 3rem);
+		color: var(--ink);
+	}
+
+	.dashboard-header p {
+		margin: 0.35rem 0 0;
+		color: var(--muted);
+		font-size: 1rem;
+		max-width: 65ch;
+	}
+
+	.summary-grid {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 0.9rem;
+	}
+
+	.summary-card {
+		background: var(--card-bg);
+		border: 1px solid var(--card-border);
+		border-radius: 0.9rem;
+		padding: 1rem;
+		box-shadow: 0 10px 22px rgba(14, 34, 64, 0.08);
+	}
+
+	.summary-card h2 {
+		font-size: 1.3rem;
+		color: var(--ink);
+		margin-bottom: 0.75rem;
+	}
+
+	.summary-list {
+		margin: 0;
+		display: grid;
+		gap: 0.55rem;
+	}
+
+	.summary-row {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		border-bottom: 1px dashed #d9e4f6;
+		padding-bottom: 0.25rem;
+	}
+
+	.summary-row dt {
+		color: var(--muted);
+		font-weight: 700;
+	}
+
+	.summary-row dd {
+		margin: 0;
+		font-weight: 700;
+		color: var(--ink);
+		font-size: 1.18rem;
+	}
+
+	.summary-row dd.ok {
+		color: var(--ok);
+	}
+
+	.summary-row dd.warn {
+		color: var(--warn);
+	}
+
+	.design-time {
+		margin-top: 0.7rem;
+		padding: 0.65rem 0.8rem;
+		border-radius: 0.7rem;
+		background: linear-gradient(130deg, #e4ecff, #e7f8f1);
+		border: 1px solid #cfe0ff;
+		color: var(--ink);
+		font-size: 1.32rem;
+		font-weight: 700;
+		letter-spacing: 0.03em;
+	}
+
+	.design-caption {
+		margin: 0.55rem 0 0;
+		color: var(--muted);
+		line-height: 1.4;
+		font-size: 0.96rem;
+	}
+
+	.summary-link {
+		display: inline-flex;
+		margin-top: 0.85rem;
+		text-decoration: none;
+		color: #ffffff;
+		background: var(--accent);
+		border-radius: 0.55rem;
+		padding: 0.5rem 0.8rem;
+		font-weight: 700;
+		transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+	}
+
+	.summary-link:hover,
+	.summary-link:focus-visible {
+		transform: translateY(-1px);
+		box-shadow: 0 6px 14px rgba(29, 78, 216, 0.3);
+		background: #1e40af;
+	}
+
+	@media (max-width: 920px) {
+		.summary-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.admin-dashboard {
+			--shell-bg: #0f1828;
+			--shell-border: #233654;
+			--card-bg: #142036;
+			--card-border: #223453;
+			--ink: #e5ecff;
+			--muted: #9eb2d6;
+			--accent: #3b82f6;
+			--ok: #34d399;
+			--warn: #f59e0b;
+
+			box-shadow: 0 16px 34px rgba(0, 0, 0, 0.34);
+		}
+
+		.summary-row {
+			border-bottom-color: #294367;
+		}
+
+		.design-time {
+			background: linear-gradient(130deg, rgba(59, 130, 246, 0.18), rgba(52, 211, 153, 0.17));
+			border-color: #2d4e7a;
+		}
+	}
+</style>
+
+<main class="admin-dashboard">
+	<div class="dashboard-header">
+		<h1>Admin Dashboard</h1>
+		<p>Summary of Site Info</p>
+	</div>
+
+	<section class="summary-grid" aria-label="Admin summary metrics">
+		<article class="summary-card">
+			<h2>Orders</h2>
+			<dl class="summary-list">
+				<div class="summary-row">
+					<dt>Total</dt>
+					<dd><%= @orders_total %></dd>
+				</div>
+				<div class="summary-row">
+					<dt>Fulfilled</dt>
+					<dd class="ok"><%= @orders_fulfilled %></dd>
+				</div>
+				<div class="summary-row">
+					<dt>Pending</dt>
+					<dd class="warn"><%= @orders_pending %></dd>
+				</div>
+			</dl>
+			<%= link_to "Manage Orders", admin_orders_path, class: "summary-link" %>
+		</article>
+
+		<article class="summary-card">
+			<h2>Users</h2>
+			<dl class="summary-list">
+				<div class="summary-row">
+					<dt>Total</dt>
+					<dd><%= @users_total %></dd>
+				</div>
+				<div class="summary-row">
+					<dt>RSVPs</dt>
+					<dd><%= @users_rsvps %></dd>
+				</div>
+			</dl>
+			<%= link_to "Manage Users", admin_users_path, class: "summary-link" %>
+		</article>
+
+		<article class="summary-card">
+			<h2>Designs</h2>
+			<p class="design-caption">Highest tracked time</p>
+			<div class="design-time"><%= @highest_time_formatted %></div>
+			<p class="design-caption">
+				<% if @highest_time_design.present? %>
+					<strong><%= @highest_time_design.name %></strong> currently has the highest total editing time.
+				<% else %>
+					No designs have tracked time yet.
+				<% end %>
+			</p>
+			<%= link_to "View Designs", designs_path, class: "summary-link" %>
+		</article>
+	</section>
+</main>

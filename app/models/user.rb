@@ -4,14 +4,14 @@ class User < ApplicationRecord
 
   validates :ysws_eligible, inclusion: { in: [ true, false ] }
 
-  enum :role, { user: 0, admin: 1, superadmin: 2 }, prefix: :role, default: :user
+  enum :role, { user: 0, admin: 1, superadmin: 2, reviewer: 3 }, prefix: :role, default: :user
   attribute :trust, :integer
   enum :trust, { unknown: 0, red: 1, yellow: 2, blue: 3, green: 4 }, default: :unknown
   attribute :veri_level, :integer
   enum :veri_level, { unknown: 0, needs_submission: 1, pending: 2, verified: 3, ineligible: 4 }, prefix: :veri_level, default: :unknown
 
-  validate :trust_level_correct
-  validate :update_veri_level
+  # Live trust/verification checks are network-bound and should be run explicitly,
+  # not as automatic model validation callbacks.
 
   def trust_level_correct
     t = get_trusted_status(slack_id: slack_id)
@@ -21,7 +21,6 @@ class User < ApplicationRecord
     end
 
     self.trust ||= :unknown
-    save!(validate: false) if persisted? && saved_change_to_attribute?(:trust)
   end
 
   def update_veri_level
@@ -34,8 +33,13 @@ class User < ApplicationRecord
 
     if veri_level != new_level
       self.veri_level = new_level_key
-      save!(validate: false) if persisted?
     end
+  end
+
+  def refresh_live_status!
+    trust_level_correct
+    update_veri_level
+    save!(validate: false) if persisted? && changed?
   end
 
   def verified_for_ysws?
@@ -45,7 +49,7 @@ class User < ApplicationRecord
   end
 
   def admin?
-    role == "admin" || role == "superadmin"
+    role == "admin" || role == "superadmin" || role == "reviewer"
   end
 
   def refresh_ysws_eligibility!
