@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get "settings/", to: "settings#index", as: :settings
   get "/favicon.ico", to: redirect("/icon.png")
 
   get "rsvp/", to: "rsvp#index", as: :rsvp

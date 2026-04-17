@@ -1,7 +1,7 @@
 module Admin
   class OrdersController < Admin::DashboardController
     def index
-      # Admin order & fulfillment list stub
+      @orders = Order.all
     end
 
     def show

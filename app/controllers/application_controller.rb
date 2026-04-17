@@ -10,6 +10,7 @@ class ApplicationController < ActionController::Base
   layout "application"
 
   before_action :set_current_oauth_tokens
+  before_action :set_nav
 
   def current_user
     return unless session[:user_id]
@@ -21,6 +22,9 @@ class ApplicationController < ActionController::Base
   end
 
   private
+  def set_nav
+    @nav = "home"
+  end
 
   def set_current_oauth_tokens
     Current.hackclub_access_token = session[:hackclub_access_token]

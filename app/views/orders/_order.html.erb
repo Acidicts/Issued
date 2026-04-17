@@ -1,0 +1,28 @@
+<style>
+    .order {
+        border: 1px solid #ccc;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 5px;
+        margin-left:10%;
+        margin-right:10%;
+    }
+    .order h3 {
+        margin-top: 0;
+    }
+    .order-details {
+        margin-top: 0.5rem;
+    }
+    .order-details p {
+        margin: 0.25rem 0;
+    }
+</style>
+
+<div class="order">
+    <h3>Order <%= order.id %></h3>
+    <p>Status: <%= order.status.humanize %></p>
+    <div class="order-details">
+        <p>Product: <%= order.product.type %></p>
+        <p>Design: <%= order.design.name %></p>
+    </div>
+</div>

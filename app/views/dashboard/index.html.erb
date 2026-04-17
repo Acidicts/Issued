@@ -899,7 +899,7 @@
 				<% product_options = @products.map { |product| [product.type.presence || "Product ##{product.id}", product.id] } %>
 				<%= form.select :product_id, options_for_select(product_options), { prompt: "Choose a product" }, { class: "dashboard-order-select" } %>
 						<% cheapest_product = @products.min_by(&:cost) %>
-						<%= form.submit "Create Order", class: "btn", disabled: @user.nil? || cheapest_product.nil? || @user.credits.to_i < cheapest_product.cost.to_i %>
+						<%= form.submit "Create Order", class: "btn" %>
 					<% end %>
 				</div>
 			</article>
