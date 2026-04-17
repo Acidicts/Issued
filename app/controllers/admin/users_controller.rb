@@ -39,7 +39,7 @@ module Admin
     end
 
     def assign_role_if_allowed
-      return unless current_user&.superadmin?
+      return unless current_user&.role_superadmin?
 
       requested_role = params.dig(:user, :role).to_s
       return if requested_role.blank?
