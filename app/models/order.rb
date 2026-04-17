@@ -11,7 +11,7 @@ class Order < ApplicationRecord
     update(status: :user_cancelled)
   end
 
-  def cancelled
+  def cancelled?
     cancelled? || user_cancelled?
   end
 end

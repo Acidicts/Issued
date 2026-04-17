@@ -25,7 +25,11 @@ Rails.application.routes.draw do
     get "/", to: "dashboard#index", as: :overview
     resources :users, only: %i[index show new edit create update destroy]
     resources :products, only: %i[index show new edit create update destroy]
-    resources :orders, only: %i[index show edit update destroy]
+    resources :orders, only: %i[index show edit update destroy] do
+      member do
+        delete :cancel
+      end
+    end
   end
 
   resources :designs, only: %i[index show new create edit update] do
