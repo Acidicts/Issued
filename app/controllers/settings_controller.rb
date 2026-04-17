@@ -4,4 +4,9 @@ class SettingsController < ApplicationController
 
   def index
   end
+
+  private
+  def set_nav
+    @nav = "dashboard"
+  end
 end
