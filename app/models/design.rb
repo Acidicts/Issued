@@ -1,3 +1,67 @@
+# Design
+# =======
+# Design model representing user designs with SVG graphics and metadata.
+#
+# Schema:
+# - id: integer (primary key)
+# - user_id: integer (foreign key to users)
+# - name: string (design name)
+# - description: text (design description)
+# - time: integer (total time spent on design)
+# - hackatime_project: string (Hackatime project identifier)
+# - hackatime_seconds: integer (Hackatime time tracking in seconds)
+# - status: integer (design status: 0=unshipped, 1=pending, 2=submitted, 3=approved, 4=rejected)
+# - created_at: datetime
+# - updated_at: datetime
+#
+# Relationships:
+# - belongs_to :user (user who created the design)
+# - has_many :design_edit_sessions (dependent: :destroy)
+# - has_one_attached :svg (ActiveStorage attachment for SVG file)
+# - has_one_attached :image (ActiveStorage attachment for preview image)
+#
+# Validations:
+# - name: presence validation
+# - description: presence validation
+# - hackatime_project: uniqueness validation (allow blank)
+# - hackatime_seconds: numericality validation (>= 0, allow nil)
+# - hackatime_project_not_used_by_other_design: custom validation
+# - svg_attached_and_valid_format: custom validation
+# - image_attached_and_valid_format: custom validation
+#
+# Enums:
+# - status: { unshipped: 0, pending: 1, submitted: 2, approved: 3, rejected: 4 }
+#
+# Attributes:
+# - svg_code: string (virtual attribute for SVG code processing)
+# - status: integer with default value 0
+#
+# Methods:
+# - elapsed_time_formatted: Formats total time as HH:MM:SS
+# - svg_empty?: Checks if SVG is empty/default
+# - total_time_seconds: Calculates total time from time and hackatime_seconds
+# - hackatime_time_formatted: Formats hackatime seconds as HH:MM:SS
+# - attach_svg_from_text: Attaches SVG from text content
+# - process_svg_code: Processes SVG code and attaches to storage
+# - svg_content: Retrieves SVG content from storage or returns default
+# - svg_preview_source: Gets SVG preview source for display
+# - default_svg: Returns default SVG template
+# - hackatime_project_not_used_by_other_design: Validates hackatime project uniqueness
+# - formatted_time: Helper to format seconds as HH:MM:SS
+# - svg_attached_and_valid_format: Validates SVG file format
+# - image_attached_and_valid_format: Validates image file format
+#
+# Attachments:
+# - svg: ActiveStorage attachment for SVG file (must be image/svg+xml or image/png)
+# - image: ActiveStorage attachment for preview image (must be image/png or image/jpeg)
+#
+# Scopes:
+# - None
+#
+# Callbacks:
+# - before_validation :process_svg_code (processes SVG code before validation)
+#
+
 class Design < ApplicationRecord
   attr_accessor :svg_code
 
