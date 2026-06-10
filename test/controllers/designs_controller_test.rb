@@ -49,7 +49,7 @@ class DesignsControllerTest < ActionDispatch::IntegrationTest
     end
 
     design = Design.order(:created_at).last
-    assert_redirected_to edit_design_path(design)
+    assert_redirected_to editor_design_path(design)
     assert_equal 5, design.time
     assert design.svg.attached?
   end

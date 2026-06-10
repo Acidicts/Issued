@@ -6,27 +6,32 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get index" do
-    get orders_index_url
+    get orders_path
     assert_response :success
   end
 
   test "show without id route is not found" do
-    get orders_show_url
+    get orders_show_path
     assert_response :not_found
   end
 
   test "new without required params is not found" do
-    get orders_new_url
+    get orders_new_path
     assert_response :not_found
   end
 
   test "delete route responds" do
-    get orders_delete_url
+    get orders_delete_path
     assert_response :success
   end
 
   test "edit without id route is not found" do
-    get orders_edit_url
+    get orders_edit_path
     assert_response :not_found
+  end
+
+  teardown do
+    OmniAuth.config.test_mode = false
+    OmniAuth.config.mock_auth.delete(:hackclub)
   end
 end
