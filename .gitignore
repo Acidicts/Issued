@@ -35,3 +35,5 @@
 /config/*.key
 
 public/og/rsvps-count.svg
+
+node_modules/*
