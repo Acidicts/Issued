@@ -39,9 +39,12 @@ class SessionsController < ApplicationController
     end
 
     user.name = info["name"] || info[:name] || info["nickname"] || info[:nickname] || info["email"] || info[:email]
-    user.verified = ActiveModel::Type::Boolean.new.cast(
-      info["verification_status"] || info[:verification_status] || info["verified"] || info[:verified]
-    )
+    status = info["verification_status"] || info[:verification_status] || info["verified"] || info[:verified]
+    if status.present? && User.veri_levels.key?(status.to_s)
+      user.veri_level = status.to_s
+    elsif ActiveModel::Type::Boolean.new.cast(status)
+      user.veri_level = :verified
+    end
     user.update_ysws_eligibility_from_auth_info(info)
     user.slack_id = slack_id if slack_id
     user.save!

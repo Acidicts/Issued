@@ -137,6 +137,13 @@
             <%= f.file_field :image %>
         </div>
 
+        <div class="field">
+            <label>
+                <%= f.check_box :remove_background %>
+                Remove background from uploaded image
+            </label>
+        </div>
+
         <% if @hackatime_projects.present? %>
             <div class="field">
               <%= f.label :hackatime_project, "Hackatime project" %>

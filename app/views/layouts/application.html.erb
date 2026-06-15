@@ -244,6 +244,7 @@
   </head>
 
   <body class="<%= @nav != nil ? 'has-nav' : '' %>">
+    <%= render "todo", show: true %>
     <% if @nav != nil %>
       <header>
         <nav>
@@ -288,5 +289,7 @@
     </div>
 
     <%= yield %>
+
+    <%= render "todo", show: true %>
   </body>
 </html>

@@ -434,21 +434,26 @@
 
             <%= hidden_field_tag :origin, "edit" %>
 
-            <% if !@design.svg.attached? || @design.svg_code.nil? %>
-                <div class="field">
-                    <%= form.label :hackatime_project, "Hackatime project" %>
-                    <%= form.select :hackatime_project,
-                        options_for_select(@hackatime_projects.map { |project| ["#{project['name']} (#{format("%02d:%02d:%02d", project['seconds'].to_i / 3600, (project['seconds'].to_i / 60) % 60, project['seconds'].to_i % 60)})", project['name']] }, @design.hackatime_project),
-                        { prompt: "Select a Hackatime project" },
-                        class: "field-input" %>
-                    <p class="muted">Selected Hackatime project time will be added to this design.</p>
-                </div>
+            <div class="field">
+                <%= form.label :hackatime_project, "Hackatime project" %>
+                <%= form.select :hackatime_project,
+                    options_for_select(@hackatime_projects.map { |project| ["#{project['name']} (#{format("%02d:%02d:%02d", project['seconds'].to_i / 3600, (project['seconds'].to_i / 60) % 60, project['seconds'].to_i % 60)})", project['name']] }, @design.hackatime_project),
+                    { prompt: "Select a Hackatime project" },
+                    class: "field-input" %>
+                <p class="muted">Selected Hackatime project time will be added to this design.</p>
+            </div>
 
-                <div class="field file-field">
-                    <%= form.label :image, "Image if using Hackatime" %>
-                    <%= form.file_field :image %>
-                </div>
-            <% end %>
+            <div class="field file-field">
+                <%= form.label :image, "Current Image" %>
+                <%= form.file_field :image %>
+            </div>
+
+            <div class="field">
+                <label>
+                    <%= form.check_box :remove_background %>
+                    Remove background from uploaded image
+                </label>
+            </div>
 
             <div class="actions">
                 <%= form.submit "Update Design", class: "button button-primary" %>

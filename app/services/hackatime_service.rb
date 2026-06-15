@@ -34,13 +34,7 @@ class HackatimeService
     uid = slack_id || @slack_id
     return nil unless uid.present? && self.class.available?
 
-    data = self.class.fetch_trust_status(uid)
-    return nil unless data.is_a?(Hash)
-
-    {
-      "trust_level" => data["trust_level"],
-      "trust_value" => data["trust_value"]
-    }
+    self.class.fetch_trust_status(uid)
   end
 
   def get_all_projects
@@ -95,7 +89,8 @@ class HackatimeService
   def self.fetch_trust_status(slack_id)
     return nil unless slack_id.present? && available?
 
-    get_json("users/#{URI.encode_www_form_component(slack_id)}/trust_factor")
+    data = get_json("users/#{URI.encode_www_form_component(slack_id)}/trust_factor")
+    data["trust_level"] if data.is_a?(Hash)
   rescue => error
     Rails.logger.error("HackatimeService.fetch_trust_status error: #{error.class} #{error.message}")
     nil

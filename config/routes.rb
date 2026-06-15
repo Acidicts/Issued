@@ -32,15 +32,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :designs, only: %i[index show new create edit update] do
-    collection do
-      get :editor, action: :editor, as: :editor
-    end
-
-    member do
-      get :editor, action: :editor, as: :editor
-    end
-  end
+  resources :designs, only: %i[index show new create edit update]
 
   get "orders", to: "orders#index", as: :orders
   get "orders/show", to: "orders#show", as: :orders_show

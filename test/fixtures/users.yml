@@ -2,10 +2,10 @@
 
 one:
   name: MyString
-  verified: 1
+  veri_level: verified
   slack_id: U123456
 
 two:
   name: MyString
-  verified: 1
+  veri_level: verified
   slack_id: U789012

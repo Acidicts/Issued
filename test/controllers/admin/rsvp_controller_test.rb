@@ -3,7 +3,7 @@ require "stringio"
 
 class Admin::RsvpControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @admin = User.create!(name: "Admin", slack_id: "UADMIN", verified: 1, ysws_eligible: false, role: :admin)
+    @admin = User.create!(name: "Admin", slack_id: "UADMIN", veri_level: :verified, ysws_eligible: false, role: :admin)
     sign_in_as(@admin)
   end
 

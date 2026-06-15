@@ -1,0 +1,80 @@
+<%# locals: { show: false } %>
+<% if show && current_user && !@current_path.include?("rsvp") %>
+<% todo_content = nil %>
+<% if current_user.slack_id.blank? %>
+  <% todo_content = { title: "Connect Your Account", text: "Link your Hack Club account to start using Issued." } %>
+<% elsif current_user.designs.empty? && @current_path != designs_path %>
+  <% todo_content = { title: "Create Your First Design", text: "Head to designs to start creating your apparel.", btn_text: "Create Design", btn_path: new_design_path } %>
+<% end %>
+<% if todo_content %>
+<style>
+  .todo-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .todo_section {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 480px;
+    width: 90%;
+  }
+
+  .todo-section h3 {
+    margin-top: 0;
+    font-size: 1.5em;
+  }
+
+  .todo-section p {
+    margin-bottom: 0;
+    font-size: 1em;
+    color: #666;
+  }
+
+  @media (max-width: 768px) {
+    .todo_section {
+      padding: 15px;
+    }
+
+    .todo-section h3 {
+      font-size: 1.2em;
+    }
+
+    .todo-section p {
+      font-size: 0.9em;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .todo_section {
+      background-color: #1e1e1e;
+      color: #f9f9f9;
+    }
+
+    .todo-section p {
+      color: #ccc;
+    }
+  }
+</style>
+
+<div class="todo-overlay">
+  <section class="todo_section" id="todo-section">
+    <div class="container">
+      <div class="todo-section">
+        <h3><%= todo_content[:title] %></h3>
+        <p><%= todo_content[:text] %></p>
+        <% if todo_content[:btn_text] && todo_content[:btn_path] %>
+          <%= link_to todo_content[:btn_text], todo_content[:btn_path], class: "btn btn-primary" %>
+        <% end %>
+      </div>
+    </div>
+  </section>
+</div>
+<% end %>
+<% end %>

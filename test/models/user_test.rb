@@ -60,7 +60,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test "fetch_live_hackclub_oauth_info falls back to in-memory user token" do
-    user = User.new(name: "Token User", slack_id: "UTOKEN1", verified: true, ysws_eligible: false, hackclub_access_token: "db-access-token")
+    user = User.new(name: "Token User", slack_id: "UTOKEN1", ysws_eligible: false, hackclub_access_token: "db-access-token")
     parsed_payload = { "identity" => { "name" => "Token User" } }
     fake_response = Struct.new(:parsed).new(parsed_payload)
     fake_token = Struct.new(:response) do
@@ -98,14 +98,15 @@ class UserTest < ActiveSupport::TestCase
     assert_equal false, user.ysws_eligible
   end
 
-  test "update_veri_level maps verification status to enum" do
-    user = User.new(veri_level: :unknown)
+  test "refresh_ysws_eligibility! updates veri_level and ysws_eligible from identity" do
+    user = User.new(veri_level: :unknown, ysws_eligible: false)
     user.define_singleton_method(:fetch_live_hackclub_identity) do
-      { "verification_status" => "verified" }
+      { "verification_status" => "verified", "ysws_eligible" => "true" }
     end
 
-    user.update_veri_level
+    user.refresh_ysws_eligibility!
     assert_equal "verified", user.veri_level
+    assert_equal true, user.ysws_eligible
   end
 
   test "veri_level enum has a declared attribute type" do

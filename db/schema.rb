@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_05_220643) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_15_213442) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -69,6 +69,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_05_220643) do
     t.index ["user_id"], name: "index_designs_on_user_id"
   end
 
+  create_table "images", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "design_id", null: false
+    t.datetime "from_time"
+    t.datetime "updated_at", null: false
+    t.index ["design_id"], name: "index_images_on_design_id"
+  end
+
   create_table "orders", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "design_id", null: false
@@ -103,10 +111,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_05_220643) do
     t.string "name"
     t.integer "role"
     t.string "slack_id"
-    t.integer "trust", default: 0, null: false
     t.datetime "updated_at", null: false
     t.integer "veri_level"
-    t.integer "verified"
     t.boolean "ysws_eligible", default: false, null: false
   end
 
@@ -115,6 +121,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_05_220643) do
   add_foreign_key "design_edit_sessions", "designs"
   add_foreign_key "design_edit_sessions", "users"
   add_foreign_key "designs", "users"
+  add_foreign_key "images", "designs"
   add_foreign_key "orders", "designs"
   add_foreign_key "orders", "products"
   add_foreign_key "orders", "users"

@@ -135,15 +135,9 @@
 
 <div class="design-detail design-detail-container">
   <div class="design-image-preview">
-    <% if !@design.svg_empty? %>
-      <div class="design-preview svg-preview">
-          <%= svg_scaled(@design.svg_content) %>
-      </div>
-    <% end %>
-
-    <% if @design.image.attached? %>
+    <% if @design.image_exists? %>
       <div class="design-preview">
-        <%= image_tag @design.image, alt: "Additional image for #{@design.name}" %>
+        <%= image_tag @design.image?, alt: "Additional image for #{@design.name}" %>
       </div>
     <% end %>
   </div>
@@ -151,7 +145,6 @@
     <h1><%= @design.name %></h1>
     <div class="design-meta">
       <p class="stat"><%= @design.description %></p>
-      <p class="stat">Total time spent editing: <strong><%= @design.elapsed_time_formatted %></strong></p>
       <% if @design.hackatime_project.present? %>
         <p class="stat">Hackatime project: <strong><%= @design.hackatime_project %></strong></p>
         <p class="stat">Hackatime time: <strong><%= @design.hackatime_time_formatted %></strong></p>
@@ -162,6 +155,5 @@
 
   <div class="design-actions">
     <p><%= link_to "Edit design", edit_design_path(@design), class: "button-primary" %></p>
-    <p><%= link_to "Edit in Editor", editor_design_path(@design), class: "button-primary" %></p>
   </div>
 </div>

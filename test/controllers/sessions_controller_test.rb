@@ -2,7 +2,7 @@ require "test_helper"
 require "securerandom"
 
 class SessionsControllerTest < ActionDispatch::IntegrationTest
-  def auth_hash_for(uid: "U#{SecureRandom.hex(4)}", name: "Hack Club User", verification_status: true, ysws_eligible: true)
+  def auth_hash_for(uid: "U#{SecureRandom.hex(4)}", name: "Hack Club User", verification_status: "verified", ysws_eligible: true)
     OmniAuth::AuthHash.new(
       provider: "hackclub",
       uid: uid,
@@ -40,7 +40,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Hack Club User", user.name
     assert_equal "U123", user.slack_id
     assert_equal true, user.ysws_eligible
-    assert_equal 1, user.verified
+    assert_equal "verified", user.veri_level
     assert_equal user.id, session[:user_id]
 
   ensure
@@ -83,7 +83,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy redirects to root" do
-    user = User.create!(name: "x", slack_id: "U123", verified: true, ysws_eligible: false)
+    user = User.create!(name: "x", slack_id: "U123", veri_level: :verified, ysws_eligible: false)
     sign_in_as(user)
 
     delete logout_url

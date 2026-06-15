@@ -35,7 +35,7 @@ module Admin
     end
 
     def user_params
-      params.require(:user).permit(:name, :slack_id, :ysws_eligible, :verified, :credits)
+      params.require(:user).permit(:name, :slack_id, :ysws_eligible, :credits)
     end
 
     def assign_role_if_allowed

@@ -45,12 +45,12 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest
   private
 
   def create_user(name:, role:)
-    User.create!(
-      name: name,
-      slack_id: "U#{SecureRandom.hex(4)}",
-      verified: 1,
-      ysws_eligible: false,
-      role: role
-    )
+      User.create!(
+        name: name,
+        slack_id: "U#{SecureRandom.hex(4)}",
+        veri_level: :verified,
+        ysws_eligible: false,
+        role: role
+      )
   end
 end

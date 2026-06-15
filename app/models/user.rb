@@ -5,11 +5,9 @@
 # Schema:
 # - id: integer (primary key)
 # - name: string (from Hack Club identity)
-# - verified: boolean (from Hack Club identity)
 # - slack_id: string (from Hack Club identity)
 # - ysws_eligible: boolean (YSWS eligibility status)
 # - role: integer (user role: 0=user, 1=admin, 2=superadmin, 3=reviewer)
-# - trust: integer (trust level: 0=unknown, 1=red, 2=yellow, 3=blue, 4=green)
 # - veri_level: integer (verification level: 0=unknown, 1=needs_submission, 2=pending, 3=verified, 4=ineligible)
 # - hackclub_access_token: string (OAuth access token)
 # - hackclub_refresh_token: string (OAuth refresh token)
@@ -23,26 +21,20 @@
 #
 # Enums:
 # - role: { user: 0, admin: 1, superadmin: 2, reviewer: 3 }
-# - trust: { unknown: 0, red: 1, yellow: 2, blue: 3, green: 4 }
 # - veri_level: { unknown: 0, needs_submission: 1, pending: 2, verified: 3, ineligible: 4 }
 #
 # Attributes:
-# - trust: integer
 # - veri_level: integer
 #
 # Methods:
-# - trust_level_correct: Updates trust level from Hackatime service
-# - update_veri_level: Updates verification level from Hack Club identity
-# - refresh_live_status!: Refreshes both trust and verification levels
 # - verified_for_ysws?: Checks if user is verified for YSWs
 # - admin?: Checks if user has admin privileges
-# - refresh_ysws_eligibility!: Refreshes YSWs eligibility from Hack Club
+# - refresh_ysws_eligibility!: Refreshes YSWs eligibility and verification from Hack Club
 # - fetch_live_hackclub_oauth_info: Fetches user identity from Hack Club OAuth
 # - update_ysws_eligibility_from_auth_info: Updates YSWs eligibility from auth info
 # - fetch_live_hackclub_identity: Fetches user identity from Hack Club
 # - hackclub_oauth_client: Creates OAuth client for Hack Club
 # - hackclub_oauth_access_token: Creates OAuth access token
-# - get_trusted_status: Fetches trust status from Hackatime service
 # - refresh_hackclub_access_token!: Refreshes OAuth access token
 #
 # Attachments:
@@ -58,51 +50,18 @@
 class User < ApplicationRecord
   has_many :designs, dependent: :destroy
   has_many :orders, dependent: :destroy
+  has_many :rsvps, dependent: :destroy
 
   validates :ysws_eligible, inclusion: { in: [ true, false ] }
 
   enum :role, { user: 0, admin: 1, superadmin: 2, reviewer: 3 }, prefix: :role, default: :user
-  attribute :trust, :integer
-  enum :trust, { unknown: 0, red: 1, yellow: 2, blue: 3, green: 4 }, default: :unknown
   attribute :veri_level, :integer
   enum :veri_level, { unknown: 0, needs_submission: 1, pending: 2, verified: 3, ineligible: 4 }, prefix: :veri_level, default: :unknown
 
-  # Live trust/verification checks are network-bound and should be run explicitly,
-  # not as automatic model validation callbacks.
-
-  def trust_level_correct
-    t = get_trusted_status(slack_id: slack_id)
-    if t.present?
-      t = t.is_a?(Array) ? t[0] : t
-      self.trust = t if t.present?
-    end
-
-    self.trust ||= :unknown
-  end
-
-  def update_veri_level
-    info = fetch_live_hackclub_identity
-    return unless info.present?
-
-    new_level = info["verification_status"]
-    new_level_key = self.class.veri_levels[new_level]
-    return unless new_level_key.present?
-
-    if veri_level != new_level
-      self.veri_level = new_level_key
-    end
-  end
-
-  def refresh_live_status!
-    trust_level_correct
-    update_veri_level
-    save!(validate: false) if persisted? && changed?
-  end
+  attribute :credits, default: 0, nil: false
 
   def verified_for_ysws?
-    veri = self.veri_level == "verified"
-    trus = self.trust.in?(%w[blue green])
-    veri && trus && ysws_eligible
+    veri_level == "verified" && ysws_eligible
   end
 
   def admin?
@@ -114,6 +73,12 @@ class User < ApplicationRecord
     return false unless info.present?
 
     update_ysws_eligibility_from_auth_info(info)
+
+    status = info["verification_status"]
+    if status.present? && self.class.veri_levels.key?(status)
+      self.veri_level = self.class.veri_levels[status]
+    end
+
     save!(validate: false) if changed?
   end
 
@@ -166,28 +131,6 @@ class User < ApplicationRecord
       token,
       refresh_token: refresh_token
     )
-  end
-
-  def get_trusted_status(slack_id: nil)
-    return nil unless slack_id.present?
-
-    # Always fetch live data from Hackatime instead of using request-level caching
-    Rails.logger.info "Admin::UsersHelper#get_trusted_status: fetching live trust for #{slack_id}"
-    service_result = HackatimeService.new(slack_id: slack_id).get_trusted_status
-
-    # Support structured Hash result or scalar and return the live trust_level when possible
-    if service_result.is_a?(Hash)
-      level = service_result[:trust_level] || service_result["trust_level"]
-      value = service_result[:trust_value] || service_result["trust_value"]
-
-      # Prefer string trust_level (e.g. "blue", "verified"); fall back to numeric trust_value
-      [ level, value ]
-    else
-      service_result
-    end
-  rescue => e
-    Rails.logger.error "Admin::UsersHelper#get_trusted_status error: #{e.message}"
-    nil
   end
 
   def refresh_hackclub_access_token!(token: Current.hackclub_access_token, refresh_token: Current.hackclub_refresh_token)

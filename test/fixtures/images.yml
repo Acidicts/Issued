@@ -1,0 +1,9 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  design: one
+  from_time: 2026-06-15 21:34:42
+
+two:
+  design: two
+  from_time: 2026-06-15 21:34:42

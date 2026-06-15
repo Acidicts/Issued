@@ -23,7 +23,7 @@ class ActionDispatch::IntegrationTest
       info: {
         name: user.name,
         slack_id: user.slack_id,
-        verification_status: user.verified.present? && user.verified.to_i == 1,
+        verification_status: user.veri_level.to_s,
         ysws_eligible: user.ysws_eligible
       }
     )

@@ -1,24 +1,24 @@
 # DesignEditSession
-# =================
-# DesignEditSession model representing sessions of editing a design.
+# ==================
+# Tracks user editing sessions for designs.
 #
 # Schema:
 # - id: integer (primary key)
-# - design_id: integer (foreign key to designs)
-# - user_id: integer (foreign key to users)
-# - started_at: datetime (session start time)
-# - ended_at: datetime (session end time, nullable)
-# - duration_seconds: integer (session duration in seconds)
+# - design_id: integer (foreign key to designs, not null)
+# - user_id: integer (foreign key to users, not null)
+# - started_at: datetime (not null)
+# - ended_at: datetime
+# - duration_seconds: integer (not null, default: 0)
+# - activity_type: string (default: "edit")
 # - created_at: datetime
 # - updated_at: datetime
 #
 # Relationships:
-# - belongs_to :design (design being edited)
-# - belongs_to :user (user who edited the design)
+# - belongs_to :design
+# - belongs_to :user
 #
 # Validations:
-# - started_at: presence validation
-# - duration_seconds: numericality validation (>= 0)
+# - duration_seconds: numericality (>= 0)
 #
 # Enums:
 # - None
@@ -27,13 +27,10 @@
 # - None
 #
 # Methods:
-# - ended?: Checks if session has ended (ended_at present)
-#
-# Attachments:
 # - None
 #
 # Scopes:
-# - recent: Scope to get recent edit sessions ordered by started_at descending
+# - None
 #
 # Callbacks:
 # - None
@@ -43,12 +40,5 @@ class DesignEditSession < ApplicationRecord
   belongs_to :design
   belongs_to :user
 
-  validates :started_at, presence: true
   validates :duration_seconds, numericality: { greater_than_or_equal_to: 0 }
-
-  scope :recent, -> { order(started_at: :desc) }
-
-  def ended?
-    ended_at.present?
-  end
 end

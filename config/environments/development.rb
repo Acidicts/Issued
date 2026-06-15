@@ -13,7 +13,7 @@ Rails.application.configure do
   config.consider_all_requests_local = true
 
   # Allow dev.bing-bong.uk in development host authorization.
-  config.hosts << "dev.bing-bong.uk"
+  config.hosts.clear
 
   # Enable server timing.
   config.server_timing = true
@@ -28,8 +28,12 @@ Rails.application.configure do
     config.action_controller.perform_caching = false
   end
 
-  # Change to :null_store to avoid any caching.
-  config.cache_store = :memory_store
+  # Use Redis for caching when REDIS_URL is set, otherwise use in-memory store.
+  if ENV["REDIS_URL"].present?
+    config.cache_store = :redis_cache_store, { url: ENV["REDIS_URL"] }
+  else
+    config.cache_store = :memory_store
+  end
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local

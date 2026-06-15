@@ -68,7 +68,9 @@
     }
 
     .design-item .design-preview svg,
-    .design-preview svg {
+    .design-item .design-preview img,
+    .design-preview svg,
+    .design-preview img {
       width: 100% !important;
       height: 100% !important;
       max-width: 100% !important;
@@ -93,6 +95,19 @@
       font-weight: 700;
     }
 
+    .design-name {
+      margin: 0;
+      margin-left: 0.5rem;
+      font-size: 1.15rem;
+      line-height: 1.3;
+      color: #10203a;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
 .design-preview {
       width: 100%;
       height: 100%;
@@ -107,7 +122,8 @@
       justify-content: center;
     }
 
-    .design-preview svg {
+    .design-preview svg,
+    .design-preview img {
       width: 100%;
       height: 100%;
       max-width: 100%;
@@ -221,6 +237,30 @@
         box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
       }
 
+      .design-item h2 {
+        color: #e2ecff;
+      }
+
+      .design-item .design-preview {
+        background: #1a2a42;
+        border-color: #2a3f60;
+        box-shadow: inset 0 0 0 1px #0f1b2f, 0 3px 8px rgba(0, 0, 0, 0.3);
+      }
+
+      .design-meta {
+        background: #121d2b;
+        border-color: #2a3f60;
+        color: #9cb2d1;
+      }
+
+      .design-meta span {
+        color: #c8daf0;
+      }
+
+      .design-name {
+        color: #e2ecff;
+      }
+
       .edit-link,
       .create-link {
         background: #2467ef;
@@ -236,23 +276,23 @@
 <div id="container">
   <div style="display:inline-flex justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
     <h1 id="your-designs-heading">Your Designs</h1>
-    <a href="<%= new_design_path %>" class="create-link" style="margin-bottom: 1.5rem; display: inline-block;">Create New Design</a>
+    <% if !current_user.designs.empty? %>
+      <%= link_to "Create New Design", new_design_path, class: "create-link", style: "margin-bottom: 1.5rem; display: inline-block;" %>
+    <% end %>
   </div>
   <hr>
   <div class="designs-list">
     <% @designs.each do |design| %>
       <div class="design-item">
         <div class="design-preview">
-          <% if !design.svg_empty? %>
-            <%= svg_scaled(design.svg_content) %>
-          <% elsif design.image.attached? %>
-            <%= image_tag design.image, alt: design.name %>
+          <% if design.image_exists? %>
+            <%= image_tag design.image?, alt: "Additional image for #{design.name}" %>
           <% else %>
             <p>No preview available.</p>
           <% end %>
         </div>
         <div class="design-details">
-          <h2><%= design.name %></h2>
+          <h2 class="design-name"> <%= design.name %></h2>
           <div class="design-meta">
             <div><span>Last edited:</span> <%= design.updated_at.strftime("%b %d, %Y") %></div>
             <% if design.hackatime_project.present? %>
@@ -270,7 +310,7 @@
     <% if @designs.empty? %>
       <div class="empty-state">
         <p>You haven't created any designs yet.</p>
-        <%= link_to "Create your first design", editor_designs_path, class: "create-link" %>
+        <%= link_to "Create your first design", new_design_path, class: "create-link" %>
       </div>
     <% end %>
   </div>

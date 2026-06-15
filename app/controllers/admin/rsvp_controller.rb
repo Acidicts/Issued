@@ -74,7 +74,6 @@ class Admin::RsvpController < Admin::DashboardController
       users_created += 1 if user.new_record?
 
       user.name = name if name.present?
-      user.verified = 0 if user.verified.nil?
       user.ysws_eligible = false if user.ysws_eligible.nil?
 
       unless user.save
