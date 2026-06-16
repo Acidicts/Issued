@@ -1,0 +1,259 @@
+<%= form_with model: @design, local: true, html: { multipart: true, class: "design-form" } do |form| %>
+  <% if @design.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@design.errors.count, "error") %> prohibited this design from being saved:</h2>
+      <ul>
+        <% @design.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :name %>
+    <%= form.text_field :name %>
+  </div>
+
+  <div class="field">
+    <%= form.label :description %>
+    <%= form.text_area :description %>
+  </div>
+
+  <% if @hackatime_projects.present? %>
+    <div class="field">
+      <%= form.label :hackatime_project, "Hackatime project" %>
+      <%= form.select :hackatime_project,
+          options_for_select(@hackatime_projects.map { |project| ["#{project['name']} (#{format("%02d:%02d:%02d", project['seconds'].to_i / 3600, (project['seconds'].to_i / 60) % 60, project['seconds'].to_i % 60)})", project['name']] }, @design.hackatime_project),
+          { prompt: "Select a Hackatime project" },
+          class: "field-input" %>
+      <p class="muted">Selected Hackatime project time will be added to this design.</p>
+    </div>
+  <% elsif current_user&.slack_id.present? && HackatimeService.available? %>
+    <p class="muted">No Hackatime projects were found for your account.</p>
+  <% end %>
+
+  <div class="field file-field">
+    <%= form.label :image, "Image" %>
+    <%= form.file_field :image %>
+  </div>
+
+  <div class="field">
+    <label>
+      <%= form.check_box :remove_background %>
+      Remove background from uploaded image
+    </label>
+  </div>
+
+  <div class="actions">
+    <%= form.submit @design.persisted? ? "Update Design" : "Create Design", class: "button button-primary" %>
+    <% if @design.persisted? %>
+      <%= link_to "Back", designs_path, class: "button button-secondary" %>
+    <% end %>
+  </div>
+<% end %>
+
+<style>
+  .design-form .field {
+    display: grid;
+    gap: 0.65rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .design-form .field label {
+    font-size: 0.79rem;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    font-weight: 800;
+    color: #243f62;
+  }
+
+  .design-form .field input[type="text"],
+  .design-form .field textarea,
+  .design-form .field select,
+  .design-form .field input[type="file"] {
+    width: 100%;
+    min-height: 3rem;
+    padding: 0.9rem 1rem;
+    border-radius: 14px;
+    border: 1px solid #d4deea;
+    background: rgba(255, 255, 255, 0.8);
+    color: #10223a;
+    font-size: 1rem;
+    line-height: 1.35;
+    font-family: inherit;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+  }
+
+  .design-form .field textarea {
+    min-height: 150px;
+    resize: vertical;
+  }
+
+  .design-form .field input[type="text"]:focus,
+  .design-form .field textarea:focus,
+  .design-form .field select:focus,
+  .design-form .field input[type="file"]:focus {
+    outline: none;
+    border-color: #1f63d8;
+    box-shadow: 0 0 0 4px rgba(31, 99, 216, 0.14);
+    transform: translateY(-1px);
+  }
+
+  .design-form .field.file-field {
+    padding: 0.95rem;
+    border: 1px solid #d4deea;
+    border-radius: 18px;
+    background: linear-gradient(140deg, rgba(239, 90, 60, 0.06), rgba(51, 106, 185, 0.08));
+  }
+
+  .design-form .field.file-field input[type="file"] {
+    min-height: auto;
+    padding: 0.45rem;
+    background: rgba(255, 255, 255, 0.93);
+  }
+
+  .design-form .field.file-field input[type="file"]::file-selector-button {
+    border: 0;
+    margin-right: 0.85rem;
+    border-radius: 999px;
+    padding: 0.58rem 0.92rem;
+    font-weight: 700;
+    background: #10223a;
+    color: #f6fbff;
+    cursor: pointer;
+  }
+
+  .design-form .muted {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    color: #5b6980;
+  }
+
+  .design-form #error_explanation {
+    margin-bottom: 1.2rem;
+    padding: 0.95rem 1.05rem;
+    border: 1px solid rgba(215, 62, 62, 0.28);
+    border-left: 5px solid #d73e3e;
+    border-radius: 14px;
+    background: rgba(255, 238, 238, 0.88);
+  }
+
+  .design-form #error_explanation h2 {
+    margin: 0;
+    font-size: 0.96rem;
+    color: #8e1717;
+  }
+
+  .design-form #error_explanation ul {
+    margin: 0.65rem 0 0;
+    padding-left: 1.1rem;
+    color: #842727;
+  }
+
+  .design-form .actions {
+    margin-top: 1.85rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .design-form .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3rem;
+    padding: 0.35rem 1.45rem;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    font-size: 0.96rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease, background-color 0.16s ease;
+  }
+
+  .design-form .button-primary {
+    background: linear-gradient(135deg, #ef5a3c 0%, #f18d42 100%);
+    color: #fffefc;
+    box-shadow: 0 14px 24px rgba(239, 90, 60, 0.14);
+  }
+
+  .design-form .button-primary:hover,
+  .design-form .button-primary:focus-visible {
+    transform: translateY(-1px);
+    box-shadow: 0 18px 30px rgba(239, 90, 60, 0.24);
+    background: linear-gradient(135deg, #c63f25 0%, #e87c2d 100%);
+  }
+
+  .design-form .button-secondary {
+    background: rgba(255, 255, 255, 0.78);
+    color: #17345c;
+    border-color: #9db0c7;
+  }
+
+  .design-form .button-secondary:hover,
+  .design-form .button-secondary:focus-visible {
+    transform: translateY(-1px);
+    background: rgba(255, 255, 255, 0.95);
+    border-color: #6a85a7;
+    box-shadow: 0 10px 20px rgba(16, 34, 58, 0.12);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .design-form .field label {
+      color: #b5c9e3;
+    }
+
+    .design-form .field input[type="text"],
+    .design-form .field textarea,
+    .design-form .field select,
+    .design-form .field input[type="file"] {
+      background: rgba(6, 17, 33, 0.86);
+      border-color: #2f425a;
+      color: #e8f0fb;
+    }
+
+    .design-form .field.file-field {
+      border-color: #2f425a;
+    }
+
+    .design-form .field.file-field input[type="file"] {
+      background: rgba(8, 22, 41, 0.9);
+    }
+
+    .design-form .field.file-field input[type="file"]::file-selector-button {
+      background: #dbe9ff;
+      color: #122a4a;
+    }
+
+    .design-form .muted {
+      color: #adc0d9;
+    }
+
+    .design-form #error_explanation {
+      border-color: rgba(248, 91, 91, 0.42);
+      border-left-color: #f16666;
+      background: rgba(97, 29, 29, 0.42);
+    }
+
+    .design-form #error_explanation h2,
+    .design-form #error_explanation ul {
+      color: #ffd5d5;
+    }
+
+    .design-form .button-secondary {
+      background: rgba(8, 22, 41, 0.8);
+      color: #dce8fa;
+      border-color: #4c6482;
+    }
+
+    .design-form .button-secondary:hover,
+    .design-form .button-secondary:focus-visible {
+      border-color: #7f9ec4;
+      box-shadow: 0 10px 20px rgba(2, 9, 20, 0.48);
+    }
+  }
+</style>

@@ -70,7 +70,7 @@
         <h3><%= todo_content[:title] %></h3>
         <p><%= todo_content[:text] %></p>
         <% if todo_content[:btn_text] && todo_content[:btn_path] %>
-          <%= link_to todo_content[:btn_text], todo_content[:btn_path], class: "btn btn-primary" %>
+          <%= link_to todo_content[:btn_text], todo_content[:btn_path], class: "brand-btn btn-primary", style: "margin-top: 1rem;" %>
         <% end %>
       </div>
     </div>

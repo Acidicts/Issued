@@ -59,7 +59,7 @@
         animation: rise-in 420ms ease forwards;
     }
 
-    h1 {
+    .design-edit-page h1 {
         margin: 0.6rem 0 0;
         font-size: clamp(2rem, 4vw, 2.8rem);
         line-height: 1.1;
@@ -85,208 +85,20 @@
         animation: rise-in 520ms ease forwards;
     }
 
-    .design-edit-page .design-form > *:nth-child(1) {
-        animation-delay: 140ms;
-    }
-
-    .design-edit-page .design-form > *:nth-child(2) {
-        animation-delay: 210ms;
-    }
-
-    .design-edit-page .design-form > *:nth-child(3) {
-        animation-delay: 280ms;
-    }
-
-    .design-edit-page .design-form > *:nth-child(4) {
-        animation-delay: 350ms;
-    }
-
-    .design-edit-page .design-form > *:nth-child(5) {
-        animation-delay: 420ms;
-    }
-
-    .design-edit-page .design-form > *:nth-child(6) {
-        animation-delay: 490ms;
-    }
-
-    .design-edit-page .design-form > *:nth-child(7) {
-        animation-delay: 560ms;
-    }
-
-    .design-edit-page .design-form > *:nth-child(8) {
-        animation-delay: 630ms;
-    }
-
-    .design-edit-page .design-form > input[type="hidden"] {
-        opacity: 1;
-        transform: none;
-        animation: none;
-    }
-
-    .design-edit-page #error_explanation {
-        margin-bottom: 1.2rem;
-        padding: 0.95rem 1.05rem;
-        border: 1px solid rgba(215, 62, 62, 0.28);
-        border-left: 5px solid #d73e3e;
-        border-radius: 14px;
-        background: rgba(255, 238, 238, 0.88);
-    }
-
-    .design-edit-page #error_explanation h2 {
-        margin: 0;
-        font-size: 0.96rem;
-        color: #8e1717;
-    }
-
-    .design-edit-page #error_explanation ul {
-        margin: 0.65rem 0 0;
-        padding-left: 1.1rem;
-        color: #842727;
-    }
-
-    .design-edit-page .field {
-        display: grid;
-        gap: 0.65rem;
-        margin-bottom: 1.2rem;
-    }
-
-    .design-edit-page .field label {
-        font-size: 0.79rem;
-        letter-spacing: 0.11em;
-        text-transform: uppercase;
-        font-weight: 800;
-        color: #243f62;
-    }
-
-    .design-edit-page .field input[type="text"],
-    .design-edit-page .field textarea,
-    .design-edit-page .field select,
-    .design-edit-page .field input[type="file"] {
-        width: 100%;
-        min-height: 3rem;
-        padding: 0.9rem 1rem;
-        border-radius: 14px;
-        border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.8);
-        color: var(--ink);
-        font-size: 1rem;
-        line-height: 1.35;
-        transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
-    }
-
-    .design-edit-page .field textarea {
-        min-height: 150px;
-        resize: vertical;
-    }
-
-    .design-edit-page .field input[type="text"]:focus,
-    .design-edit-page .field textarea:focus,
-    .design-edit-page .field select:focus,
-    .design-edit-page .field input[type="file"]:focus {
-        outline: none;
-        border-color: var(--focus);
-        box-shadow: 0 0 0 4px rgba(31, 99, 216, 0.14);
-        transform: translateY(-1px);
-    }
-
-    .design-edit-page .field.file-field {
-        padding: 0.95rem;
-        border: 1px solid var(--line);
-        border-radius: 18px;
-        background: linear-gradient(140deg, rgba(239, 90, 60, 0.06), rgba(51, 106, 185, 0.08));
-    }
-
-    .design-edit-page .field.file-field input[type="file"] {
-        min-height: auto;
-        padding: 0.45rem;
-        background: rgba(255, 255, 255, 0.93);
-    }
-
-    .design-edit-page .field.file-field input[type="file"]::file-selector-button {
-        border: 0;
-        margin-right: 0.85rem;
-        border-radius: 999px;
-        padding: 0.58rem 0.92rem;
-        font-weight: 700;
-        background: #10223a;
-        color: #f6fbff;
-        cursor: pointer;
-    }
-
-    .design-edit-page .muted {
-        margin: 0;
-        font-size: 0.9rem;
-        line-height: 1.45;
-        color: var(--muted);
-    }
-
-    .design-edit-page .actions {
-        margin-top: 1.85rem;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.75rem;
-    }
-
-    .design-edit-page .button {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 3rem;
-        padding: 0.35rem 1.45rem;
-        border-radius: 999px;
-        border: 1px solid transparent;
-        font-size: 0.96rem;
-        font-weight: 800;
-        letter-spacing: 0.02em;
-        text-decoration: none;
-        cursor: pointer;
-        transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease, background-color 0.16s ease;
-    }
-
-    .design-edit-page .button-primary {
-        background: linear-gradient(135deg, var(--accent) 0%, #f18d42 100%);
-        color: #fffefc;
-        box-shadow: 0 14px 24px var(--accent-soft);
-    }
-
-    .design-edit-page .button-primary:hover,
-    .design-edit-page .button-primary:focus-visible {
-        transform: translateY(-1px);
-        box-shadow: 0 18px 30px rgba(239, 90, 60, 0.24);
-        background: linear-gradient(135deg, var(--accent-deep) 0%, #e87c2d 100%);
-    }
-
-    .design-edit-page .button-secondary {
-        background: rgba(255, 255, 255, 0.78);
-        color: #17345c;
-        border-color: var(--line-strong);
-    }
-
-    .design-edit-page .button-secondary:hover,
-    .design-edit-page .button-secondary:focus-visible {
-        transform: translateY(-1px);
-        background: rgba(255, 255, 255, 0.95);
-        border-color: #6a85a7;
-        box-shadow: 0 10px 20px rgba(16, 34, 58, 0.12);
-    }
-    
-    .field {
-        margin-right: 1rem;
-    }
-
-    form {
-        display: block;
-        flex-direction: column;
-        gap: 1.2rem;
-        align-items: center;
-    }
+    .design-edit-page .design-form > *:nth-child(1) { animation-delay: 140ms; }
+    .design-edit-page .design-form > *:nth-child(2) { animation-delay: 210ms; }
+    .design-edit-page .design-form > *:nth-child(3) { animation-delay: 280ms; }
+    .design-edit-page .design-form > *:nth-child(4) { animation-delay: 350ms; }
+    .design-edit-page .design-form > *:nth-child(5) { animation-delay: 420ms; }
+    .design-edit-page .design-form > *:nth-child(6) { animation-delay: 490ms; }
+    .design-edit-page .design-form > *:nth-child(7) { animation-delay: 560ms; }
+    .design-edit-page .design-form > *:nth-child(8) { animation-delay: 630ms; }
 
     @keyframes card-load {
         from {
             opacity: 0;
             transform: translateY(16px) scale(0.985);
         }
-
         to {
             opacity: 1;
             transform: translateY(0) scale(1);
@@ -305,18 +117,9 @@
             min-height: auto;
             padding: 0.8rem;
         }
-
         .design-edit-page .design-edit-card {
             border-radius: 22px;
             padding: 1.1rem;
-        }
-
-        .design-edit-page .actions {
-            flex-direction: column;
-        }
-
-        .design-edit-page .button {
-            width: 100%;
         }
     }
 
@@ -345,7 +148,7 @@
                 linear-gradient(150deg, #071120 0%, #0b1f36 48%, #171323 100%);
         }
 
-        h1 {
+        .design-edit-page h1 {
             color: #e8f0fb;
         }
 
@@ -358,49 +161,6 @@
         .design-edit-page .design-edit-kicker {
             color: #88b8ff;
         }
-
-        .design-edit-page .field label {
-            color: #b5c9e3;
-        }
-
-        .design-edit-page .field input[type="text"],
-        .design-edit-page .field textarea,
-        .design-edit-page .field select,
-        .design-edit-page .field input[type="file"] {
-            background: rgba(6, 17, 33, 0.86);
-        }
-
-        .design-edit-page .field.file-field input[type="file"] {
-            background: rgba(8, 22, 41, 0.9);
-        }
-
-        .design-edit-page .field.file-field input[type="file"]::file-selector-button {
-            background: #dbe9ff;
-            color: #122a4a;
-        }
-
-        .design-edit-page #error_explanation {
-            border-color: rgba(248, 91, 91, 0.42);
-            border-left-color: #f16666;
-            background: rgba(97, 29, 29, 0.42);
-        }
-
-        .design-edit-page #error_explanation h2,
-        .design-edit-page #error_explanation ul {
-            color: #ffd5d5;
-        }
-
-        .design-edit-page .button-secondary {
-            background: rgba(8, 22, 41, 0.8);
-            color: #dce8fa;
-            border-color: #4c6482;
-        }
-
-        .design-edit-page .button-secondary:hover,
-        .design-edit-page .button-secondary:focus-visible {
-            border-color: #7f9ec4;
-            box-shadow: 0 10px 20px rgba(2, 9, 20, 0.48);
-        }
     }
 </style>
 
@@ -408,57 +168,6 @@
     <section class="design-edit-card">
         <h1>Edit Design</h1>
         <p class="design-edit-intro">Tune details, sync tracked time, and keep your submission polished.</p>
-
-        <%= form_with(model: @design, local: true, html: { multipart: true, class: "design-form" }) do |form| %>
-            <% if @design.errors.any? %>
-                <div id="error_explanation">
-                    <h2><%= pluralize(@design.errors.count, "error") %> prohibited this design from being saved:</h2>
-
-                    <ul>
-                        <% @design.errors.full_messages.each do |message| %>
-                            <li><%= message %></li>
-                        <% end %>
-                    </ul>
-                </div>
-            <% end %>
-
-            <div class="field">
-                <%= form.label :name %>
-                <%= form.text_field :name %>
-            </div>
-
-            <div class="field">
-                <%= form.label :description %>
-                <%= form.text_area :description %>
-            </div>
-
-            <%= hidden_field_tag :origin, "edit" %>
-
-            <div class="field">
-                <%= form.label :hackatime_project, "Hackatime project" %>
-                <%= form.select :hackatime_project,
-                    options_for_select(@hackatime_projects.map { |project| ["#{project['name']} (#{format("%02d:%02d:%02d", project['seconds'].to_i / 3600, (project['seconds'].to_i / 60) % 60, project['seconds'].to_i % 60)})", project['name']] }, @design.hackatime_project),
-                    { prompt: "Select a Hackatime project" },
-                    class: "field-input" %>
-                <p class="muted">Selected Hackatime project time will be added to this design.</p>
-            </div>
-
-            <div class="field file-field">
-                <%= form.label :image, "Current Image" %>
-                <%= form.file_field :image %>
-            </div>
-
-            <div class="field">
-                <label>
-                    <%= form.check_box :remove_background %>
-                    Remove background from uploaded image
-                </label>
-            </div>
-
-            <div class="actions">
-                <%= form.submit "Update Design", class: "button button-primary" %>
-                <%= link_to "Back", designs_path, class: "button button-secondary" %>
-            </div>
-        <% end %>
+        <%= render "form" %>
     </section>
 </div>

@@ -1,164 +1,172 @@
 <style>
-  .design-form {
-    max-width: 680px;
-    margin: 0 auto;
-    padding: 1.5rem;
-    background: #ffffff;
-    border-radius: 22px;
-    box-shadow: 0 22px 60px rgba(15, 30, 60, 0.08);
-  }
-
-  .design-form h1 {
-    margin-bottom: 1.2rem;
-    font-size: clamp(1.85rem, 2vw, 2.2rem);
-  }
-
-  .design-form .field {
-    display: grid;
-    gap: 0.5rem;
-    margin-bottom: 1.15rem;
-  }
-
-  .design-form label {
-    font-weight: 600;
-    color: #12192d;
-  }
-
-  .design-form input[type="text"],
-  .design-form textarea,
-  .design-form select {
-    width: 100%;
-    padding: 0.95rem 1rem;
-    border: 1px solid #d8dee9;
-    border-radius: 14px;
-    background: #f7f9ff;
-    color: #152039;
-    font: inherit;
-  }
-
-  .design-form textarea {
-    min-height: 11rem;
-    resize: vertical;
-  }
-
-  .design-form .actions {
-    margin-top: 1rem;
-  }
-
-  .design-form input[type="submit"] {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.95rem 1.5rem;
-    border: none;
-    border-radius: 999px;
-    background: #3f71f3;
-    color: #ffffff;
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform 0.16s ease, background 0.16s ease;
-  }
-
-  .design-form input[type="submit"]:hover {
-    background: #315ccd;
-    transform: translateY(-1px);
-  }
-
-  .design-form .muted {
-    color: #6f7f9a;
-    margin-top: 0.35rem;
-    font-size: 0.95rem;
-  }
-
-  .field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    width: 95%;
-  }
-
-  h1 {
-    font-family: Workbench, sans-serif;
-    color: #1f2f45;
-    font-weight: 400;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .design-form {
-      background: #1e293b;
-      box-shadow: 0 22px 60px rgba(15, 30, 60, 0.12);
+    .design-new-page {
+        --ink: #10223a;
+        --muted: #5b6980;
+        --surface: rgba(255, 255, 255, 0.9);
+        --line: #d4deea;
+        --line-strong: #9db0c7;
+        --accent: #ef5a3c;
+        --accent-deep: #c63f25;
+        --accent-soft: rgba(239, 90, 60, 0.14);
+        --focus: #1f63d8;
+        position: relative;
+        isolation: isolate;
+        min-height: calc(100vh - 2rem);
+        padding: clamp(1rem, 2.4vw, 2.75rem);
+        color-scheme: light;
+        background:
+            radial-gradient(72rem 30rem at -12% -10%, rgba(239, 90, 60, 0.2), transparent 62%),
+            radial-gradient(55rem 24rem at 108% 0%, rgba(36, 107, 216, 0.19), transparent 60%),
+            linear-gradient(150deg, #fffdf9 0%, #f4f9ff 48%, #fff5ec 100%);
+        font-family: "Avenir Next", "Avenir", "Segoe UI", "Helvetica Neue", sans-serif;
+        color: var(--ink);
     }
 
-    .design-form label {
-      color: #f8f9fa;
+    .design-new-page::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        opacity: 0.45;
+        background-image:
+            linear-gradient(rgba(16, 34, 58, 0.08) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(16, 34, 58, 0.08) 1px, transparent 1px);
+        background-size: 48px 48px;
+        mask-image: radial-gradient(circle at center, black 28%, transparent 90%);
     }
 
-    .design-form input[type="text"],
-    .design-form textarea,
-    .design-form select {
-      background: #2d3748;
-      border-color: #4a5568;
-      color: #e2e8f0;
+    .design-new-page .design-new-card {
+        width: min(760px, 100%);
+        margin-inline: auto;
+        padding: clamp(1.35rem, 3vw, 2.6rem);
+        border-radius: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.85);
+        background: var(--surface);
+        box-shadow: 0 30px 70px rgba(15, 29, 52, 0.16);
+        backdrop-filter: blur(7px);
+        animation: card-load 680ms cubic-bezier(0.21, 0.86, 0.27, 1);
     }
 
-    .design-form input[type="submit"] {
-      background: #3f71f3;
+    .design-new-page .design-new-kicker {
+        margin: 0;
+        font-size: 0.75rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        font-weight: 800;
+        color: #315f94;
+        opacity: 0;
+        animation: rise-in 420ms ease forwards;
     }
 
-    .design-form input[type="submit"]:hover {
-      background: #315ccd;
+    .design-new-page h1 {
+        margin: 0.6rem 0 0;
+        font-size: clamp(2rem, 4vw, 2.8rem);
+        line-height: 1.1;
+        letter-spacing: -0.035em;
+        color: #10223a;
+        opacity: 0;
+        animation: rise-in 460ms 80ms ease forwards;
     }
 
-    .design-form .muted {
-      color: #a0aec0;
+    .design-new-page .design-new-intro {
+        margin: 0.9rem 0 1.9rem;
+        max-width: 54ch;
+        font-size: 1rem;
+        line-height: 1.5;
+        color: var(--muted);
+        opacity: 0;
+        animation: rise-in 460ms 160ms ease forwards;
     }
 
-    h1 {
-      color: #fff;
+    .design-new-page .design-form > * {
+        opacity: 0;
+        transform: translateY(10px);
+        animation: rise-in 520ms ease forwards;
     }
-  }
+
+    .design-new-page .design-form > *:nth-child(1) { animation-delay: 140ms; }
+    .design-new-page .design-form > *:nth-child(2) { animation-delay: 210ms; }
+    .design-new-page .design-form > *:nth-child(3) { animation-delay: 280ms; }
+    .design-new-page .design-form > *:nth-child(4) { animation-delay: 350ms; }
+    .design-new-page .design-form > *:nth-child(5) { animation-delay: 420ms; }
+    .design-new-page .design-form > *:nth-child(6) { animation-delay: 490ms; }
+    .design-new-page .design-form > *:nth-child(7) { animation-delay: 560ms; }
+    .design-new-page .design-form > *:nth-child(8) { animation-delay: 630ms; }
+
+    @keyframes card-load {
+        from {
+            opacity: 0;
+            transform: translateY(16px) scale(0.985);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    @keyframes rise-in {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 640px) {
+        .design-new-page {
+            min-height: auto;
+            padding: 0.8rem;
+        }
+        .design-new-page .design-new-card {
+            border-radius: 22px;
+            padding: 1.1rem;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .design-new-page * {
+            animation: none !important;
+            transition: none !important;
+        }
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .design-new-page {
+            --ink: #e8f0fb;
+            --muted: #adc0d9;
+            --surface: rgba(7, 18, 34, 0.86);
+            --line: #2f425a;
+            --line-strong: #5d7593;
+            --accent: #ff7b56;
+            --accent-deep: #eb5f36;
+            --accent-soft: rgba(255, 123, 86, 0.18);
+            --focus: #62a2ff;
+            color-scheme: dark;
+            background:
+                radial-gradient(72rem 30rem at -12% -10%, rgba(255, 121, 73, 0.24), transparent 62%),
+                radial-gradient(55rem 24rem at 108% 0%, rgba(77, 156, 255, 0.2), transparent 60%),
+                linear-gradient(150deg, #071120 0%, #0b1f36 48%, #171323 100%);
+        }
+
+        .design-new-page h1 {
+            color: #e8f0fb;
+        }
+
+        .design-new-page::before {
+            background-image:
+                linear-gradient(rgba(200, 223, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(200, 223, 255, 0.1) 1px, transparent 1px);
+        }
+
+        .design-new-page .design-new-kicker {
+            color: #88b8ff;
+        }
+    }
 </style>
 
-<div class="design-form" style="margin-top: 2rem;">
-    <h1>New Design</h1>
-    <%= form_with model: @design, local: true, html: { multipart: true } do |f| %>
-        <div class="field">
-            <%= f.label :name %>
-            <%= f.text_field :name %>
-        </div>
-
-        <div class="field">
-            <%= f.label :description %>
-            <%= f.text_area :description %>
-        </div>
-
-        <div class="field">
-            <%= f.label :image, "Optional image" %>
-            <%= f.file_field :image %>
-        </div>
-
-        <div class="field">
-            <label>
-                <%= f.check_box :remove_background %>
-                Remove background from uploaded image
-            </label>
-        </div>
-
-        <% if @hackatime_projects.present? %>
-            <div class="field">
-              <%= f.label :hackatime_project, "Hackatime project" %>
-              <%= f.select :hackatime_project,
-                  options_for_select(@hackatime_projects.map { |project| ["#{project['name']} (#{format("%02d:%02d:%02d", project['seconds'].to_i / 3600, (project['seconds'].to_i / 60) % 60, project['seconds'].to_i % 60)})", project['name']] }, @design.hackatime_project),
-                  { prompt: "Select a Hackatime project" },
-                  class: "field-input" %>
-              <p class="muted">Selected Hackatime project time will be added to this design.</p>
-            </div>
-        <% elsif current_user&.slack_id.present? && HackatimeService.available? %>
-            <p class="muted">No Hackatime projects were found for your account.</p>
-        <% end %>
-
-        <div class="actions">
-            <%= f.submit "Create Design" %>
-        </div>
-    <% end %>
+<div class="design-new-page">
+    <section class="design-new-card">
+        <h1>New Design</h1>
+        <%= render "form" %>
+    </section>
 </div>
