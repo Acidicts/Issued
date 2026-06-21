@@ -2,7 +2,7 @@ class DesignsController < ApplicationController
   layout "application"
   before_action :set_nav
   before_action :ensure_signed_in
-  before_action :find_design, only: [ :show, :edit, :update ]
+  before_action :find_design, only: [ :show, :edit, :update, :image ]
   before_action :load_hackatime_projects, only: [ :new, :edit ]
 
   def index
@@ -10,6 +10,13 @@ class DesignsController < ApplicationController
   end
 
   def show
+  end
+
+  def image
+    @image = @design.images.find(params[:image_id])
+    render "designs/image"
+  rescue
+    render "designs/image"
   end
 
   def new

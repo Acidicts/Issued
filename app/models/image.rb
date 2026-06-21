@@ -42,6 +42,6 @@ class Image < ApplicationRecord
   after_create :set_from_time
 
   def set_from_time
-    self.from_time = Time.now
+    self.from_time = Time.current
   end
 end

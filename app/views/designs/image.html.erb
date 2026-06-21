@@ -1,0 +1,165 @@
+<style>
+  .image-viewer {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+
+  .image-viewer-nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .image-viewer-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 9999px;
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .image-viewer-back:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+  }
+
+  .image-viewer-back svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .image-viewer-card {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 20px 45px rgba(15, 29, 52, 0.08);
+    overflow: hidden;
+  }
+
+  .image-viewer-img {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: #f8fafc;
+    min-height: 400px;
+  }
+
+  .image-viewer-img img {
+    max-width: 100%;
+    max-height: 75vh;
+    object-fit: contain;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(15, 29, 52, 0.1);
+  }
+
+  .image-viewer-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  .image-viewer-meta h1 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1e293b;
+    letter-spacing: -0.01em;
+  }
+
+  .image-viewer-meta time {
+    font-size: 0.85rem;
+    color: #64748b;
+  }
+
+  .image-viewer-not-found {
+    text-align: center;
+    padding: 6rem 2rem;
+    color: #64748b;
+    font-size: 1.1rem;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .image-viewer-back {
+      background: #1e293b;
+      color: #94a3b8;
+    }
+
+    .image-viewer-back:hover {
+      background: #334155;
+      color: #e2e8f0;
+    }
+
+    .image-viewer-card {
+      background: #1f2937;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.3);
+    }
+
+    .image-viewer-img {
+      background: #111827;
+    }
+
+    .image-viewer-img img {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    }
+
+    .image-viewer-meta {
+      border-color: #374151;
+    }
+
+    .image-viewer-meta h1 {
+      color: #e2e8f0;
+    }
+
+    .image-viewer-meta time {
+      color: #94a3b8;
+    }
+  }
+</style>
+
+<div class="image-viewer">
+  <div class="image-viewer-nav">
+    <% if @image&.image_file&.attached? %>
+        <%= link_to design_path(@image.design), class: "image-viewer-back" do %>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z" clip-rule="evenodd" /></svg>
+            Back to design
+        <% end %>
+    <% else %>
+        <%= link_to designs_path(), class: "image-viewer-back" do %>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z" clip-rule="evenodd" /></svg>
+            Back to designs
+        <% end %>
+    <% end %>
+  </div>
+
+  <% if @image&.image_file&.attached? %>
+    <div class="image-viewer-card">
+      <div class="image-viewer-img">
+        <%= image_tag @image.image_file %>
+      </div>
+      <div class="image-viewer-meta">
+        <h1><%= @image.design.name %></h1>
+        <time datetime="<%= @image.created_at.iso8601 %>"><%= @image.created_at.strftime("%b %d, %Y at UTC %I:%M %p") %></time>
+      </div>
+    </div>
+  <% else %>
+    <div class="image-viewer-card">
+      <div class="image-viewer-img">
+        <p>Image not found.</p>
+      </div>
+      <div class="image-viewer-meta">
+        <h1>Image not found</h1>
+        <time datetime="<%= Time.now.iso8601 %>"><%= Time.now.strftime("%b %d, %Y at UTC %I:%M %p") %></time>
+      </div>
+    </div>
+  <% end %>
+</div>

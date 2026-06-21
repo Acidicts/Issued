@@ -1,0 +1,7 @@
+
+<a href="<%= image_design_path(image.design, image_id: image.id) %>" class="image-history-preview" target="_blank">
+  <%= image_tag image.image_file %>
+  <div class="image-history-overlay">
+    <time datetime="<%= image.created_at.iso8601 %>"><%= image.created_at.strftime("%b %d, %Y at %I:%M %p") %></time>
+  </div>
+</a>
