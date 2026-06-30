@@ -1,11 +1,11 @@
 <style>
   :root {
-    --panel: #ffffff;
+    --panel: #F2EAD3;
     --line: #dce7f3;
     --muted: #4f637f;
     --accent: #ec6724;
-    --background: #f4f7fb;
-    --text: #1f2f45;
+    --background: #E4D9BC;
+    --text: #4B4133;
   }
 
   #container {
@@ -17,7 +17,7 @@
   }
 
   #your-designs-heading {
-    font-family: Workbench, sans-serif;
+    font-family: 'Space Mono', 'Courier New', monospace;
     font-size: clamp(2.2rem, 5vw, 3rem);
     color: var(--text);
     margin-bottom: 1.5rem;
@@ -38,18 +38,16 @@
     gap: 0.95rem;
     align-items: start;
     background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 16px;
+    border: 1.5px dashed var(--line);
+    border-radius: 4px;
     padding: 0.95rem;
-    box-shadow: 0 12px 20px rgba(15, 29, 52, 0.1);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: none;
     min-height: 170px;
   }
 
   .design-item:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 16px 26px rgba(15, 29, 52, 0.18);
-    border-color: #aecbf8;
+    box-shadow: 0 6px 0 -3px rgba(36, 29, 22, 0.15);
+    border-color: var(--line);
   }
 
   .design-item .design-preview {
@@ -58,10 +56,10 @@
     width: 150px;
     height: 150px;
     padding: 0;
-    background: #fff;
+      background: #F2EAD3;
     border: 1px solid var(--line);
-    border-radius: 12px;
-    box-shadow: inset 0 0 0 1px #ffffff, 0 3px 8px rgba(15, 29, 52, 0.08);
+    border-radius: 3px;
+    box-shadow: none;
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -144,9 +142,9 @@
 		  flex-direction: column;
       margin-top: 0.35rem;
       padding: 0.45rem 0.6rem;
-      background: #f9fbff;
-      border: 1px solid #e3eefe;
-      border-radius: 10px;
+      background: #F2EAD3;
+      border: 1.5px dashed #B7A878;
+      border-radius: 3px;
       display: inline-flex;
       gap: 0.65rem;
       font-size: 0.85rem;
@@ -168,7 +166,7 @@
     .design-actions .edit-link,
     .design-actions .create-link {
       padding: 0.42rem 0.72rem;
-      border-radius: 0.45rem;
+      border-radius: 3px;
       font-size: 0.84rem;
       letter-spacing: 0.02em;
     }
@@ -179,16 +177,14 @@
       font-weight: 600;
       color: #ffffff;
       background: var(--accent);
-      border-radius: 0.5rem;
+      border-radius: 3px;
       padding: 0.46rem 0.8rem;
       text-decoration: none;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      transition: background 0.15s ease;
     }
 
     .edit-link:hover,
     .create-link:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 16px rgba(236, 103, 36, 0.3);
       background: #d75a00;
     }
 
@@ -235,7 +231,6 @@
       .design-item {
         background: #0f1b2f;
         border-color: var(--line);
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
       }
 
       .design-item h2 {
@@ -245,7 +240,6 @@
       .design-item .design-preview {
         background: #1a2a42;
         border-color: #2a3f60;
-        box-shadow: inset 0 0 0 1px #0f1b2f, 0 3px 8px rgba(0, 0, 0, 0.3);
       }
 
       .design-meta {

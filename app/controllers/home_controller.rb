@@ -1,8 +1,8 @@
 class HomeController < ApplicationController
   before_action :set_nav
+  layout "home"
 
   def index
-    @nav = nil
   end
 
   def about

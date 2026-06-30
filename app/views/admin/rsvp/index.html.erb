@@ -1,6 +1,6 @@
 <style>
     h1 {
-        font-family: Workbench, sans-serif;
+        font-family: 'Space Mono', 'Courier New', monospace;
         font-size: 2.8rem;
         margin-bottom: 1.5rem;
     }
@@ -10,25 +10,25 @@
         width: 90%;
         max-width: 1200px;
         margin: 0 auto;
-        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
     }
 
     .rsvp-table th,
     .rsvp-table td {
-        border: 1px solid #e2e8f0;
+        border: 1px dashed #B7A878;
         padding: 1rem 1.1rem;
+        vertical-align: middle;
     }
 
     .rsvp-table th {
-        background-color: #f8fafc;
+        background-color: #F2EAD3;
         text-align: left;
-        font-family: Workbench, sans-serif;
+        font-family: 'Space Mono', 'Courier New', monospace;
         font-size: 1.1rem;
         letter-spacing: 0.02em;
     }
 
     .rsvp-table tbody tr:hover {
-        background-color: #f1f5f9;
+        background-color: #E4D9BC;
     }
 
     .page-header {
@@ -43,7 +43,7 @@
     .page-header h1 {
         margin: 0;
         font-size: 2.8rem;
-        font-family: Workbench, sans-serif;
+        font-family: 'Space Mono', 'Courier New', monospace;
     }
 
     .page-meta {
@@ -56,10 +56,9 @@
     }
 
     .import-card {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 0.75rem;
-        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+        background: #F2EAD3;
+        border: 1.5px dashed #241D16;
+        border-radius: 4px;
         padding: 1rem;
         margin: 0 auto 1.25rem;
         width: 90%;
@@ -82,7 +81,7 @@
         border: none;
         background: #0f766e;
         color: #ffffff;
-        border-radius: 0.55rem;
+        border-radius: 3px;
         padding: 0.55rem 0.95rem;
         font-weight: 600;
         cursor: pointer;
@@ -99,16 +98,15 @@
         align-items: center;
         justify-content: center;
         padding: 0.55rem 0.95rem;
-        border-radius: 0.55rem;
+        border-radius: 3px;
         background: #1f7a8c;
         color: white;
         text-decoration: none;
-        transition: transform 0.2s ease, background 0.2s ease;
+        transition: background 0.2s ease;
     }
 
     .rsvp-link:hover {
         background: #175f70;
-        transform: translateY(-1px);
     }
 
     .action-buttons {
@@ -128,26 +126,18 @@
         justify-content: center;
         padding: 0.55rem 0.9rem;
         text-decoration: none;
-        border-radius: 0.55rem;
+        border-radius: 3px;
         font-weight: 600;
         color: white;
         background-color: #ef4444;
         border: none;
         cursor: pointer;
-        transition: background-color 0.2s ease, transform 0.2s ease;
+        transition: background-color 0.2s ease;
     }
 
     .action-buttons a:hover,
     .action-buttons button:hover {
-        background-color: #dc2626;
-        transform: translateY(-1px);
-    }
-
-    .rsvp-table th,
-    .rsvp-table td {
-        border: 1px solid #e2e8f0;
-        padding: 1rem 1.1rem;
-        vertical-align: middle;
+        background-color: #D6402C;
     }
 
     @media (max-width: 860px) {
@@ -167,17 +157,13 @@
 
     @media (prefers-color-scheme: dark) {
         .rsvp-table th {
-            background-color: #1f2937;
+            background-color: #241D16;
             color: #f8fafc;
         }
 
         .rsvp-table td {
-            background-color: #111827;
-            color: #d1d5db;
-        }
-
-        .rsvp-table {
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+            background-color: #241D16;
+            color: #D9CBA6;
         }
     }
 </style>

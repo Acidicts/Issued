@@ -1,0 +1,117 @@
+<%#
+  app/views/dashboard/index.html.erb
+
+  Expects, normally set in DashboardController#index:
+    @maker        - { id:, handle: }
+    @threads      - Integer balance
+    @stats        - { approved:, pending:, draft:, rejected: }
+    @designs      - [{ name:, language:, category:, status:, swatch:, note: }, ...]
+    @notifications- [{ body:, time:, read: }, ...]
+    @shop_items   - [{ name:, cost: }, ...]
+
+  Use app/views/layouts/application.html.erb.
+%>
+
+<%
+    unread_count = @notifications.count { |n| !n[:read] }
+%>
+
+<div class="wrap">
+
+  <%# STAT STAMPS %>
+  <section class="stats">
+    <div class="stamp approved" data-mark="<%= status_mark(:approved) %>">
+      <span class="count"><%= @stats[:approved] %></span>
+      <span class="what">Approved</span>
+    </div>
+    <div class="stamp pending" data-mark="<%= status_mark(:pending) %>">
+      <span class="count"><%= @stats[:pending] %></span>
+      <span class="what">Pending review</span>
+    </div>
+    <div class="stamp draft" data-mark="<%= status_mark(:draft) %>">
+      <span class="count"><%= @stats[:draft] %></span>
+      <span class="what">Drafts</span>
+    </div>
+    <div class="stamp rejected" data-mark="<%= status_mark(:rejected) %>">
+      <span class="count"><%= @stats[:rejected] %></span>
+      <span class="what">Rejected</span>
+    </div>
+  </section>
+
+  <div class="main">
+
+    <%# DESIGNS %>
+    <section class="panel" data-controller="design-filter">
+      <h2>Your designs</h2>
+      <p class="sub">Every design you've sewn together from code, and where it stands.</p>
+
+      <div class="filters">
+        <button class="chip active" data-design-filter-target="chip"
+                data-action="click->design-filter#filter" data-design-filter-status-param="all">
+          All · <%= @designs.size %>
+        </button>
+        <% %i[approved pending draft rejected].each do |status| %>
+          <button class="chip" data-design-filter-target="chip"
+                  data-action="click->design-filter#filter" data-design-filter-status-param="<%= status %>">
+            <%= status_label(status).capitalize %> · <%= @stats[status] %>
+          </button>
+        <% end %>
+      </div>
+
+      <div class="designs">
+        <% @designs.each do |design| %>
+          <article class="design-card" data-design-filter-target="card" data-status="<%= design[:status] %>">
+            <span class="stamp-badge <%= design[:status] %>"><%= status_label(design[:status]) %></span>
+            <div class="swatch" style="background:<%= design[:swatch] %>;">
+              <%= design[:name].parameterize(separator: "_") %><%= design[:language] == "SVG" ? ".svg" : "" %>
+            </div>
+            <h3><%= design[:name] %></h3>
+            <div class="meta">
+              <span><%= design[:language] %></span>
+              <span><%= design[:category] %></span>
+            </div>
+            <% if design[:status] == :rejected && design[:note] %>
+              <p class="reject-note"><%= design[:note] %></p>
+            <% elsif design[:status] == :approved && design[:note] %>
+              <p class="earn-note"><%= design[:note] %></p>
+            <% end %>
+          </article>
+        <% end %>
+      </div>
+    </section>
+
+    <%# SIDE COLUMN %>
+    <aside>
+      <section class="panel" data-controller="notifications">
+        <div class="bell-row">
+          <h2 style="margin-bottom:14px;">Notifications</h2>
+          <button class="mark-read" data-action="click->notifications#markAllRead">mark all read</button>
+        </div>
+        <div class="receipt">
+          <% @notifications.each do |notification| %>
+            <div class="receipt-item <%= "read" if notification[:read] %>" data-notifications-target="item">
+              <span class="receipt-dot"></span>
+              <div class="receipt-body">
+                <p><%= raw notification[:body] %></p>
+                <time><%= notification[:time] %></time>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </section>
+
+      <section class="panel shop-teaser">
+        <h2>Spend your threads</h2>
+        <p class="sub">Apparel printed from approved designs — yours or anyone's.</p>
+        <% @shop_items.each do |item| %>
+          <div class="shop-item">
+            <span class="name"><%= item[:name] %></span>
+            <span class="cost"><%= format_threads(item[:cost]) %> threads</span>
+          </div>
+        <% end %>
+        <%= link_to "Open the shop", shop_path, class: "cta" %>
+      </section>
+    </aside>
+
+  </div>
+</div>

@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
   # Changes to the importmap will invalidate the etag for HTML responses
   stale_when_importmap_changes
 
-  helper_method :current_user, :signed_in?
+  helper_method :current_user, :signed_in?, :unread_notification_count, :current_maker
 
   layout "application"
 
@@ -13,6 +13,19 @@ class ApplicationController < ActionController::Base
   before_action :set_nav
   before_action :current_url
   before_action :current_path
+  before_action :current_threads
+
+  BARCODE_WIDTHS = [
+    2, 1, 1, # Start B
+    1, 4, 2, # I
+    1, 4, 2, # S
+    1, 4, 2, # S
+    3, 2, 1, # U
+    2, 3, 1, # E
+    2, 1, 3, # D
+    2, 3, 2, # Checksum (Value 30)
+    2, 3, 1, 2 # Stop Pattern
+  ].freeze
 
   def current_user
     return unless session[:user_id]
@@ -29,6 +42,23 @@ class ApplicationController < ActionController::Base
 
   def signed_in?
     current_user.present?
+  end
+
+  def current_maker
+    return unless signed_in?
+    {
+      id: current_user.id.to_s.rjust(4, "0"),
+      name: current_user.name
+    }
+  end
+
+  def current_threads
+    return unless signed_in?
+    @threads = current_user.threads || 0
+  end
+
+  def unread_notification_count
+    0
   end
 
   private

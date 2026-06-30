@@ -1,51 +1,28 @@
 <style>
     .design-new-page {
-        --ink: #10223a;
+        --ink: #241D16;
+        --ink-soft: #4B4133;
         --muted: #5b6980;
-        --surface: rgba(255, 255, 255, 0.9);
-        --line: #d4deea;
-        --line-strong: #9db0c7;
-        --accent: #ef5a3c;
-        --accent-deep: #c63f25;
-        --accent-soft: rgba(239, 90, 60, 0.14);
-        --focus: #1f63d8;
-        position: relative;
-        isolation: isolate;
+        --surface: #F2EAD3;
+        --line: #B7A878;
+        --stamp-red: #D6402C;
+        --thread-teal: #1F6F78;
         min-height: calc(100vh - 2rem);
         padding: clamp(1rem, 2.4vw, 2.75rem);
-        color-scheme: light;
         background:
-            radial-gradient(72rem 30rem at -12% -10%, rgba(239, 90, 60, 0.2), transparent 62%),
-            radial-gradient(55rem 24rem at 108% 0%, rgba(36, 107, 216, 0.19), transparent 60%),
-            linear-gradient(150deg, #fffdf9 0%, #f4f9ff 48%, #fff5ec 100%);
-        font-family: "Avenir Next", "Avenir", "Segoe UI", "Helvetica Neue", sans-serif;
+            radial-gradient(circle at 1px 1px, rgba(36,29,22,0.05) 1px, transparent 1px) 0 0/14px 14px,
+            #E4D9BC;
+        font-family: 'Space Mono', 'Courier New', monospace;
         color: var(--ink);
-    }
-
-    .design-new-page::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        z-index: -1;
-        pointer-events: none;
-        opacity: 0.45;
-        background-image:
-            linear-gradient(rgba(16, 34, 58, 0.08) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(16, 34, 58, 0.08) 1px, transparent 1px);
-        background-size: 48px 48px;
-        mask-image: radial-gradient(circle at center, black 28%, transparent 90%);
     }
 
     .design-new-page .design-new-card {
         width: min(760px, 100%);
         margin-inline: auto;
         padding: clamp(1.35rem, 3vw, 2.6rem);
-        border-radius: 30px;
-        border: 1px solid rgba(255, 255, 255, 0.85);
+        border-radius: 4px;
+        border: 1.5px dashed var(--ink);
         background: var(--surface);
-        box-shadow: 0 30px 70px rgba(15, 29, 52, 0.16);
-        backdrop-filter: blur(7px);
-        animation: card-load 680ms cubic-bezier(0.21, 0.86, 0.27, 1);
     }
 
     .design-new-page .design-new-kicker {
@@ -54,9 +31,7 @@
         letter-spacing: 0.18em;
         text-transform: uppercase;
         font-weight: 800;
-        color: #315f94;
-        opacity: 0;
-        animation: rise-in 420ms ease forwards;
+        color: var(--ink-soft);
     }
 
     .design-new-page h1 {
@@ -64,9 +39,7 @@
         font-size: clamp(2rem, 4vw, 2.8rem);
         line-height: 1.1;
         letter-spacing: -0.035em;
-        color: #10223a;
-        opacity: 0;
-        animation: rise-in 460ms 80ms ease forwards;
+        color: var(--ink);
     }
 
     .design-new-page .design-new-intro {
@@ -74,42 +47,7 @@
         max-width: 54ch;
         font-size: 1rem;
         line-height: 1.5;
-        color: var(--muted);
-        opacity: 0;
-        animation: rise-in 460ms 160ms ease forwards;
-    }
-
-    .design-new-page .design-form > * {
-        opacity: 0;
-        transform: translateY(10px);
-        animation: rise-in 520ms ease forwards;
-    }
-
-    .design-new-page .design-form > *:nth-child(1) { animation-delay: 140ms; }
-    .design-new-page .design-form > *:nth-child(2) { animation-delay: 210ms; }
-    .design-new-page .design-form > *:nth-child(3) { animation-delay: 280ms; }
-    .design-new-page .design-form > *:nth-child(4) { animation-delay: 350ms; }
-    .design-new-page .design-form > *:nth-child(5) { animation-delay: 420ms; }
-    .design-new-page .design-form > *:nth-child(6) { animation-delay: 490ms; }
-    .design-new-page .design-form > *:nth-child(7) { animation-delay: 560ms; }
-    .design-new-page .design-form > *:nth-child(8) { animation-delay: 630ms; }
-
-    @keyframes card-load {
-        from {
-            opacity: 0;
-            transform: translateY(16px) scale(0.985);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-    }
-
-    @keyframes rise-in {
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        color: var(--ink-soft);
     }
 
     @media (max-width: 640px) {
@@ -118,48 +56,8 @@
             padding: 0.8rem;
         }
         .design-new-page .design-new-card {
-            border-radius: 22px;
+            border-radius: 4px;
             padding: 1.1rem;
-        }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        .design-new-page * {
-            animation: none !important;
-            transition: none !important;
-        }
-    }
-
-    @media (prefers-color-scheme: dark) {
-        .design-new-page {
-            --ink: #e8f0fb;
-            --muted: #adc0d9;
-            --surface: rgba(7, 18, 34, 0.86);
-            --line: #2f425a;
-            --line-strong: #5d7593;
-            --accent: #ff7b56;
-            --accent-deep: #eb5f36;
-            --accent-soft: rgba(255, 123, 86, 0.18);
-            --focus: #62a2ff;
-            color-scheme: dark;
-            background:
-                radial-gradient(72rem 30rem at -12% -10%, rgba(255, 121, 73, 0.24), transparent 62%),
-                radial-gradient(55rem 24rem at 108% 0%, rgba(77, 156, 255, 0.2), transparent 60%),
-                linear-gradient(150deg, #071120 0%, #0b1f36 48%, #171323 100%);
-        }
-
-        .design-new-page h1 {
-            color: #e8f0fb;
-        }
-
-        .design-new-page::before {
-            background-image:
-                linear-gradient(rgba(200, 223, 255, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(200, 223, 255, 0.1) 1px, transparent 1px);
-        }
-
-        .design-new-page .design-new-kicker {
-            color: #88b8ff;
         }
     }
 </style>

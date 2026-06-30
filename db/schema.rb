@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_15_213442) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_30_212614) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -80,6 +80,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_15_213442) do
     t.index ["design_id"], name: "index_images_on_design_id"
   end
 
+  create_table "notifications", force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.integer "priority"
+    t.boolean "read"
+    t.string "time"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_notifications_on_user_id"
+  end
+
   create_table "orders", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "design_id", null: false
@@ -109,11 +120,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_15_213442) do
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "credits"
+    t.string "email"
     t.text "hackclub_access_token"
     t.text "hackclub_refresh_token"
     t.string "name"
     t.integer "role"
     t.string "slack_id"
+    t.integer "threads"
     t.datetime "updated_at", null: false
     t.integer "veri_level"
     t.boolean "ysws_eligible", default: false, null: false
@@ -125,6 +138,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_15_213442) do
   add_foreign_key "design_edit_sessions", "users"
   add_foreign_key "designs", "users"
   add_foreign_key "images", "designs"
+  add_foreign_key "notifications", "users"
   add_foreign_key "orders", "designs"
   add_foreign_key "orders", "products"
   add_foreign_key "orders", "users"

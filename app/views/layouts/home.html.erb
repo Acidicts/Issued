@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Issued</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+      * { box-sizing: border-box; }
+
+      body {
+        font-family: 'Space Mono', 'Courier New', monospace;
+        margin: 0;
+        padding: 0;
+        color: #241D16;
+        background: #E4D9BC;
+        transition: background 0.3s ease, color 0.3s ease;
+      }
+
+      body.has-nav {
+        padding-top: 4.5rem;
+      }
+
+      .home-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
+        background: #F2EAD3;
+        border-bottom: 1.5px dashed #B7A878;
+        padding: 0.65rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+
+      .home-nav .nav-left {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+      }
+
+      .home-nav .wordmark {
+        font-family: 'Archivo Black', 'Arial Black', sans-serif;
+        font-size: 18px;
+        text-decoration: none;
+        color: #241D16;
+      }
+
+      .home-nav .wordmark .dot { color: #D6402C; }
+
+      .home-nav .nav-links {
+        display: flex;
+        gap: 0.25rem;
+      }
+
+      .home-nav .nav-link {
+        font-family: 'Space Mono', 'Courier New', monospace;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: #4B4133;
+        text-decoration: none;
+        padding: 0.4rem 0.65rem;
+        border-radius: 2px;
+        transition: background 0.15s ease, color 0.15s ease;
+      }
+
+      .home-nav .nav-link:hover,
+      .home-nav .nav-link:focus-visible {
+        background: rgba(31, 111, 120, 0.12);
+        color: #1F6F78;
+      }
+
+      .home-nav .nav-link.active {
+        background: #241D16;
+        color: #F2EAD3;
+      }
+
+      .home-nav .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body { background: #1a1510; color: #e8dfd0; }
+        .home-nav { background: #241d16; border-bottom-color: #5a4f3e; }
+        .home-nav .wordmark { color: #e8dfd0; }
+        .home-nav .nav-link { color: #b8a890; }
+        .home-nav .nav-link:hover,
+        .home-nav .nav-link:focus-visible { background: rgba(42, 138, 150, 0.2); color: #2a8a96; }
+        .home-nav .nav-link.active { background: #1F6F78; color: #F2EAD3; }
+      }
+    </style>
+
+    <%= yield :head %>
+  </head>
+
+  <body class="<%= @nav.present? ? 'has-nav' : '' %>">
+    <% if @nav.present? %>
+      <header class="home-nav">
+        <div class="nav-left">
+          <%= link_to root_path, class: "wordmark" do %>
+            issued<span class="dot">.</span>
+          <% end %>
+          <nav class="nav-links">
+            <%= link_to "Home", root_path, class: "nav-link #{"active" if @nav == "home" && request.path == "/"}" %>
+            <%= link_to "About", about_path, class: "nav-link #{"active" if controller.action_name == "about"}" %>
+            <%= link_to "FAQ", faq_path, class: "nav-link #{"active" if controller.action_name == "faq"}" %>
+          </nav>
+        </div>
+        <div class="nav-right">
+          <% if signed_in? %>
+            <%= link_to "Dashboard", dashboard_path, class: "nav-link" %>
+          <% else %>
+            <%= link_to "Login", login_path(redirect: request.fullpath), class: "nav-link" %>
+          <% end %>
+        </div>
+      </header>
+    <% end %>
+
+    <%= yield %>
+  </body>
+</html>

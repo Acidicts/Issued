@@ -1,10 +1,12 @@
 <style>
   body {
-    font-family: workbench, sans-serif;
+    font-family: 'Space Mono', 'Courier New', monospace;
     margin: 0;
     padding: 0;
-    background: #f9fafb;
-    color: #1f2937;
+    background:
+      radial-gradient(circle at 1px 1px, rgba(36, 29, 22, 0.05) 1px, transparent 1px) 0 0/14px 14px,
+      #E4D9BC;
+    color: #241D16;
   }
 
   #container {
@@ -19,12 +21,12 @@
   }
 
   #title {
+    font-family: 'Archivo Black', 'Arial Black', sans-serif;
     font-size: clamp(5rem, 10vw, 12rem);
     font-weight: 700;
     line-height: 1;
     letter-spacing: -0.02em;
     margin: 0;
-    text-shadow: 0 0 1rem rgba(0, 0, 0, 0.75);
   }
 
   #descriptors {
@@ -48,28 +50,26 @@
   }
 
   .btn {
-    border: 1px solid rgb(85, 85, 85);
-    background: rgba(255, 255, 255, 0.1);
-    color: black;
+    border: 1.5px dashed #241D16;
+    background: #F2EAD3;
+    color: #241D16;
     font-size: 1rem;
     font-weight: 600;
-    border-radius: 0.75rem;
+    border-radius: 4px;
     padding: 0.75rem 0.6rem;
     cursor: pointer;
     min-width: 6rem;
-    transition: transform 0.14s ease, background 0.14s ease, box-shadow 0.14s ease;
+    transition: background 0.14s ease;
     text-decoration: none;
     text-align: center;
   }
 
   .btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    background: #E4D9BC;
   }
 
   .btn:focus-visible {
-    outline: 3px solid #8adfff;
+    outline: 2px solid #1F6F78;
     outline-offset: 2px;
   }
 
@@ -96,23 +96,24 @@
 
   @media (prefers-color-scheme: dark) {
     body {
-      background: #0c0f1a;
-      color: #f3f4f6;
-    }
-
-    .title {
-      text-shadow: 0 0 1rem rgb(186, 186, 186);
+      background:
+        radial-gradient(circle at 1px 1px, rgba(232, 223, 208, 0.05) 1px, transparent 1px) 0 0/14px 14px,
+        #1a1510;
+      color: #e8dfd0;
     }
 
     .btn {
-      border-color: rgba(255, 255, 255, 0.30);
-      background: rgba(255, 255, 255, 0.1);
-      color: #f3f4f6;
+      border-color: #5a4f3e;
+      background: #241D16;
+      color: #e8dfd0;
     }
 
     .btn:hover {
-      background: rgba(255, 255, 255, 0.2);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+      background: #3d3528;
+    }
+
+    .btn:focus-visible {
+      outline-color: #2a8a96;
     }
   }
 </style>

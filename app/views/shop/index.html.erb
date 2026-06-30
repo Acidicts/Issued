@@ -1,0 +1,148 @@
+<style>
+  .shop-wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem;
+  }
+
+  .shop-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+  }
+
+  .shop-header h1 {
+    font-family: 'Space Mono', 'Courier New', monospace;
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    font-weight: 700;
+    color: #241D16;
+    margin: 0;
+  }
+
+  .shop-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+
+  .product-card {
+    background: #F2EAD3;
+    border: 1.5px dashed #B7A878;
+    border-radius: 4px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .product-card .product-image {
+    width: 100%;
+    aspect-ratio: 1;
+    background: #E4D9BC;
+    border: 1px solid #B7A878;
+    border-radius: 3px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .product-card .product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .product-card .product-image .placeholder {
+    font-size: 0.85rem;
+    color: #8A7D6B;
+  }
+
+  .product-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .product-info .product-name {
+    font-family: 'Space Mono', 'Courier New', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #241D16;
+    margin: 0;
+  }
+
+  .product-info .product-cost {
+    font-size: 0.9rem;
+    color: #4B4133;
+  }
+
+  .product-info .product-cost b {
+    color: #241D16;
+  }
+
+  .empty-shop {
+    text-align: center;
+    padding: 4rem 1rem;
+    color: #8A7D6B;
+  }
+
+  .empty-shop p {
+    margin: 0 0 0.5rem;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .shop-header h1 { color: #e8dfd0; }
+
+    .product-card {
+      background: #241d16;
+      border-color: #5a4f3e;
+    }
+
+    .product-card .product-image {
+      background: #1a1510;
+      border-color: #5a4f3e;
+    }
+
+    .product-card .product-image .placeholder { color: #8a7d6b; }
+
+    .product-info .product-name { color: #e8dfd0; }
+    .product-info .product-cost { color: #b8a890; }
+    .product-info .product-cost b { color: #e8dfd0; }
+
+    .empty-shop { color: #8a7d6b; }
+  }
+</style>
+
+<div class="shop-wrap">
+  <div class="shop-header">
+    <h1>Shop</h1>
+  </div>
+
+  <% if @products.any? %>
+    <div class="shop-grid">
+      <% @products.each do |product| %>
+        <div class="product-card">
+          <div class="product-image">
+            <% if product.image.attached? %>
+              <%= image_tag product.image, alt: product.type %>
+            <% else %>
+              <span class="placeholder">No image</span>
+            <% end %>
+          </div>
+          <div class="product-info">
+            <h2 class="product-name"><%= product.type %></h2>
+            <p class="product-cost"><b><%= number_to_currency(product.cost, unit: "") %></b> threads</p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="empty-shop">
+      <p>No products available yet.</p>
+    </div>
+  <% end %>
+</div>

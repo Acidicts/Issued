@@ -3,6 +3,7 @@
 # User model representing application users with authentication, verification, and role-based access.
 #
 # Schema:
+# - email: string (from Hack Club identity)
 # - id: integer (primary key)
 # - name: string (from Hack Club identity)
 # - slack_id: string (from Hack Club identity)
@@ -11,6 +12,7 @@
 # - veri_level: integer (verification level: 0=unknown, 1=needs_submission, 2=pending, 3=verified, 4=ineligible)
 # - hackclub_access_token: string (OAuth access token)
 # - hackclub_refresh_token: string (OAuth refresh token)
+# - threads: integer
 #
 # Relationships:
 # - has_many :designs (dependent: :destroy)
@@ -51,11 +53,14 @@ class User < ApplicationRecord
   has_many :designs, dependent: :destroy
   has_many :orders, dependent: :destroy
   has_many :rsvps, dependent: :destroy
+  has_many :notifications, dependent: :destroy
 
   validates :ysws_eligible, inclusion: { in: [ true, false ] }
 
   enum :role, { user: 0, admin: 1, superadmin: 2, reviewer: 3 }, prefix: :role, default: :user
   attribute :veri_level, :integer
+  attribute :email, :string
+  attribute :threads, :integer, default: 0
   enum :veri_level, { unknown: 0, needs_submission: 1, pending: 2, verified: 3, ineligible: 4 }, prefix: :veri_level, default: :unknown
 
   attribute :credits, default: 0, nil: false

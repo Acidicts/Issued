@@ -1,40 +1,62 @@
 class DashboardController < ApplicationController
-  layout "application"
-  before_action :set_nav
   before_action :require_login
 
+  STATUS_MAP = {
+    approved: :approved,
+    pending: :pending,
+    submitted: :pending,
+    unshipped: :draft,
+    rejected: :rejected
+  }.freeze
+
+  SWATCHES = %w[#1F6F78 #B97F19 #847A63 #9B2E22 #3D7A4D #D6402C #2563EB #7C3AED #047857 #B45309].freeze
+
   def index
+    @nav = "dashboard"
     @user = current_user
     @orders = @user ? @user.orders : []
-    @designs = current_user.designs
     @products = Rails.cache.fetch("products/all", expires_in: 5.minutes) { Product.all.to_a }
 
-    # Hackatime integration
-    if @user&.slack_id.present? && HackatimeService.available?
-      cache_key = "hackatime/projects/#{@user.slack_id}"
-      @hackatime_projects = Rails.cache.fetch(cache_key, expires_in: 2.minutes) do
-        HackatimeService.new(slack_id: @user.slack_id).get_all_projects
-      end
-    else
-      @hackatime_projects = []
+    designs = current_user.designs
+    notifications = current_user.notifications
+
+    @maker = {
+      id: @user.id.to_s.rjust(4, "0"),
+      name: @user.name
+    }
+
+    @designs = designs.each_with_index.map do |d, i|
+      view_status = STATUS_MAP[d.status.to_sym] || :draft
+      {
+        name: d.name,
+        language: "SVG",
+        category: "",
+        status: view_status,
+        swatch: SWATCHES[i % SWATCHES.size],
+        note: ""
+      }
     end
 
-    # Pipeline counts
-    orders = @user.orders.includes(:design, :product)
-    pipeline_key = "pipeline/#{@user.id}"
-    @pipeline = Rails.cache.fetch(pipeline_key, expires_in: 1.minute) do
-      [
-        orders.where(status: :pending).count,
-        orders.where(status: :processing).count,
-        orders.where(status: :production).count,
-        orders.where(status: :completed).count
-      ]
+    @notifications = notifications.each_with_index.map do |d, i|
+      {
+        body: d.body,
+        priority: d.priority,
+        time: d.time,
+        read: d.read
+      }
     end
-  end
 
-  private
+    @stats = {
+      approved: designs.count(&:approved?),
+      pending: designs.select { |d| d.pending? || d.submitted? }.count,
+      draft: designs.count(&:unshipped?),
+      rejected: designs.count(&:rejected?)
+    }
 
-  def set_nav
-    @nav = "dashboard"
+    @threads = @user.threads || 0
+
+    @shop_items = @products.map do |p|
+      { name: p.type, cost: p.cost.to_i }
+    end
   end
 end

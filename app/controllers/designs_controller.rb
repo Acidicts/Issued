@@ -73,7 +73,7 @@ class DesignsController < ApplicationController
   private
 
   def set_nav
-    @nav = "dashboard"
+    @nav = "designs"
   end
 
   def ensure_signed_in

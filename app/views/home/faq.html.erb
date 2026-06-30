@@ -1,9 +1,9 @@
 <style>
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'Space Mono', 'Courier New', monospace;
     margin: 0;
     padding: 1.25rem;
-    background: #ffffff;
+    background: #F2EAD3;
     color: #222222;
     min-height: 100vh;
     display: flex;
@@ -18,7 +18,7 @@
   }
 
   h1 {
-    font-family: "Workbench";
+    font-family: 'Archivo Black', 'Arial Black', sans-serif;
     font-size: 6rem;
     font-weight: 700;
     margin: 0 0 0.25rem 0;
@@ -50,11 +50,7 @@
     top: 0;
     width: 2px;
     height: 100%;
-    background: linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0.9),
-      rgba(176, 176, 176, 0.7)
-    );
+    background: #B7A878;
     transform: scaleY(0);
     transform-origin: top;
     transition: transform 0.45s ease;
@@ -88,11 +84,7 @@
     left: 0;
     width: 100%;
     height: 2px;
-    background: linear-gradient(
-      to right,
-      rgba(255, 255, 255, 0.95),
-      rgba(170, 170, 170, 0.55)
-    );
+    background: #B7A878;
     transform: translateX(0);
     opacity: 1;
     transition: transform 0.32s ease, opacity 0.32s ease;
@@ -165,16 +157,16 @@
   }
 
   #btn {
-    border: 1px solid rgb(85, 85, 85);
-    background: rgba(255, 255, 255, 0.1);
-    color: black;
+    border: 1.5px dashed #241D16;
+    background: #F2EAD3;
+    color: #241D16;
     font-size: 1rem;
     font-weight: 600;
-    border-radius: 0.75rem;
+    border-radius: 4px;
     padding: 0.75rem 0.6rem;
     cursor: pointer;
     min-width: 6rem;
-    transition: transform 0.14s ease, background 0.14s ease, box-shadow 0.14s ease;
+    transition: background 0.14s ease;
     text-decoration: none;
     text-align: center;
     margin: 0.75rem;
@@ -213,19 +205,11 @@
     }
 
     .faq-header::before {
-      background: linear-gradient(
-        to right,
-        rgba(255, 255, 255, 0.95),
-        rgba(160, 160, 160, 0.6)
-      );
+      background: #B7A878;
     }
 
     .faq-item::before {
-      background: linear-gradient(
-        to bottom,
-        rgba(255, 255, 255, 0.92),
-        rgba(165, 165, 165, 0.72)
-      );
+      background: #B7A878;
     }
 
     .faq-item.open .faq-content {
@@ -309,8 +293,8 @@
       <div class="faq-arrow"></div>
     </div>
     <div class="faq-content">
-      <p>Yes, it is free but only for teenagers 13-18, who are members of Hack Club.</p>
-      <button id="btn" style="margin-top: 0.75rem;" onclick="window.location.href='https://slack.hackclub.com/'">
+      <p>Yes, it is free but only for teenagers 13-18.</p>
+      <button id="btn" style="margin-top: 0.75rem;" onclick="window.location.href='https://hackclub.com/'">
         Join Hack Club
       </button>
     </div>
@@ -332,8 +316,10 @@
       <div class="faq-arrow"></div>
     </div>
     <div class="faq-content">
-      <a href="https://issued.fillout.com/faq">Create a new FAQ</a>
-      <p>Or wait for our faq system to be made available.</p>
+      <button id="btn" style="margin-top: 0.75rem;" onclick="window.location.href='https://issued.fillout.com/faq'">
+        Create a new Question
+      </button>
+      <%# <p>Or wait for our faq system to be made available.</p> %>
     </div>
   </div>
 </div>

@@ -24,21 +24,25 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Workbench&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
       body {
-        background: #f9fafb;
-        color: #1f2937;
+        background:
+          radial-gradient(circle at 1px 1px, rgba(36, 29, 22, 0.05) 1px, transparent 1px) 0 0/14px 14px,
+          #E4D9BC;
+        color: #241D16;
+        font-family: 'Space Mono', 'Courier New', monospace;
+        font-size: 14px;
+        line-height: 1.5;
         transition: background 0.3s ease, color 0.3s ease;
         padding-top: 4.2rem;
         margin-top: 3rem;
       }
 
       body > header {
-        background: rgba(255, 255, 255, 1);
-        backdrop-filter: blur(10px);
-        border-bottom: 1px solid #fff;
+        background: #F2EAD3;
+        border-bottom: 1.5px dashed #B7A878;
         position: fixed;
         top: 0;
         left: 0;
@@ -55,7 +59,7 @@
         right: 0;
         bottom: 0;
         height: 3px;
-        background: linear-gradient(90deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.8));
+        background: linear-gradient(90deg, rgba(183, 168, 120, 0.8), rgba(242, 234, 211, 0.2), rgba(183, 168, 120, 0.8));
         background-size: 200% 100%;
         animation: running-line 2.5s linear infinite;
         z-index: 51;
@@ -78,50 +82,56 @@
       }
 
       .nav-link {
-        font-family: Workbench, sans-serif;
-        color: #111827;
+        font-family: 'Space Mono', 'Courier New', monospace;
+        color: #241D16;
         text-decoration: none;
-        font-weight: 600;
+        font-weight: 700;
         padding: 0.5rem 0.75rem;
-        border-radius: 0.55rem;
+        border-radius: 2px;
         transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
       }
 
       .nav-link:hover,
       .nav-link:focus-visible {
-        text-shadow: 0 0 0.75rem rgba(255, 255, 255, 1);
+        background: rgba(31, 111, 120, 0.15);
+        color: #1F6F78;
       }
 
       @media (prefers-color-scheme: dark) {
         body {
-          background: #000000;
-          color: #f3f4f6;
+          background:
+            radial-gradient(circle at 1px 1px, rgba(232, 223, 208, 0.05) 1px, transparent 1px) 0 0/14px 14px,
+            #1a1510;
+          color: #e8dfd0;
         }
 
         body > header {
-          background: rgba(15, 23, 42, 0.86);
-          border-bottom: rgba(255, 255, 255, 0.55);
+          background: #241d16;
+          border-bottom-color: #5a4f3e;
+        }
+
+        body > header::after {
+          background: linear-gradient(90deg, rgba(90, 79, 62, 0.8), rgba(36, 29, 22, 0.2), rgba(90, 79, 62, 0.8));
         }
 
         .nav-link {
-          color: #f3f4f6;
+          color: #e8dfd0;
         }
 
         .nav-link:hover,
         .nav-link:focus-visible {
-          background: rgba(147, 197, 253, 0.2);
-          color: #bfdbfe;
+          background: rgba(42, 138, 150, 0.2);
+          color: #2a8a96;
         }
 
         .btn {
-          border-color: rgba(255, 255, 255, 0.30);
-          background: rgba(255, 255, 255, 0.1);
-          color: #f3f4f6;
+          border-color: rgba(232, 223, 208, 0.30);
+          background: rgba(232, 223, 208, 0.1);
+          color: #e8dfd0;
         }
 
         .btn:hover {
-          background: rgba(255, 255, 255, 0.2);
-          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+          background: rgba(232, 223, 208, 0.2);
         }
       }
 
@@ -134,9 +144,9 @@
         align-items: center;
         gap: 0.75rem;
         padding: 0.55rem 1.25rem;
-        background: #f4f7fb;
-        border-top: 1px solid #dfe7f2;
-        border-bottom: 1px solid #dfe7f2;
+        background: #E4D9BC;
+        border-top: 1px dashed #B7A878;
+        border-bottom: 1px dashed #B7A878;
         position: relative;
         z-index: 49;
       }
@@ -148,62 +158,62 @@
         align-items: center;
         gap: 0.75rem;
         padding: 0.55rem 1.25rem;
-        background: #f4f7fb;
-        border-top: 1px solid #dfe7f2;
-        border-bottom: 1px solid #dfe7f2;
+        background: #E4D9BC;
+        border-top: 1px dashed #B7A878;
+        border-bottom: 1px dashed #B7A878;
         position: relative;
         z-index: 49;
       }
 
       .dashboard-link {
-        font-family: Workbench, sans-serif;
+        font-family: 'Space Mono', 'Courier New', monospace;
         font-size: 0.88rem;
-        color: #1f2f45;
+        color: #4B4133;
         padding: 0.48rem 0.75rem;
-        border-radius: 0.5rem;
+        border-radius: 2px;
         text-decoration: none;
         transition: all 0.2s ease;
       }
 
       .dashboard-link:hover,
       .dashboard-link:focus-visible {
-        background: #e9effa;
-        color: #0f1850;
+        background: rgba(31, 111, 120, 0.15);
+        color: #1F6F78;
         transform: translateY(-1px);
       }
 
       .dashboard-link.active {
-        background: #d4e0ff;
-        color: #10379f;
+        background: #241D16;
+        color: #F2EAD3;
         font-weight: 700;
       }
 
       @media (prefers-color-scheme: dark) {
         .dashboard-subnav {
-          background: rgba(23, 35, 56, 0.95);
-          border-top: 1px solid #1a2b45;
-          border-bottom: 1px solid #1a2b45;
+          background: #241d16;
+          border-top-color: #5a4f3e;
+          border-bottom-color: #5a4f3e;
         }
 
         .dashboard-subnav-parent {
-          background: rgba(23, 35, 56, 0.95);
-          border-top: 1px solid #1a2b45;
-          border-bottom: 1px solid #1a2b45;
+          background: #241d16;
+          border-top-color: #5a4f3e;
+          border-bottom-color: #5a4f3e;
         }
 
         .dashboard-link {
-          color: #d6e7ff;
+          color: #b8a890;
         }
 
         .dashboard-link:hover,
         .dashboard-link:focus-visible {
-          background: rgba(70, 90, 134, 0.6);
-          color: #ffffff;
+          background: rgba(42, 138, 150, 0.3);
+          color: #2a8a96;
         }
 
         .dashboard-link.active {
-          background: rgba(50, 83, 146, 0.8);
-          color: #e8f2ff;
+          background: #1F6F78;
+          color: #F2EAD3;
         }
       }
     </style>

@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  time: MyString
+  read: false
+  body: MyText
+  priority: 1
+
+two:
+  time: MyString
+  read: false
+  body: MyText
+  priority: 1

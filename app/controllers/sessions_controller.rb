@@ -47,6 +47,7 @@ class SessionsController < ApplicationController
     end
     user.update_ysws_eligibility_from_auth_info(info)
     user.slack_id = slack_id if slack_id
+    user.email = info["email"]
     user.save!
 
     session[:user_id] = user.id
