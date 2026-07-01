@@ -1,0 +1,20 @@
+<div class="receipt-item receipt-item--full <%= "read" unless notification[:read] == false %>"
+     data-notifications-target="item"
+     data-kind="<%= notification[:kind] %>"
+     id="notification_<%= notification[:id] %>">
+
+  <span class="notif-mark notif-mark--<%= notification_style_class(notification[:kind]) %>">
+    <%= notification_mark(notification[:kind]) %>
+  </span>
+
+  <div class="receipt-body">
+    <p><%= raw notification[:body] %></p>
+    <time><%= notification[:time] %></time>
+  </div>
+
+  <% unless notification[:read] %>
+    <button class="mark-read mark-read--single" data-action="click->notifications#markOneRead">
+      mark read
+    </button>
+  <% end %>
+</div>

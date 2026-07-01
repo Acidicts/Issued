@@ -94,6 +94,9 @@
               <div class="receipt-body">
                 <p><%= raw notification[:body] %></p>
                 <time><%= notification[:time] %></time>
+                <% if !notification[:read] %>
+                  <%= link_to "Mark as read", read_notification_path(notification[:id]) %>
+                <% end %>
               </div>
             </div>
           <% end %>

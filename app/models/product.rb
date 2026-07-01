@@ -6,6 +6,7 @@
 # - id: integer (primary key)
 # - type: string (product type)
 # - cost: decimal (product cost)
+# - thread_cost: integer (product thread_cost)
 # - created_at: datetime
 # - updated_at: datetime
 #

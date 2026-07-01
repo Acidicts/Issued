@@ -1,0 +1,13 @@
+<div class="product-card">
+    <div class="product-image">
+    <% if product.image.attached? %>
+        <%= image_tag product.image, alt: product.type %>
+    <% else %>
+        <span class="placeholder">No image</span>
+    <% end %>
+    </div>
+    <div class="product-info">
+    <h2 class="product-name"><%= product.type %></h2>
+    <p class="product-cost"><b><%= product.thread_cost %></b> threads</p>
+    </div>
+</div>

@@ -20,6 +20,7 @@
     font-weight: 700;
     color: #241D16;
     margin: 0;
+    margin-left: -1rem;
   }
 
   .shop-grid {
@@ -119,25 +120,13 @@
 
 <div class="shop-wrap">
   <div class="shop-header">
-    <h1>Shop</h1>
+    <h1>The Loom</h1>
   </div>
 
   <% if @products.any? %>
     <div class="shop-grid">
       <% @products.each do |product| %>
-        <div class="product-card">
-          <div class="product-image">
-            <% if product.image.attached? %>
-              <%= image_tag product.image, alt: product.type %>
-            <% else %>
-              <span class="placeholder">No image</span>
-            <% end %>
-          </div>
-          <div class="product-info">
-            <h2 class="product-name"><%= product.type %></h2>
-            <p class="product-cost"><b><%= number_to_currency(product.cost, unit: "") %></b> threads</p>
-          </div>
-        </div>
+        <%= render "shop/product", product: product %>
       <% end %>
     </div>
   <% else %>

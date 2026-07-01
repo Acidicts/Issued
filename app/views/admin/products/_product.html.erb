@@ -1,9 +1,12 @@
 <div class="product-card">
-  <% if product.image.attached? %>
-    <%= image_tag product.image, alt: product.type, class: "product-thumbnail" %>
-  <% end %>
+  <div class="product-thumbnail">
+    <% if product.image.attached? %>
+      <%= image_tag product.image, alt: product.type %>
+    <% end %>
+  </div>
   <div class="product-card__title"><strong><%= product.type %></strong></div>
-  <div class="product-card__price"><%= number_to_currency(product.cost) %></div>
+  <div class="product-card__price"><%= "$" + product.cost.to_s %></div>
+  <div class="product-card__price"><%= product.thread_cost %> threads</div>
   <div class="product-card__actions">
     <%= link_to "Edit", edit_admin_product_path(product), class: "btn btn-sm btn-outline-primary" %>
   </div>

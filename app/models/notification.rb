@@ -5,13 +5,13 @@ class Notification < ApplicationRecord
   enum :priority, {
     urgent: 0,
     middling: 1,
-    info: 2
+    info: 2,
+    review: 3,
+    system: 4,
+    standard: 5
   }
 
   def read
-    return unless current_user == self.user
-
-    self.update(:read, true)
-    self.save!
+    update!(read: true)
   end
 end

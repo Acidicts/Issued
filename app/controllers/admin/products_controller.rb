@@ -27,7 +27,7 @@ module Admin
     def create
       return unless current_user.admin?
 
-      @product = Product.new(product_attributes_with_usd_cost)
+      @product = Product.new(product_params)
       if @product.save
         redirect_to admin_product_path(@product), notice: "Product was successfully created."
       else
@@ -40,20 +40,11 @@ module Admin
       return unless params[:id]
 
       product = Product.find(params[:id])
-      if product.update(product_attributes_with_usd_cost)
+      if product.update(product_params)
         redirect_to admin_product_path(product), notice: "Product was successfully updated."
       else
         render :edit, status: :unprocessable_entity
       end
-    end
-
-    def product_attributes_with_usd_cost
-      attrs = product_params.to_h
-      if attrs["cost_gbp"].present?
-        usd_value = helpers.gbp_to_usd(attrs["cost_gbp"])
-        attrs["cost"] = usd_value&.round(0)&.to_i
-      end
-      attrs.except("cost_gbp")
     end
 
     def destroy
@@ -68,7 +59,7 @@ module Admin
     private
 
     def product_params
-      params.require(:product).permit(:type, :cost, :cost_gbp, :image)
+      params.require(:product).permit(:type, :cost, :thread_cost, :image)
     end
   end
 end

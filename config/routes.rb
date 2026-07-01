@@ -35,7 +35,11 @@ Rails.application.routes.draw do
   end
 
   # Notifications
-  resources :notifications, only: %i[index show]
+  resources :notifications, only: %i[index] do
+    member do
+      get :read
+    end
+  end
 
   # Orders
   get    "orders",       to: "orders#index", as: :orders

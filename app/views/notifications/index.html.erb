@@ -1,2 +1,48 @@
-<h1>Notifications#index</h1>
-<p>Find me in app/views/notifications/index.html.erb</p>
+<%# app/views/notifications/index.html.erb %>
+<%# Requires both stylesheets — notifications.css extends shared components from dashboard.css %>
+<%= stylesheet_link_tag "dashboard" %>
+<%= stylesheet_link_tag "notifications" %>
+
+<div class="wrap">
+  <header class="tag">
+    <div class="tag-left">
+      <span class="wordmark">issued<span class="dot">.</span></span>
+      <span class="tagline">notifications</span>
+    </div>
+  </header>
+
+  <section class="panel notif-page" data-controller="notifications" data-notifications-unread-class="unread">
+    <div class="bell-row">
+      <div>
+        <h2 style="margin-bottom:4px;">Notifications</h2>
+        <p class="sub" style="margin-bottom:0;">
+          <span data-notifications-target="count"><%= @notifications.count { |n| !n[:read] } %></span> unread
+        </p>
+      </div>
+      <button class="mark-read" data-action="click->notifications#markAllRead">mark all read</button>
+    </div>
+
+    <div class="filters">
+      <button class="chip active" data-notifications-target="chip"
+              data-action="click->notifications#filter" data-notifications-kind-param="all">
+        All · <%= @notifications.size %>
+      </button>
+      <% @notifications.map { |n| n[:kind] }.uniq.each do |kind| %>
+        <button class="chip" data-notifications-target="chip"
+                data-action="click->notifications#filter" data-notifications-kind-param="<%= kind %>">
+          <%= kind.to_s.humanize %> · <%= @notifications.count { |n| n[:kind] == kind } %>
+        </button>
+      <% end %>
+    </div>
+
+    <div class="receipt receipt--full">
+      <% if @notifications.any? %>
+        <% @notifications.each do |notification| %>
+          <%= render "notifications/notification", notification: notification %>
+        <% end %>
+      <% else %>
+        <p class="empty-state">Nothing yet — approvals, rejections, and shop drops will show up here.</p>
+      <% end %>
+    </div>
+  </section>
+</div>
