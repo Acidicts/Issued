@@ -26,7 +26,7 @@ class DashboardController < ApplicationController
     }
 
     @designs = designs.each_with_index.map do |d, i|
-      view_status = STATUS_MAP[d.status.to_sym] || :draft
+      view_status = STATUS_MAP[d.status&.to_sym] || :draft
       {
         name: d.name,
         language: "SVG",
