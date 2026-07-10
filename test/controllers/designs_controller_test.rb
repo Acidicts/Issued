@@ -28,6 +28,11 @@ class DesignsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "should get new" do
+    get new_design_path
+    assert_response :success
+  end
+
   test "should create design" do
     assert_difference("Design.count", 1) do
       post designs_path, params: {
@@ -39,6 +44,11 @@ class DesignsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to design_path(design)
   end
 
+  test "should get edit" do
+    get edit_design_path(@design)
+    assert_response :success
+  end
+
   test "should update design" do
     patch design_path(@design), params: {
       design: { name: "Updated" }
@@ -46,5 +56,26 @@ class DesignsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to design_path(@design)
     assert_equal "Updated", @design.reload.name
+  end
+
+  test "create with invalid params shows errors" do
+    post designs_path, params: {
+      design: { name: "", description: "" }
+    }
+    assert_response :unprocessable_entity
+  end
+
+  test "update with invalid params shows errors" do
+    patch design_path(@design), params: {
+      design: { name: "", description: "" }
+    }
+    assert_response :unprocessable_entity
+  end
+
+  test "unauthenticated user is redirected" do
+    delete logout_url
+
+    get designs_path
+    assert_redirected_to login_path(redirect: designs_path)
   end
 end

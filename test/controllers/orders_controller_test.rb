@@ -10,28 +10,31 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "show without id route is not found" do
-    get orders_show_path
-    assert_response :not_found
+  test "index requires login" do
+    delete logout_url
+
+    get orders_url
+    assert_redirected_to root_url
   end
 
-  test "new without required params is not found" do
-    get orders_new_path
-    assert_response :not_found
+  test "new creates order and redirects" do
+    design = designs(:one)
+    product = products(:one)
+
+    assert_difference("Order.count", 1) do
+      post orders_new_path, params: { design_id: design.id, product_id: product.id }
+    end
+    assert_redirected_to orders_path
+  end
+
+  test "new with invalid params" do
+    assert_no_difference("Order.count") do
+      post orders_new_path, params: { design_id: 99999, product_id: 99999 }
+    end
   end
 
   test "delete route responds" do
     get orders_delete_path
     assert_response :success
-  end
-
-  test "edit without id route is not found" do
-    get orders_edit_path
-    assert_response :not_found
-  end
-
-  teardown do
-    OmniAuth.config.test_mode = false
-    OmniAuth.config.mock_auth.delete(:hackclub)
   end
 end

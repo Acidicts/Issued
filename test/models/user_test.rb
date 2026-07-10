@@ -112,4 +112,112 @@ class UserTest < ActiveSupport::TestCase
   test "veri_level enum has a declared attribute type" do
     assert_kind_of ActiveRecord::Enum::EnumType, User.attribute_types["veri_level"]
   end
+
+  test "has many designs" do
+    user = users(:one)
+    assert_respond_to user, :designs
+  end
+
+  test "has many orders" do
+    user = users(:one)
+    assert_respond_to user, :orders
+  end
+
+  test "has many rsvps" do
+    user = users(:one)
+    assert_respond_to user, :rsvps
+  end
+
+  test "has many notifications" do
+    user = users(:one)
+    assert_respond_to user, :notifications
+  end
+
+  test "verified_for_ysws? returns true when verified and eligible" do
+    user = User.new(veri_level: :verified, ysws_eligible: true)
+    assert user.verified_for_ysws?
+  end
+
+  test "verified_for_ysws? returns false when not verified" do
+    user = User.new(veri_level: :pending, ysws_eligible: true)
+    refute user.verified_for_ysws?
+  end
+
+  test "verified_for_ysws? returns false when not eligible" do
+    user = User.new(veri_level: :verified, ysws_eligible: false)
+    refute user.verified_for_ysws?
+  end
+
+  test "admin? returns true for admin role" do
+    user = User.new(role: :admin)
+    assert user.admin?
+  end
+
+  test "admin? returns true for superadmin role" do
+    user = User.new(role: :superadmin)
+    assert user.admin?
+  end
+
+  test "admin? returns true for reviewer role" do
+    user = User.new(role: :reviewer)
+    assert user.admin?
+  end
+
+  test "admin? returns false for user role" do
+    user = User.new(role: :user)
+    refute user.admin?
+  end
+
+  test "role enum values" do
+    user = User.new
+    assert_equal "user", user.role
+
+    user.role = :admin
+    assert_equal "admin", user.role
+
+    user.role = :superadmin
+    assert_equal "superadmin", user.role
+
+    user.role = :reviewer
+    assert_equal "reviewer", user.role
+  end
+
+  test "veri_level enum values" do
+    user = User.new
+    assert_equal "unknown", user.veri_level
+
+    user.veri_level = :needs_submission
+    assert_equal "needs_submission", user.veri_level
+
+    user.veri_level = :pending
+    assert_equal "pending", user.veri_level
+
+    user.veri_level = :verified
+    assert_equal "verified", user.veri_level
+
+    user.veri_level = :ineligible
+    assert_equal "ineligible", user.veri_level
+  end
+
+  test "ysws_eligible validates inclusion" do
+    user = User.new(name: "Test", slack_id: "UTEST", veri_level: :verified)
+    user.ysws_eligible = true
+    assert user.valid?
+
+    user.ysws_eligible = false
+    assert user.valid?
+  end
+
+  test "refresh_ysws_eligibility! returns false when no identity" do
+    user = User.new(veri_level: :unknown, ysws_eligible: false)
+    user.define_singleton_method(:fetch_live_hackclub_identity) { nil }
+
+    result = user.refresh_ysws_eligibility!
+    assert_equal false, result
+  end
+
+  test "threads defaults to zero" do
+    user = User.new
+    assert_equal 0, user.threads
+  end
 end

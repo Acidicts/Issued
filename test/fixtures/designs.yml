@@ -5,9 +5,11 @@ one:
   name: Existing Design
   description: Sample design fixture
   time: 120
+  status: 0
 
 two:
   user: two
   name: Another Design
   description: Another sample
   time: 90
+  status: 0
