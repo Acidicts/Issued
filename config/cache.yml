@@ -1,16 +1,18 @@
 default: &default
-  store_options:
-    # Cap age of oldest cache entry to fulfill retention policies
-    # max_age: <%= 60.days.to_i %>
-    max_size: <%= 256.megabytes %>
+  store: :redis_cache_store
+  options:
+    url: <%= ENV.fetch("REDIS_URL", "redis://localhost:6379/0") %>
     namespace: <%= Rails.env %>
+    reconnect_attempts: 1
+    error_handler: -> (method:, returning:, exception:) {
+      Rails.logger.error("Redis cache error: #{exception.class}: #{exception.message}")
+    }
 
 development:
   <<: *default
 
 test:
-  <<: *default
+  store: :memory_store
 
 production:
-  database: cache
   <<: *default

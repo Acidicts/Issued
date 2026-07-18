@@ -13,6 +13,7 @@
 # - hackclub_access_token: string (OAuth access token)
 # - hackclub_refresh_token: string (OAuth refresh token)
 # - threads: integer
+# - guide: boolean
 #
 # Relationships:
 # - has_many :designs (dependent: :destroy)
@@ -64,6 +65,7 @@ class User < ApplicationRecord
   enum :veri_level, { unknown: 0, needs_submission: 1, pending: 2, verified: 3, ineligible: 4 }, prefix: :veri_level, default: :unknown
 
   attribute :credits, default: 0, nil: false
+  attribute :guide, default: false, nil: false
 
   def verified_for_ysws?
     veri_level == "verified" && ysws_eligible

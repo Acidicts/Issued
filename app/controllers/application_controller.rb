@@ -14,6 +14,7 @@ class ApplicationController < ActionController::Base
   before_action :current_url
   before_action :current_path
   before_action :current_threads
+  before_action :user_exists
 
   BARCODE_WIDTHS = [
     2, 1, 1, # Start B
@@ -30,6 +31,13 @@ class ApplicationController < ActionController::Base
   def current_user
     return unless session[:user_id]
     @current_user ||= User.find_by(id: session[:user_id])
+  end
+
+  def user_exists
+    return unless !@current_user.nil?
+    if User.find(@current_user.id).nil?
+      redirect_to logout_path, flash[:alert] = "User does not exist!"
+    end
   end
 
   def current_url

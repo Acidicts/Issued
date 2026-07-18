@@ -5,7 +5,7 @@ gem "rails", "~> 8.1.2", ">= 8.1.2.1"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # Use sqlite3 as the database for Active Record
-gem "sqlite3", ">= 2.1"
+# gem "sqlite3", ">= 2.1"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 7.2.1"
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
@@ -37,10 +37,8 @@ gem "rack-session", ">= 2.1.2"
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
-# Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
-gem "solid_cache"
+# Use the database-backed adapter for Active Job
 gem "solid_queue"
-gem "solid_cable"
 
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
@@ -83,6 +81,7 @@ group :test do
   gem "selenium-webdriver"
 end
 
+# Use PostgreSQL as the database for Active Record
 gem "pg", "~> 1.5"
 gem "redis"
 
