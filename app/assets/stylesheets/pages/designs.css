@@ -1,17 +1,10 @@
 .design-new-page {
-    --ink: #241D16;
-    --ink-soft: #4B4133;
-    --muted: #5b6980;
-    --surface: #F2EAD3;
-    --line: #B7A878;
-    --stamp-red: #D6402C;
-    --thread-teal: #1F6F78;
     min-height: calc(100vh - 2rem);
     padding: clamp(1rem, 2.4vw, 2.75rem);
     background:
         radial-gradient(circle at 1px 1px, rgba(36,29,22,0.05) 1px, transparent 1px) 0 0/14px 14px,
-        #E4D9BC;
-    font-family: 'Space Mono', 'Courier New', monospace;
+        var(--paper);
+    font-family: var(--mono);
     color: var(--ink);
 }
 
@@ -21,7 +14,7 @@
     padding: clamp(1.35rem, 3vw, 2.6rem);
     border-radius: 4px;
     border: 1.5px dashed var(--ink);
-    background: var(--surface);
+    background: var(--card);
 }
 
 .design-new-page .design-new-kicker {
@@ -49,19 +42,12 @@
     color: var(--ink-soft);
 
 }.design-edit-page {
-    --ink: #241D16;
-    --ink-soft: #4B4133;
-    --muted: #5b6980;
-    --surface: #F2EAD3;
-    --line: #B7A878;
-    --stamp-red: #D6402C;
-    --thread-teal: #1F6F78;
     min-height: calc(100vh - 2rem);
     padding: clamp(1rem, 2.4vw, 2.75rem);
     background:
         radial-gradient(circle at 1px 1px, rgba(36,29,22,0.05) 1px, transparent 1px) 0 0/14px 14px,
-        #E4D9BC;
-    font-family: 'Space Mono', 'Courier New', monospace;
+        var(--paper);
+    font-family: var(--mono);
     color: var(--ink);
 }
 
@@ -71,7 +57,7 @@
     padding: clamp(1.35rem, 3vw, 2.6rem);
     border-radius: 4px;
     border: 1.5px dashed var(--ink);
-    background: var(--surface);
+    background: var(--card);
 }
 
 .design-edit-page .design-edit-kicker {
@@ -97,46 +83,6 @@
     font-size: 1rem;
     line-height: 1.5;
     color: var(--ink-soft);
-}
-
-@media (prefers-color-scheme: dark) {
-    .design-new-page {
-        --ink: #EDE6D4;
-        --ink-soft: #C0B8A8;
-        --muted: #8A919C;
-        --surface: #1E1A12;
-        --line: #4A3F2F;
-        --stamp-red: #F06040;
-        --thread-teal: #3AA8B3;
-        background:
-            radial-gradient(circle at 1px 1px, rgba(237,230,212,0.06) 1px, transparent 1px) 0 0/14px 14px,
-            #151210;
-    }
-
-    .design-new-page .design-new-card {
-        border-style: dashed;
-        border-color: var(--ink);
-        background: var(--surface);
-    }
-
-    .design-edit-page {
-        --ink: #EDE6D4;
-        --ink-soft: #C0B8A8;
-        --muted: #8A919C;
-        --surface: #1E1A12;
-        --line: #4A3F2F;
-        --stamp-red: #F06040;
-        --thread-teal: #3AA8B3;
-        background:
-            radial-gradient(circle at 1px 1px, rgba(237,230,212,0.06) 1px, transparent 1px) 0 0/14px 14px,
-            #151210;
-    }
-
-    .design-edit-page .design-edit-card {
-        border-style: dashed;
-        border-color: var(--ink);
-        background: var(--surface);
-    }
 }
 
 @media (max-width: 640px) {

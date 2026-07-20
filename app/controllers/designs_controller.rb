@@ -1,6 +1,5 @@
 class DesignsController < ApplicationController
   layout "application"
-  before_action :set_nav
   before_action :ensure_signed_in
   before_action :find_design, only: [ :show, :edit, :update, :image ]
   before_action :load_hackatime_projects, only: [ :new, :edit ]

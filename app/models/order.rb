@@ -53,6 +53,6 @@ class Order < ApplicationRecord
   end
 
   def cancelled?
-    cancelled? || user_cancelled?
+    self.status == "cancelled"
   end
 end

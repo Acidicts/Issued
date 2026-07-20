@@ -47,7 +47,7 @@
     <link rel="apple-touch-icon" href="/icon.png">
 
     <%# Includes all stylesheet files in app/assets/stylesheets/components %>
-    <%= stylesheet_link_tag 'components/application.css', 'components/brand.css', 'components/dashboard.css', 'components/notifications.css', "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag 'components/application.css', 'components/brand.css', 'pages/notifications.css', "data-turbo-track": "reload" %>
     
     <%= javascript_importmap_tags %>
 
@@ -56,6 +56,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
+      * { box-sizing: border-box; }
       body {
         background:
           radial-gradient(circle at 1px 1px, rgba(36, 29, 22, 0.05) 1px, transparent 1px) 0 0/14px 14px,

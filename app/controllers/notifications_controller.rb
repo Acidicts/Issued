@@ -1,10 +1,11 @@
 class NotificationsController < ApplicationController
+  layout "application"
   before_action :require_login
 
   def index
-    # Replace with current_maker.notifications.order(created_at: :desc) once the
-    # Notification model exists — demo data below keeps the view renderable on its own.
+    @nav = "notifications"
     @notifications = current_user.notifications
+    render "notifications/index"
   end
 
   def read

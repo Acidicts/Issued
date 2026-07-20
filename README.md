@@ -29,7 +29,7 @@ The app includes:
 
 ## What Is Issued
 
-YS: Make Designs with code either using hackatime or the integrated svg editor
+YS: Make Designs with code using hackatime
 WS: Get custom clothes made with your designs
 
 From an admin perspective:

@@ -37,3 +37,6 @@
 public/og/rsvps-count.svg
 
 node_modules/*
+
+# Local planning file
+PLAN.md

@@ -40,6 +40,21 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def set_unread_notifications
+    return unless current_user
+    notifications = current_user.notifications.limit(30)
+
+    @notifications = notifications.each_with_index.map do |d, i|
+      {
+        body: d.body,
+        priority: d.priority,
+        time: d.time,
+        read: d.read,
+        id: d.id
+      }
+    end
+  end
+
   def current_url
     @current_url = request.original_url
   end

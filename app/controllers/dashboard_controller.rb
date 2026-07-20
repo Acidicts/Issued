@@ -18,7 +18,7 @@ class DashboardController < ApplicationController
     @products = Rails.cache.fetch("products/all", expires_in: 5.minutes) { Product.all.to_a }
 
     designs = current_user.designs
-    notifications = current_user.notifications.limit(30)
+    notifications = current_user.notifications
 
     @maker = {
       id: @user.id.to_s.rjust(4, "0"),

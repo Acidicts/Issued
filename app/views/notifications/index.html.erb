@@ -1,16 +1,9 @@
 <%# app/views/notifications/index.html.erb %>
 <%# Requires both stylesheets — notifications.css extends shared components from dashboard.css %>
-<%= stylesheet_link_tag "dashboard" %>
-<%= stylesheet_link_tag "notifications" %>
+<%= stylesheet_link_tag "pages/dashboard" %>
+<%= stylesheet_link_tag "pages/notifications" %>
 
-<div class="wrap">
-  <header class="tag">
-    <div class="tag-left">
-      <span class="wordmark">issued<span class="dot">.</span></span>
-      <span class="tagline">notifications</span>
-    </div>
-  </header>
-
+<div id="container" class="wrap">
   <section class="panel notif-page" data-controller="notifications" data-notifications-unread-class="unread">
     <div class="bell-row">
       <div>

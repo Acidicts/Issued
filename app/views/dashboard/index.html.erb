@@ -11,6 +11,7 @@
 
   Use app/views/layouts/application.html.erb.
 %>
+    <%= stylesheet_link_tag 'pages/dashboard.css', "data-turbo-track": "reload" %>
 
 <%
     unread_count = @notifications.count { |n| !n[:read] }
@@ -84,7 +85,10 @@
     <aside>
       <section class="panel" data-controller="notifications">
         <div class="bell-row">
-          <h2 style="margin-bottom:14px;">Notifications</h2>
+          <div class="notification-title-count">
+            <h2>Notifications</h2>
+            <h2 class="notification-count-bubble"><%= unread_count %></h2>
+          </div>
           <button class="mark-read" data-action="click->notifications#markAllRead">mark all read</button>
         </div>
         <div class="receipt">
