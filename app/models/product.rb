@@ -5,7 +5,7 @@
 # Schema:
 # - id: integer (primary key)
 # - type: string (product type)
-# - cost: decimal (product cost)
+# - cost: decimal (product cost_usd)
 # - thread_cost: integer (product thread_cost)
 # - created_at: datetime
 # - updated_at: datetime
@@ -37,10 +37,18 @@
 #
 
 class Product < ApplicationRecord
-  self.inheritance_column = :_type_disabled
+  include CurrencyConvertible
 
-  attr_accessor :cost_gbp
+  self.inheritance_column = :_type_disabled
 
   has_one_attached :image
   has_many :orders
+
+  def cost_usd
+    self.cost
+  end
+
+  def cost_gbp
+    usd_to_gbp(self.cost)
+  end
 end
