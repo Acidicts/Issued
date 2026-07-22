@@ -1,0 +1,67 @@
+h1 {
+    font-family: 'Space Mono', 'Courier New', monospace;
+    font-size: 3rem;
+}
+
+.user-table th, .user-table td {
+    border: 1px dashed #B7A878;
+    padding: 8px;
+}
+
+.user-table th {
+    background-color: #F2EAD3;
+    text-align: left;
+}
+
+.action-buttons a {
+    margin-right: 5px;
+    padding: 5px 10px;
+    text-decoration: none;
+    color: white;
+    background-color: #1F6F78;
+    border-radius: 4px;
+}
+
+.action-buttons a.delete {
+    background-color: #D6402C;
+}
+
+
+.action-buttons {
+    padding: 5px;
+}
+
+th {
+    font-family: 'Space Mono', 'Courier New', monospace;
+    font-size: 1.25rem;
+}
+
+td {
+    font-family: 'Space Mono', 'Courier New', monospace;
+    font-size: 1.4rem;
+}
+
+table {
+    margin: 0 5%;
+    width: 90%;
+}
+
+@media (prefers-color-scheme: dark) {
+    .user-table th {
+        background-color: #333;
+        color: #fff;
+    }
+
+    .user-table td {
+        background-color: #222;
+        color: #fff;
+    }
+
+    .action-buttons a {
+    background-color: #1F6F78;
+    }
+
+    .action-buttons a.delete {
+    background-color: #D6402C;
+    }
+}

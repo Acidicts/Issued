@@ -1,40 +1,7 @@
+<%= stylesheet_link_tag "pages/admin/orders" %>
+
 <h1>Order and Fulfillment Management</h1>
 <p>List all orders and fulfillment status, with actions to update status and retry or cancel</p>
-
-<style>
-    table {
-        width: 90%;
-        border-collapse: collapse;
-        margin-top: 1rem;
-        margin-right: 5%;
-        margin-left: 5%;
-    }
-    th, td {
-        padding: 0.75rem;
-        text-align: left;
-        border-bottom: 1px dashed #B7A878;
-    }
-    th {
-        background-color: #F2EAD3;
-        font-weight: 600;
-        color: #241D16;
-        border: 1px dashed #B7A878;
-    }
-    tr:hover {
-        background-color: #E4D9BC;
-    }
-
-    @media (prefers-color-scheme: dark) {
-        th {
-            background-color: #241D16;
-            color: #e8dfd0;
-            border: 1px dashed #5a4f3e;
-        }
-        tr:hover {
-            background-color: #3d3528;
-        }
-    }
-</style>
 
 <table>
     <thead>

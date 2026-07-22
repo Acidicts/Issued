@@ -1,12 +1,15 @@
 <div class="product-card">
-  <div class="product-thumbnail">
+  <div class="product-image">
     <% if product.image.attached? %>
-      <%= image_tag product.image, alt: product.type %>
+        <%= image_tag product.image, alt: product.type %>
+    <% else %>
+        <span class="placeholder">No image</span>
     <% end %>
+    </div>
+    <div class="product-info">
+    <h2 class="product-name"><%= product.type %></h2>
+    <p class="product-cost"><b><%= product.thread_cost %></b> threads</p>
   </div>
-  <div class="product-card__title"><strong><%= product.type %></strong></div>
-  <div class="product-card__price"><%= "$" + product.cost.to_s %></div>
-  <div class="product-card__price"><%= product.thread_cost %> threads</div>
   <div class="product-card__actions">
     <%= link_to "Edit", edit_admin_product_path(product), class: "btn btn-sm btn-outline-primary" %>
   </div>

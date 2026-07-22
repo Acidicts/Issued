@@ -1,0 +1,50 @@
+:root{
+  --brand-primary: #1F6F78;
+  --brand-primary-dark: #164e55;
+  --brand-primary-light: rgba(31, 111, 120, 0.15);
+  --brand-secondary: #D6402C;
+  --brand-secondary-dark: #9B2E22;
+
+  --brand-surface: #F2EAD3;
+  --brand-surface-alt: #E4D9BC;
+  --brand-border: #B7A878;
+  --brand-border-light: #D9CBA6;
+
+  --brand-text: #241D16;
+  --brand-text-secondary: #4B4133;
+  --brand-text-muted: #847A63;
+
+  --brand-success: #3D7A4D;
+  --brand-warning: #B97F19;
+  --brand-danger: #D6402C;
+  --brand-danger-dark: #9B2E22;
+
+  --brand-radius: 0.5rem;
+  --brand-radius-sm: 0.25rem;
+  --brand-radius-lg: 0.75rem;
+
+  --brand-shadow: 0 1px 3px rgba(36, 29, 22, 0.1), 0 1px 2px rgba(36, 29, 22, 0.06);
+  --brand-shadow-lg: 0 4px 12px rgba(36, 29, 22, 0.15), 0 2px 4px rgba(36, 29, 22, 0.1);
+
+  --brand-font: 'Space Mono', 'Courier New', monospace;
+  --brand-font-display: 'Archivo Black', 'Arial Black', sans-serif;
+}
+
+/* Dark mode: swap surfaces/text like the admin panel does, keep the
+   accent hues (teal/red/gold/green) constant so status colors still
+   read the same regardless of theme. */
+@media (prefers-color-scheme: dark){
+  :root{
+    --brand-surface: #241D16;
+    --brand-surface-alt: #2E2417;
+    --brand-border: #B7A878;
+    --brand-border-light: #4B4133;
+
+    --brand-text: #E4D9BC;
+    --brand-text-secondary: #C9BB93;
+    --brand-text-muted: #B7A878;
+
+    --brand-shadow: 0 1px 3px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.25);
+    --brand-shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.45), 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+}

@@ -1,12 +1,16 @@
-<h1>Product Management</h1>
-<%= link_to 'Add New Product', new_admin_product_path, class: 'btn btn-primary' %>
+<%= stylesheet_link_tag "pages/admin/products" %>
 
-<div class="admin-product-grid">
-    <% @products.each do |product| %>
-        <%= render 'product', product: product %>
-    <% end %>
-    <% if @products.empty? %>
-        <p>No products found.</p>
-        <%= link_to 'Add New Product', new_admin_product_path, class: 'btn btn-primary' %>
-    <% end %>
+<h1>Product Management</h1>
+<%= link_to 'Add New Product', new_admin_product_path, class: 'btn btn-primary mb-1r' %>
+
+<div class="admin-product">
+    <div class="admin-product-grid">
+        <% @products.each do |product| %>
+            <%= render 'product', product: product %>
+        <% end %>
+        <% if @products.empty? %>
+            <p>No products found.</p>
+            <%= link_to 'Add New Product', new_admin_product_path, class: 'btn btn-primary' %>
+        <% end %>
+    </div>
 </div>
