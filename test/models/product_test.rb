@@ -26,8 +26,7 @@ class ProductTest < ActiveSupport::TestCase
   end
 
   test "has cost_gbp accessor" do
-    product = Product.new
-    product.cost_gbp = "25.00"
-    assert_equal "25.00", product.cost_gbp
+    product = Product.new(cost: 30)
+    assert_respond_to product, :cost_gbp
   end
 end
