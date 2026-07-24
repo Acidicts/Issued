@@ -10,10 +10,10 @@ module NotificationsHelper
   }.freeze
 
   def notification_mark(kind)
-    NOTIFICATION_STYLES.fetch(kind&.to_sym, ["•", "system"]).first
+    NOTIFICATION_STYLES.fetch(kind&.to_sym, [ "•", "system" ]).first
   end
 
   def notification_style_class(kind)
-    NOTIFICATION_STYLES.fetch(kind&.to_sym, ["•", "system"]).last
+    NOTIFICATION_STYLES.fetch(kind&.to_sym, [ "•", "system" ]).last
   end
 end

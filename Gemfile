@@ -22,14 +22,20 @@ gem "csv"
 
 # Security fixes for dependencies
 gem "addressable", ">= 2.9.0"
+gem "concurrent-ruby", ">= 1.3.7"
+gem "crass", ">= 1.0.7"
 gem "erb", ">= 6.0.4"
-gem "faraday", ">= 2.14.2"
+gem "faraday", ">= 2.14.3"
+gem "json", ">= 2.19.9"
 gem "jwt", ">= 3.2.0"
+gem "loofah", ">= 2.25.2"
 gem "net-imap", ">= 0.6.4"
-gem "nokogiri", ">= 1.19.3"
+gem "nokogiri", ">= 1.19.4"
 gem "oauth2", ">= 2.0.22"
 gem "rack", ">= 3.2.6"
 gem "rack-session", ">= 2.1.2"
+gem "rails-html-sanitizer", ">= 1.7.1"
+gem "websocket-driver", ">= 0.8.2"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"
