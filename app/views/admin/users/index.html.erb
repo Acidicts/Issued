@@ -14,16 +14,7 @@
         </thead>
         <tbody>
             <% @users.each do |user| %>
-                <tr>
-                    <td><%= user.id %></td>
-                    <td><%= user.name %></td>
-                    <td><%= user.slack_id.to_s.humanize %></td>
-                    <td><%= user.role %></td>
-                    <td class="action-buttons">
-                        <%= link_to 'Edit', edit_admin_user_path(user), class: 'edit' %>
-                        <%= link_to 'Delete', admin_user_path(user), method: :delete, data: { confirm: 'Are you sure?' }, class: 'delete' %>
-                    </td>
-                </tr>
+                <%= render "admin/users/user", user: user %>
             <% end %>
         </tbody>
     </table>

@@ -1,0 +1,20 @@
+<tr>
+    <td><%= user.id %></td>
+    <td>
+        <div data-controller="hide-pii">
+            <p data-hide-pii-target="pii"><%= user.name %></p>
+            <button data-hide-pii-target="button" data-action="click->hide-pii#showClick">Show</button>
+        </div>
+    </td>
+    <td>
+        <div data-controller="hide-pii">
+            <p data-hide-pii-target="pii"><%= user.slack_id.to_s.humanize %></p>
+            <button data-hide-pii-target="button" data-action="click->hide-pii#showClick">Show</button>
+        </div>
+    </td>
+    <td><%= user.role %></td>
+    <td class="action-buttons">
+        <%= link_to 'Edit', edit_admin_user_path(user), class: 'edit' %>
+        <%= link_to 'Delete', admin_user_path(user), method: :delete, data: { confirm: 'Are you sure?' }, class: 'delete' %>
+    </td>
+</tr>
