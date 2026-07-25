@@ -402,8 +402,8 @@
           <%= link_to "The Loom", shop_path, class: "tab #{"active" if @nav == "shop"}" %>
           <%= link_to notifications_path, class: "tab #{"active" if @nav == "notifications"}" do %>
             Notifications
-            <% if unread_notification_count.positive? %>
-              <span class="pip"><%= unread_notification_count %></span>
+            <% if @unread_notification_count > 0 %>
+              <span class="pip"><%= @unread_notification_count %></span>
             <% end %>
           <% end %>
           <% if current_user.admin? %>

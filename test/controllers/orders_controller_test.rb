@@ -17,24 +17,25 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_url
   end
 
-  test "new creates order and redirects" do
+  test "new shows order form" do
+    product = products(:one)
+    get new_order_path(product_id: product.id)
+    assert_response :success
+  end
+
+  test "create places order and redirects" do
     design = designs(:one)
     product = products(:one)
 
     assert_difference("Order.count", 1) do
-      post orders_new_path, params: { design_id: design.id, product_id: product.id }
+      post orders_path, params: { order: { design_id: design.id, product_id: product.id } }
     end
     assert_redirected_to orders_path
   end
 
-  test "new with invalid params" do
+  test "create with invalid params does not place order" do
     assert_no_difference("Order.count") do
-      post orders_new_path, params: { design_id: 99999, product_id: 99999 }
+      post orders_path, params: { order: { design_id: 99999, product_id: 99999 } }
     end
-  end
-
-  test "delete route responds" do
-    get orders_delete_path
-    assert_response :success
   end
 end

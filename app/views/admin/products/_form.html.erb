@@ -1,61 +1,131 @@
 <%= stylesheet_link_tag "components/tokens" %>
 <%= stylesheet_link_tag "components/forms" %>
+<%= stylesheet_link_tag "pages/admin/products" %>
 
-<%= form_for [:admin, @product], html: { multipart: true, class: 'form-card' } do |f| %>
-  <div class="form-header">
-    <h1><%= @product.new_record? ? "New Product" : "Edit Product" %></h1>
-    <p>Manage product details, pricing, and media assets.</p>
-  </div>
+<%
+  img_url = if @product&.image&.attached?
+              url_for(@product.image)
+            else
+              ""
+            end
+%>
 
-  <div class="form-group <%= 'has-error' if @product.errors[:type].present? %>">
-    <%= f.label :type, class: 'form-label' %>
-    <%= f.text_field :type, class: 'form-input' %>
-    <% if @product.errors[:type].present? %>
-      <div class="form-error"><%= @product.errors[:type].join(', ') %></div>
-    <% end %>
-  </div>
+<div data-controller="product-preview"
+     data-product-preview-img-url-value="<%= img_url %>">
 
-  <div class="form-grid">
-    <div class="form-group <%= 'has-error' if @product.errors[:cost].present? %>">
-      <%= f.label :cost, "Cost (USD)", class: 'form-label' %>
-      <%= f.number_field :cost, step: 0.01, class: 'form-input' %>
-      <% if @product.errors[:cost].present? %>
-        <div class="form-error"><%= @product.errors[:cost].join(', ') %></div>
-      <% end %>
+  <%= form_for [:admin, @product], html: { multipart: true, class: 'form-card' } do |f| %>
+    <div class="form-header">
+      <h1><%= @product.new_record? ? "New Product" : "Edit Product" %></h1>
+      <p>Manage product details, pricing, and media assets.</p>
     </div>
 
-    <div class="form-group <%= 'has-error' if @product.errors[:thread_cost].present? %>">
-      <%= f.label :thread_cost, "Cost Threads", class: 'form-label' %>
-      <%= f.number_field :thread_cost, step: 1, class: 'form-input' %>
-      <% if @product.errors[:thread_cost].present? %>
-        <div class="form-error"><%= @product.errors[:thread_cost].join(', ') %></div>
-      <% end %>
-    </div>
-  </div>
+    <div class="admin-product-layout">
+      <div class="admin-product-fields">
+        <div class="form-group <%= 'has-error' if @product.errors[:type].present? %>">
+          <%= f.label :type, class: 'form-label' %>
+          <%= f.text_field :type, class: 'form-input' %>
+          <% if @product.errors[:type].present? %>
+            <div class="form-error"><%= @product.errors[:type].join(', ') %></div>
+          <% end %>
+        </div>
 
-  <div class="form-group">
-    <%= f.label :image, "Product image", class: 'form-label' %>
-    
-    <label class="form-dropzone" for="product_image">
-      <div class="dropzone-content">
-        <span class="icon">⇪</span>
-        <span class="label">Click to upload product image</span>
-        <span class="sub">PNG, JPG, or WEBP formats</span>
-      </div>
-      <%= f.file_field :image, accept: 'image/*', id: 'product_image' %>
-    </label>
+        <div class="form-grid">
+          <div class="form-group <%= 'has-error' if @product.errors[:cost].present? %>">
+            <%= f.label :cost, "Cost (USD)", class: 'form-label' %>
+            <%= f.number_field :cost, step: 0.01, class: 'form-input' %>
+            <% if @product.errors[:cost].present? %>
+              <div class="form-error"><%= @product.errors[:cost].join(', ') %></div>
+            <% end %>
+          </div>
 
-    <% if @product&.image&.attached? %>
-      <div class="form-file-item">
-        <div class="d-flex align-items-center gap-2">
-          <%= image_tag @product.image, alt: "Product image", style: "max-width: 48px; border-radius: 4px;" %>
-          <span class="name"><%= @product.image.filename.to_s %></span>
+          <div class="form-group <%= 'has-error' if @product.errors[:thread_cost].present? %>">
+            <%= f.label :thread_cost, "Cost Threads", class: 'form-label' %>
+            <%= f.number_field :thread_cost, step: 1, class: 'form-input' %>
+            <% if @product.errors[:thread_cost].present? %>
+              <div class="form-error"><%= @product.errors[:thread_cost].join(', ') %></div>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <%= f.label :image, "Product image", class: 'form-label' %>
+
+          <label class="form-dropzone" for="product_image">
+            <div class="dropzone-content">
+              <span class="icon">⇪</span>
+              <span class="label">Click to upload product image</span>
+              <span class="sub">PNG, JPG, or WEBP formats</span>
+            </div>
+            <%= f.file_field :image, accept: 'image/*', id: 'product_image',
+                  data: { action: "change->product-preview#imageSelected" } %>
+          </label>
+
+          <% if @product&.image&.attached? %>
+            <div class="form-file-item">
+              <div class="d-flex align-items-center gap-2">
+                <%= image_tag @product.image, alt: "Product image", style: "max-width: 48px; border-radius: 4px;" %>
+                <span class="name"><%= @product.image.filename.to_s %></span>
+              </div>
+            </div>
+          <% end %>
+        </div>
+
+        <fieldset class="form-fieldset">
+          <legend>Design placement</legend>
+          <p class="form-hint" style="margin-bottom: 12px;">Drag the overlay on the preview to position, or edit values below.</p>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <%= f.label :image_x, "X position (px)", class: 'form-label' %>
+              <%= f.number_field :image_x, step: 1, class: 'form-input',
+                    data: { product_preview_target: "inputX", action: "input->product-preview#inputChanged" } %>
+            </div>
+            <div class="form-group">
+              <%= f.label :image_y, "Y position (px)", class: 'form-label' %>
+              <%= f.number_field :image_y, step: 1, class: 'form-input',
+                    data: { product_preview_target: "inputY", action: "input->product-preview#inputChanged" } %>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <%= f.label :image_wx, "Width (px)", class: 'form-label' %>
+              <%= f.number_field :image_wx, step: 1, class: 'form-input',
+                    data: { product_preview_target: "inputWx", action: "input->product-preview#inputChanged" } %>
+            </div>
+            <div class="form-group">
+              <%= f.label :image_wy, "Height (px)", class: 'form-label' %>
+              <%= f.number_field :image_wy, step: 1, class: 'form-input',
+                    data: { product_preview_target: "inputWy", action: "input->product-preview#inputChanged" } %>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="form-actions align-end">
+          <%= f.submit class: 'btn btn-primary' %>
         </div>
       </div>
-    <% end %>
-  </div>
 
-  <div class="form-actions align-end">
-    <%= f.submit class: 'btn btn-primary' %>
-  </div>
-<% end %>
+      <div class="admin-product-preview-side">
+        <div class="preview-label">Live preview</div>
+        <div class="preview-canvas"
+             data-product-preview-target="canvas"
+             data-action="mousedown->product-preview#dragStart">
+          <% if @product&.image&.attached? %>
+            <%= image_tag @product.image, alt: "Product preview",
+                  class: "preview-product-img",
+                  data: { product_preview_target: "productImage" } %>
+          <% else %>
+            <div class="preview-placeholder" data-product-preview-target="placeholder">
+              Upload a product image to preview
+            </div>
+          <% end %>
+          <div class="preview-design-box"
+               data-product-preview-target="designBox"
+               style="display: none;">
+            <span class="preview-design-label">Design area</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

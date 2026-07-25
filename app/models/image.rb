@@ -43,5 +43,6 @@ class Image < ApplicationRecord
 
   def set_from_time
     self.from_time = Time.current
+    self.save!
   end
 end

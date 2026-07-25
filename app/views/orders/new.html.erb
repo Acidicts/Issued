@@ -1,9 +1,90 @@
-<h1>Order Created</h1>
-<p>Your order has been created successfully.</p>
-<ul>
-  <li>Order ID: <%= @order.id %></li>
-  <li>Product: <%= @order.product&.name || "Unknown product" %></li>
-  <li>Design: <%= @order.design&.name || "Unknown design" %></li>
-  <li>Status: <%= @order.status %></li>
-</ul>
-<%= link_to "Back to dashboard", dashboard_path, class: "btn" %>
+<%= stylesheet_link_tag "pages/orders", "data-turbo-track": "reload" %>
+
+<div class="order-wrap" data-controller="order-preview">
+  <div class="order-header">
+    <h1>New Order</h1>
+    <p class="sub">Choose a design to print on your <%= @product.type&.downcase || "product" %>.</p>
+  </div>
+
+  <div class="order-layout">
+    <div class="order-form-side">
+      <%= form_with model: @order, url: orders_path, method: :post, class: "form-card" do |f| %>
+        <%= f.hidden_field :product_id, value: @product.id %>
+
+        <div class="form-group">
+          <label class="form-label">
+            Pattern
+          </label>
+          <div class="order-product-summary">
+            <% if @product.image.attached? %>
+              <%= image_tag @product.image, alt: @product.type, class: "order-product-thumb" %>
+            <% end %>
+            <div>
+              <strong><%= @product.type %></strong>
+              <span class="order-product-cost"><%= @product.thread_cost %> threads</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="order_design_id">
+            Design
+            <span class="required">*</span>
+          </label>
+          <% if @designs.any? %>
+            <select name="order[design_id]"
+                    id="order_design_id"
+                    class="form-select"
+                    data-action="change->order-preview#updateDesign"
+                    data-order-preview-target="designSelect">
+              <option value="">Select a design...</option>
+              <% @designs.each do |design| %>
+                <%
+                  latest_image = design.images.order(created_at: :desc).first
+                  img_url = if latest_image&.image_file&.attached?
+                              url_for(latest_image.image_file)
+                            else
+                              ""
+                            end
+                %>
+                <option value="<%= design.id %>" data-image-url="<%= img_url %>"><%= design.name %></option>
+              <% end %>
+            </select>
+            <p class="form-hint">Pick a design from your collection to preview it on the product.</p>
+          <% else %>
+            <p class="form-hint" style="color: var(--brand-warning);">You have no designs yet. <%= link_to "Create one first", new_design_path %>.</p>
+          <% end %>
+        </div>
+
+        <div class="form-actions">
+          <%= f.submit "Place Order", class: "btn btn-primary", disabled: @designs.empty?, data: { disable_button_target: "button" } %>
+          <%= link_to "Cancel", shop_path, class: "btn btn-outline" %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="order-preview-side">
+      <div class="preview-label">Preview</div>
+      <div class="preview-canvas"
+           data-order-preview-target="canvas"
+           data-image-x="<%= @product.image_x %>"
+           data-image-y="<%= @product.image_y %>"
+           data-image-wx="<%= @product.image_wx %>"
+           data-image-wy="<%= @product.image_wy %>">
+        <div class="preview-product">
+          <% if @product.image.attached? %>
+            <%= image_tag @product.image, alt: @product.type, data: { order_preview_target: "productImage" } %>
+          <% else %>
+            <span class="preview-placeholder">No product image</span>
+          <% end %>
+        </div>
+        <div class="preview-design" data-order-preview-target="designOverlay" style="display: none;">
+          <img data-order-preview-target="designImage" src="" alt="Design preview">
+        </div>
+        <div class="preview-empty" data-order-preview-target="emptyState">
+          <span>Select a design to see a preview</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

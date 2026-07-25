@@ -14,7 +14,12 @@ module Admin
     end
 
     def update
-      # Admin update order / fulfillment status stub
+      order = Order.find(params[:id])
+      if order.update(order_params)
+        redirect_to admin_orders_path, notice: "Order updated."
+      else
+        redirect_to admin_orders_path, alert: "Could not update order."
+      end
     end
 
     def destroy
@@ -31,6 +36,12 @@ module Admin
         flash[:alert] = "Order ##{order.id} is already cancelled."
       end
       redirect_to admin_orders_path
+    end
+
+    private
+
+    def order_params
+      params.require(:order).permit(:status)
     end
   end
 end

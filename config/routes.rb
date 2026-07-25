@@ -42,11 +42,7 @@ Rails.application.routes.draw do
   end
 
   # Orders
-  get    "orders",       to: "orders#index", as: :orders
-  get    "orders/show",  to: "orders#show",  as: :orders_show
-  match  "orders/new",   to: "orders#new",   via: %i[get post], as: :orders_new
-  get    "orders/edit",  to: "orders#edit",  as: :orders_edit
-  get    "orders/delete", to: "orders#delete", as: :orders_delete
+  resources :orders, only: %i[index show new create edit update destroy]
 
   # Settings
   get "settings/", to: "settings#index", as: :settings

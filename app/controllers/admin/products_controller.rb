@@ -29,7 +29,7 @@ module Admin
 
       @product = Product.new(product_params)
       if @product.save
-        redirect_to admin_product_path(@product), notice: "Product was successfully created."
+        redirect_to admin_products_path, notice: "Product was successfully created."
       else
         render :new, status: :unprocessable_entity
       end
@@ -41,7 +41,7 @@ module Admin
 
       product = Product.find(params[:id])
       if product.update(product_params)
-        redirect_to admin_product_path(product), notice: "Product was successfully updated."
+        redirect_to admin_products_path, notice: "Product was successfully updated."
       else
         render :edit, status: :unprocessable_entity
       end
@@ -59,7 +59,7 @@ module Admin
     private
 
     def product_params
-      params.require(:product).permit(:type, :cost, :thread_cost, :image)
+      params.require(:product).permit(:type, :cost, :thread_cost, :image, :image_x, :image_y, :image_wx, :image_wy)
     end
   end
 end

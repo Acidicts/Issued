@@ -89,3 +89,123 @@
 .product-info .product-cost b {
   color: var(--ink);
 }
+
+/* --- Product form layout --- */
+.admin-product-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 720px) {
+  .admin-product-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-product-fields .form-group {
+  margin-bottom: 18px;
+}
+
+.admin-product-fields .form-group:last-child {
+  margin-bottom: 0;
+}
+
+/* --- Preview panel --- */
+.admin-product-preview-side {
+  position: sticky;
+  top: 6rem;
+}
+
+.preview-label {
+  font-family: 'Space Mono', 'Courier New', monospace;
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.preview-canvas {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  border: 1.5px dashed var(--line);
+  border-radius: 4px;
+  background: var(--card);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: crosshair;
+}
+
+.preview-product-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  user-select: none;
+  pointer-events: none;
+}
+
+.preview-placeholder {
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+  padding: 2rem;
+}
+
+.preview-design-box {
+  position: absolute;
+  border: 3px dashed var(--accent);
+  background: rgba(31, 111, 120, 0.5);
+  cursor: move;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  z-index: 2;
+  min-width: 20px;
+  min-height: 20px;
+}
+
+.preview-design-box::before,
+.preview-design-box::after,
+.preview-design-box .edge-n,
+.preview-design-box .edge-s,
+.preview-design-box .edge-e,
+.preview-design-box .edge-w {
+  content: "";
+  position: absolute;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+/* Corner handles */
+.preview-design-box::before {
+  width: 10px; height: 10px;
+  bottom: -5px; right: -5px;
+  cursor: se-resize;
+}
+
+.preview-design-box::after {
+  width: 10px; height: 10px;
+  top: -5px; left: -5px;
+  cursor: nw-resize;
+}
+
+.preview-design-label {
+  font-family: 'Space Mono', 'Courier New', monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--accent);
+  background: rgba(31, 111, 120, 0.15);
+  padding: 2px 6px;
+  border-radius: 2px;
+  margin-top: 2px;
+  user-select: none;
+  pointer-events: none;
+}

@@ -15,6 +15,7 @@ class ApplicationController < ActionController::Base
   before_action :current_path
   before_action :current_threads
   before_action :user_exists
+  before_action :set_unread_notifications
 
   BARCODE_WIDTHS = [
     2, 1, 1, # Start B
@@ -42,6 +43,7 @@ class ApplicationController < ActionController::Base
 
   def set_unread_notifications
     return unless current_user
+    @unread_notification_count = current_user.notifications.where(read: false).count
     notifications = current_user.notifications.limit(30)
 
     @notifications = notifications.each_with_index.map do |d, i|
@@ -81,7 +83,7 @@ class ApplicationController < ActionController::Base
   end
 
   def unread_notification_count
-    0
+    current_user.notifications.where(read: false).count
   end
 
   private

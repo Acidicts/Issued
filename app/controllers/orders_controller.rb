@@ -13,27 +13,51 @@ class OrdersController < ApplicationController
   end
 
   def new
-    @order = Order.new
-    @order.user = current_user
-    @order.design = Design.find(params[:design_id])
-    @order.status = :pending
-    @order.product = Product.find(params[:product_id])
-    @order.save
-    redirect_to orders_path
+    @product = Product.find(params[:product_id])
+    @designs = current_user.designs.order(:name)
+    @order = Order.new(product: @product)
   end
 
-  def destroy
-    @order = Order.find(params[:id])
-    @order.destroy
+  def create
+    @product = Product.find(params[:order][:product_id])
+    @designs = current_user.designs.order(:name)
+    @order = Order.new(order_params)
+    @order.user = current_user
+    @order.status = :pending
+
+    if @order.save
+      redirect_to orders_path, notice: "Order placed successfully!"
+    else
+      render :new, status: :unprocessable_entity
+    end
   end
 
   def edit
     @order = Order.find(params[:id])
   end
 
+  def update
+    @order = Order.find(params[:id])
+    if @order.update(order_params)
+      redirect_to orders_path, notice: "Order updated."
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    @order = Order.find(params[:id])
+    @order.destroy
+    redirect_to orders_path, notice: "Order cancelled."
+  end
+
   private
 
   def set_nav
     @nav = "dashboard"
+  end
+
+  def order_params
+    params.require(:order).permit(:design_id, :product_id)
   end
 end

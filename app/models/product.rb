@@ -9,6 +9,10 @@
 # - thread_cost: integer (product thread_cost)
 # - created_at: datetime
 # - updated_at: datetime
+# - image_x: integer (for order preview etc) in px
+# - image_y: integer (for order preview etc) in px
+# - image_wx: integer (for order preview etc) in px
+# - image_wy: integer (for order preview etc) in px
 #
 # Relationships:
 # - has_one_attached :image (ActiveStorage attachment)

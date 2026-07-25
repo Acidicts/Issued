@@ -1,0 +1,147 @@
+.order-wrap {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem;
+}
+
+.order-header h1 {
+  font-family: 'Space Mono', 'Courier New', monospace;
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  font-weight: 700;
+  color: var(--brand-text);
+  margin: 0 0 0.25rem;
+}
+
+.order-header .sub {
+  margin: 0;
+  font-size: 14px;
+  color: var(--brand-text-muted);
+}
+
+.order-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 720px) {
+  .order-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.order-form-side .form-card {
+  padding: 1.5rem;
+}
+
+.order-product-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--brand-surface-alt);
+  border: 1.5px solid var(--brand-border);
+  border-radius: var(--brand-radius-sm);
+}
+
+.order-product-thumb {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.order-product-summary strong {
+  display: block;
+  font-size: 13px;
+  color: var(--brand-text);
+}
+
+.order-product-cost {
+  font-size: 12px;
+  color: var(--brand-text-muted);
+}
+
+/* Preview panel */
+.order-preview-side {
+  position: sticky;
+  top: 6rem;
+}
+
+.preview-label {
+  font-family: var(--brand-font);
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--brand-text-muted);
+  margin-bottom: 8px;
+}
+
+.preview-canvas {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  border: 1.5px dashed var(--brand-border);
+  border-radius: var(--brand-radius);
+  background: var(--brand-surface-alt);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-product {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-product img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.preview-design {
+  position: absolute;
+  top: 15%;
+  left: 25%;
+  width: 50%;
+  height: 50%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.preview-design img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  opacity: 0.85;
+  mix-blend-mode: multiply;
+}
+
+.preview-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--brand-text-muted);
+  font-size: 13px;
+  background: rgba(242, 234, 211, 0.6);
+  pointer-events: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .preview-empty {
+    background: rgba(36, 29, 22, 0.6);
+  }
+}
