@@ -1,0 +1,300 @@
+/* =============================================================
+   Custom Dropdown Component
+   -------------------------------------------------------------
+   A themeable replacement for the native <select> — both the
+   closed box AND the open popup list — so dropdowns match the
+   site's look instead of the OS/browser's native chrome. Native
+   <select> popups can't be restyled with CSS alone (this is a
+   browser limitation, not a bug in the old version of this file),
+   so this version pairs the CSS with a small Stimulus controller
+   (app/javascript/controllers/dropdown_controller.js) that renders
+   a themed listbox on top of a hidden real <select>.
+
+   USAGE
+   -----
+     <div class="dropdown" data-controller="dropdown">
+       <select class="dropdown-select" data-dropdown-target="select">
+         <option value="a">Option A</option>
+         <option value="b">Option B</option>
+       </select>
+
+       <button type="button" class="dropdown-trigger"
+               data-dropdown-target="trigger"
+               data-action="click->dropdown#toggle">
+         <span class="dropdown-trigger-label" data-dropdown-target="label"></span>
+       </button>
+
+       <ul class="dropdown-menu" data-dropdown-target="menu" role="listbox" hidden></ul>
+     </div>
+
+   The real <select> stays in the DOM (visually hidden, not
+   display:none) so the form still submits normally, and it's still
+   there for screen readers and as a no-JS fallback — if JS fails to
+   load, the plain select is shown instead (see the no-js fallback
+   rule near the bottom).
+
+   THEMING
+   -------
+   Reads colors from local --dd-* variables that default to the
+   site-wide --brand-* tokens. Any container can override the look
+   for its own theme just by redefining --dd-* (or the underlying
+   --brand-* / --ink/--line/--surface vars):
+
+     .my-special-form {
+       --dd-border: var(--line);
+       --dd-surface: var(--surface);
+       --dd-text: var(--ink);
+     }
+
+   The design form (app/assets/stylesheets/pages/designs.css)
+   already defines --ink / --line / --surface / --accent, so
+   .dropdown automatically maps onto that palette when nested
+   inside .design-form — see the mapping block below.
+   ============================================================= */
+
+.dropdown {
+    --dd-surface: var(--brand-surface-alt);
+    --dd-surface-hover: var(--brand-surface);
+    --dd-menu-surface: var(--brand-surface);
+    --dd-border: var(--brand-border);
+    --dd-border-hover: var(--brand-text-muted);
+    --dd-text: var(--brand-text);
+    --dd-text-muted: var(--brand-text-muted);
+    --dd-accent: var(--brand-primary);
+    --dd-accent-ring: var(--brand-primary-light);
+    --dd-selected-bg: var(--brand-primary-light);
+    --dd-radius: var(--brand-radius-sm);
+    --dd-font: var(--brand-font);
+    --dd-shadow: var(--brand-shadow-lg, 0 12px 28px rgba(0, 0, 0, 0.18));
+
+    position: relative;
+    display: block;
+    width: 100%;
+}
+
+/* Map the postal/stamp theme used by the design form onto the
+   same --dd-* variables, so dropdowns nested in .design-form
+   pick up --ink / --line / --surface / --accent automatically. */
+.design-form .dropdown {
+    --dd-surface: var(--surface);
+    --dd-surface-hover: var(--paper);
+    --dd-menu-surface: var(--surface);
+    --dd-border: var(--line);
+    --dd-border-hover: var(--ink-soft);
+    --dd-text: var(--ink);
+    --dd-text-muted: var(--ink-soft);
+    --dd-accent: var(--accent);
+    --dd-accent-ring: color-mix(in srgb, var(--accent) 20%, transparent);
+    --dd-selected-bg: color-mix(in srgb, var(--accent) 16%, transparent);
+    --dd-radius: 4px;
+    --dd-font: inherit;
+    --dd-shadow: 0 16px 32px rgba(0, 0, 0, 0.35);
+}
+
+/* ---------- the real <select> ----------
+   Kept in the DOM and functional, but visually hidden underneath
+   the custom trigger/menu once JS has taken over. Using an
+   absolutely-positioned, opacity:0 element (rather than
+   display:none) keeps it focusable/submittable. */
+.dropdown-select {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* ---------- no-JS fallback ----------
+   Until the Stimulus controller connects, show the real select
+   (styled to match) instead of an inert trigger button. */
+.dropdown:not(.dropdown--js) .dropdown-select {
+    position: static;
+    opacity: 1;
+    pointer-events: auto;
+    z-index: auto;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    min-height: 3rem;
+    padding: 0.9rem 2.5rem 0.9rem 1rem;
+    font-family: var(--dd-font);
+    font-size: 1rem;
+    color: var(--dd-text);
+    background-color: var(--dd-surface);
+    border: 1px solid var(--dd-border);
+    border-radius: var(--dd-radius);
+    cursor: pointer;
+}
+
+.dropdown:not(.dropdown--js) .dropdown-trigger,
+.dropdown:not(.dropdown--js) .dropdown-menu {
+    display: none;
+}
+
+/* ---------- trigger button (closed state) ---------- */
+.dropdown-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    width: 100%;
+    min-height: 3rem;
+    margin: 0;
+    padding: 0.9rem 1rem;
+
+    font-family: var(--dd-font);
+    font-size: 1rem;
+    line-height: 1.35;
+    text-align: left;
+    color: var(--dd-text);
+
+    background-color: var(--dd-surface);
+    border: 1px solid var(--dd-border);
+    border-radius: var(--dd-radius);
+
+    cursor: pointer;
+    transition: border-color .15s ease, background-color .15s ease, box-shadow .15s ease;
+}
+
+.dropdown-trigger-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dropdown-trigger-label:empty::before {
+    content: attr(data-placeholder);
+    color: var(--dd-text-muted);
+}
+
+/* arrow, drawn with CSS so it themes with everything else */
+.dropdown-trigger::after {
+    content: "";
+    flex-shrink: 0;
+    width: 8px;
+    height: 8px;
+    margin-top: -3px;
+    border-right: 2px solid var(--dd-text-muted);
+    border-bottom: 2px solid var(--dd-text-muted);
+    transform: rotate(45deg);
+    transition: border-color .15s ease, transform .15s ease;
+}
+
+.dropdown.is-open .dropdown-trigger::after {
+    transform: rotate(225deg);
+    margin-top: 3px;
+}
+
+.dropdown-trigger:hover {
+    border-color: var(--dd-border-hover);
+    background-color: var(--dd-surface-hover);
+}
+
+.dropdown-trigger:hover::after,
+.dropdown.is-open .dropdown-trigger::after {
+    border-color: var(--dd-text);
+}
+
+.dropdown-trigger:focus-visible,
+.dropdown.is-open .dropdown-trigger {
+    outline: none;
+    border-color: var(--dd-accent);
+    box-shadow: 0 0 0 3px var(--dd-accent-ring);
+}
+
+.dropdown-trigger:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* ---------- popup menu (open state) ---------- */
+.dropdown-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    z-index: 30;
+
+    margin: 0;
+    padding: 6px;
+    list-style: none;
+
+    max-height: 280px;
+    overflow-y: auto;
+
+    background: var(--dd-menu-surface);
+    border: 1px solid var(--dd-border);
+    border-radius: var(--dd-radius);
+    box-shadow: var(--dd-shadow);
+}
+
+.dropdown-menu[hidden] {
+    display: none;
+}
+
+.dropdown-option {
+    padding: 0.65rem 0.75rem;
+    border-radius: calc(var(--dd-radius) - 2px);
+    font-family: var(--dd-font);
+    font-size: 0.95rem;
+    color: var(--dd-text);
+    cursor: pointer;
+    transition: background-color .1s ease;
+}
+
+.dropdown-option + .dropdown-option {
+    margin-top: 2px;
+}
+
+.dropdown-option:hover {
+    background-color: var(--dd-surface-hover);
+}
+
+.dropdown-option.is-selected {
+    background-color: var(--dd-selected-bg);
+    color: var(--dd-text);
+    font-weight: 700;
+}
+
+.dropdown-option[aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* thin themed scrollbar for the menu, webkit browsers */
+.dropdown-menu::-webkit-scrollbar {
+    width: 8px;
+}
+
+.dropdown-menu::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb {
+    background: var(--dd-border);
+    border-radius: 4px;
+}
+
+/* Compact size variant, e.g. for inline filters/toolbars */
+.dropdown--sm .dropdown-trigger {
+    min-height: 2.25rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+}
+
+.dropdown--sm .dropdown-option {
+    padding: 0.5rem 0.6rem;
+    font-size: 0.85rem;
+}
+
+/* Error state, matches .form-group.has-error conventions used
+   elsewhere so it composes with existing validation styling. */
+.dropdown.has-error .dropdown-trigger {
+    border-color: var(--brand-danger, #D6402C);
+}
+
+.dropdown.has-error .dropdown-trigger:focus-visible {
+    box-shadow: 0 0 0 3px rgba(214, 64, 44, 0.15);
+}

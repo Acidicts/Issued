@@ -26,10 +26,12 @@
   <% if @hackatime_projects.present? %>
     <div class="field">
       <%= form.label :hackatime_project, "Hackatime project" %>
-      <%= form.select :hackatime_project,
-          options_for_select(@hackatime_projects.map { |project| ["#{project['name']} (#{format("%02d:%02d:%02d", project['seconds'].to_i / 3600, (project['seconds'].to_i / 60) % 60, project['seconds'].to_i % 60)})", project['name']] }, @design.hackatime_project),
-          { prompt: "Select a Hackatime project" },
-          class: "form-select" %>
+      <%= render "shared/dropdown",
+          form: form,
+          method: :hackatime_project,
+          choices: @hackatime_projects.map { |project| ["#{project['name']} (#{format("%02d:%02d:%02d", project['seconds'].to_i / 3600, (project['seconds'].to_i / 60) % 60, project['seconds'].to_i % 60)})", project['name']] },
+          selected: @design.hackatime_project,
+          prompt: "Select a Hackatime project" %>
       <p class="muted">Selected Hackatime project time will be added to this design.</p>
     </div>
   <% elsif current_user&.slack_id.present? && HackatimeService.available? %>

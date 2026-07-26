@@ -188,7 +188,6 @@
 
 .design-form .field input[type="text"],
 .design-form .field textarea,
-.design-form .field select,
 .design-form .field input[type="file"] {
     width: 100%;
     min-height: 3rem;
@@ -210,10 +209,17 @@
 
 .design-form .field input[type="text"]:focus,
 .design-form .field textarea:focus,
-.design-form .field select:focus,
 .design-form .field input[type="file"]:focus {
     outline: none;
     border-color: var(--ink);
+}
+
+/* Selects inside the design form use the shared .dropdown
+   component (app/assets/stylesheets/components/dropdown.css),
+   which is themed to this postal palette via the
+   `.design-form .dropdown` mapping defined there. */
+.design-form .field .dropdown {
+    margin: 0;
 }
 
 .design-form .field.file-field {
