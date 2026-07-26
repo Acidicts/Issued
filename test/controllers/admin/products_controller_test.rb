@@ -29,7 +29,7 @@ class Admin::ProductsControllerTest < ActionDispatch::IntegrationTest
         product: { type: "Sticker", cost: 10, thread_cost: 25 }
       }
     end
-    assert_redirected_to admin_product_url(Product.last)
+    assert_redirected_to admin_products_url
   end
 
   test "admin can edit product" do
@@ -43,7 +43,7 @@ class Admin::ProductsControllerTest < ActionDispatch::IntegrationTest
     patch admin_product_url(product), params: {
       product: { type: "Updated Shirt", cost: 30 }
     }
-    assert_redirected_to admin_product_url(product)
+    assert_redirected_to admin_products_url
     assert_equal "Updated Shirt", product.reload.type
   end
 
