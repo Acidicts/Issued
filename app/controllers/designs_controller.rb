@@ -22,7 +22,7 @@ class DesignsController < ApplicationController
     if @current_user.guide == false
       @current_user.update!(guide: true)
     end
-    @design = current_user.designs.new(name: "Untitled Design", description: "Draft description", time: 0)
+    @design = current_user.designs.new()
     render "designs/new"
   end
 

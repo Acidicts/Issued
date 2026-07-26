@@ -1,4 +1,6 @@
 <%= form_with model: @design, local: true, html: { multipart: true, class: "design-form", data: { controller: "disable-button", disable_button_with_value: "Creating...", action: "submit->disable-button#disable" } } do |form| %>
+  <h1 class="design-form-heading"><%= heading %></h1>
+  
   <% if @design.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@design.errors.count, "error") %> prohibited this design from being saved:</h2>
@@ -12,12 +14,13 @@
 
   <div class="field">
     <%= form.label :name %>
-    <%= form.text_field :name %>
+    <% possessive_name = current_user.name.end_with?('s') ? "#{current_user.name}' Master Piece" : "#{current_user.name}'s Master Piece" %>
+    <%= form.text_field :name, placeholder: possessive_name %>
   </div>
 
   <div class="field">
     <%= form.label :description %>
-    <%= form.text_area :description %>
+    <%= form.text_area :description, placeholder: "This is the best becuase " + current_user.name + " made it!" %>
   </div>
 
   <% if @hackatime_projects.present? %>
@@ -26,7 +29,7 @@
       <%= form.select :hackatime_project,
           options_for_select(@hackatime_projects.map { |project| ["#{project['name']} (#{format("%02d:%02d:%02d", project['seconds'].to_i / 3600, (project['seconds'].to_i / 60) % 60, project['seconds'].to_i % 60)})", project['name']] }, @design.hackatime_project),
           { prompt: "Select a Hackatime project" },
-          class: "field-input" %>
+          class: "form-select" %>
       <p class="muted">Selected Hackatime project time will be added to this design.</p>
     </div>
   <% elsif current_user&.slack_id.present? && HackatimeService.available? %>
@@ -52,149 +55,3 @@
     <% end %>
   </div>
 <% end %>
-
-<style>
-  .design-form .field {
-    display: grid;
-    gap: 0.65rem;
-    margin-bottom: 1.2rem;
-  }
-
-  .design-form .field label {
-    font-size: 0.79rem;
-    letter-spacing: 0.11em;
-    text-transform: uppercase;
-    font-weight: 800;
-    color: var(--ink, #241D16);
-  }
-
-  .design-form .field input[type="text"],
-  .design-form .field textarea,
-  .design-form .field select,
-  .design-form .field input[type="file"] {
-    width: 100%;
-    min-height: 3rem;
-    padding: 0.9rem 1rem;
-    border-radius: 4px;
-    border: 1px solid var(--line, #B7A878);
-    background: var(--surface, #F2EAD3);
-    color: var(--ink, #241D16);
-    font-size: 1rem;
-    line-height: 1.35;
-    font-family: inherit;
-    transition: border-color 0.18s ease;
-  }
-
-  .design-form .field textarea {
-    min-height: 150px;
-    resize: vertical;
-  }
-
-  .design-form .field input[type="text"]:focus,
-  .design-form .field textarea:focus,
-  .design-form .field select:focus,
-  .design-form .field input[type="file"]:focus {
-    outline: 2px solid var(--thread-teal, #1F6F78);
-    outline-offset: 2px;
-    border-color: var(--ink, #241D16);
-  }
-
-  .design-form .field.file-field {
-    padding: 0.95rem;
-    border: 1px solid var(--line, #B7A878);
-    border-radius: 4px;
-    background: var(--surface, #F2EAD3);
-  }
-
-  .design-form .field.file-field input[type="file"] {
-    min-height: auto;
-    padding: 0.45rem;
-    background: var(--surface, #F2EAD3);
-  }
-
-  .design-form .field.file-field input[type="file"]::file-selector-button {
-    border: 0;
-    margin-right: 0.85rem;
-    border-radius: 4px;
-    padding: 0.58rem 0.92rem;
-    font-weight: 700;
-    background: var(--ink, #241D16);
-    color: var(--paper, #E4D9BC);
-    cursor: pointer;
-  }
-
-  .design-form .muted {
-    margin: 0;
-    font-size: 0.9rem;
-    line-height: 1.45;
-    color: var(--ink-soft, #4B4133);
-  }
-
-  .design-form #error_explanation {
-    margin-bottom: 1.2rem;
-    padding: 0.95rem 1.05rem;
-    border: 1.5px dashed var(--stamp-red, #D6402C);
-    border-left: 5px solid var(--stamp-red, #D6402C);
-    border-radius: 4px;
-    background: #F2EAD3;
-  }
-
-  .design-form #error_explanation h2 {
-    margin: 0;
-    font-size: 0.96rem;
-    color: var(--stamp-red, #D6402C);
-  }
-
-  .design-form #error_explanation ul {
-    margin: 0.65rem 0 0;
-    padding-left: 1.1rem;
-    color: var(--stamp-red, #D6402C);
-  }
-
-  .design-form .actions {
-    margin-top: 1.85rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-  }
-
-  .design-form .button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 3rem;
-    padding: 0.35rem 1.45rem;
-    border-radius: 4px;
-    border: 1.5px solid var(--ink, #241D16);
-    font-size: 0.96rem;
-    font-weight: 800;
-    letter-spacing: 0.02em;
-    text-decoration: none;
-    cursor: pointer;
-    transition: background-color 0.16s ease;
-    font-family: inherit;
-  }
-
-  .design-form .button-primary {
-    background: var(--ink, #241D16);
-    color: var(--paper, #E4D9BC);
-  }
-
-  .design-form .button-primary:hover,
-  .design-form .button-primary:focus-visible {
-    background: var(--stamp-red, #D6402C);
-  }
-
-  .design-form .button-secondary {
-    background: var(--surface, #F2EAD3);
-    color: var(--ink, #241D16);
-    border-color: var(--ink, #241D16);
-  }
-
-  .design-form .button-secondary:hover,
-  .design-form .button-secondary:focus-visible {
-    background: var(--line, #B7A878);
-  }
-
-
-</style>

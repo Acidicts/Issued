@@ -62,7 +62,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_25_163943) do
     t.string "description", default: ""
     t.string "hackatime_project"
     t.integer "hackatime_seconds"
-    t.string "name", default: "Untitled Design", null: false
+    t.string "name", default: "", null: false
     t.integer "status"
     t.integer "time"
     t.datetime "updated_at", null: false

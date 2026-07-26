@@ -62,6 +62,10 @@ class Design < ApplicationRecord
   validate :hackatime_project_not_used_by_other_design
 
   attribute :status, :integer, default: 0
+
+  attribute :name, :string, default: ""
+  attribute :description, :string, default: ""
+
   enum :status, { unshipped: 0, pending: 1, submitted: 2, approved: 3, rejected: 4 }
 
   def elapsed_time_formatted
