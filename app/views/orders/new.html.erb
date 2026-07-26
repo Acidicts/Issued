@@ -8,7 +8,7 @@
 
   <div class="order-layout">
     <div class="order-form-side">
-      <%= form_with model: @order, url: orders_path, method: :post, class: "form-card" do |f| %>
+      <%= form_with model: @order, url: orders_path, method: :post, html: { class: "form-card", data: { turbo: false } } do |f| %>
         <%= f.hidden_field :product_id, value: @product.id %>
 
         <div class="form-group">

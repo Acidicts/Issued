@@ -15,6 +15,6 @@
     <td><%= user.role %></td>
     <td class="action-buttons">
         <%= link_to 'Edit', edit_admin_user_path(user), class: 'edit' %>
-        <%= link_to 'Delete', admin_user_path(user), method: :delete, data: { confirm: 'Are you sure?' }, class: 'delete' %>
+        <%= link_to 'Delete', admin_user_path(user), method: :delete, data: { confirm: 'Are you sure?', turbo: false }, class: 'delete' %>
     </td>
 </tr>

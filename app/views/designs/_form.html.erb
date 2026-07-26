@@ -1,4 +1,4 @@
-<%= form_with model: @design, local: true, html: { multipart: true, class: "design-form", data: { controller: "disable-button", disable_button_with_value: "Creating...", action: "submit->disable-button#disable" } } do |form| %>
+<%= form_with model: @design, html: { multipart: true, class: "design-form", data: { turbo: false, controller: "disable-button", disable_button_with_value: "Creating...", action: "submit->disable-button#disable" } } do |form| %>
   <h1 class="design-form-heading"><%= heading %></h1>
   
   <% if @design.errors.any? %>

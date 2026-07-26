@@ -12,7 +12,7 @@
 </div>
 
 <div class="import-card">
-    <%= form_with url: admin_rsvp_import_path, method: :post, local: true, html: { class: "import-form", multipart: true } do %>
+    <%= form_with url: admin_rsvp_import_path, method: :post, html: { class: "import-form", multipart: true, data: { turbo: false } } do %>
         <%= file_field_tag :csv_file, accept: ".csv", required: true %>
         <%= submit_tag "Import CSV", class: "import-button" %>
     <% end %>
@@ -35,7 +35,7 @@
         <td><%= rsvp.user.name %></td>
         <td><%= rsvp.user.slack_id %></td>
         <td class="action-buttons">
-          <%= button_to "Delete", admin_rsvp_delete_path(rsvp), method: :delete, class: "delete" %>
+          <%= button_to "Delete", admin_rsvp_delete_path(rsvp), method: :delete, class: "delete", data: { turbo: false } %>
         </td>
       </tr>
     <% end %>

@@ -136,7 +136,7 @@
 
     <div class="rsvp-actions">
       <% if @can_rsvp %>
-        <%= button_to "RSVP Now!", rsvp_submit_path, method: :post, class: "rsvp-btn primary" %>
+        <%= button_to "RSVP Now!", rsvp_submit_path, method: :post, class: "rsvp-btn primary", data: { turbo: false } %>
       <% elsif !signed_in? && !@running && !@ended %>
         <%= link_to "RSVP Now!", login_path(redirect: rsvp_submit_after_login_path), class: "rsvp-btn primary" %>
       <% elsif @already_rsvped %>

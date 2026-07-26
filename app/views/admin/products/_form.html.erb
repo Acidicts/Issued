@@ -13,7 +13,7 @@
 <div data-controller="product-preview"
      data-product-preview-img-url-value="<%= img_url %>">
 
-  <%= form_for [:admin, @product], html: { multipart: true, class: 'form-card' } do |f| %>
+  <%= form_for [:admin, @product], html: { multipart: true, class: 'form-card', data: { turbo: false } } do |f| %>
     <div class="form-header">
       <h1><%= @product.new_record? ? "New Product" : "Edit Product" %></h1>
       <p>Manage product details, pricing, and media assets.</p>
