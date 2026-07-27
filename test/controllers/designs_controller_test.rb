@@ -76,6 +76,6 @@ class DesignsControllerTest < ActionDispatch::IntegrationTest
     delete logout_url
 
     get designs_path
-    assert_redirected_to login_path(redirect: designs_path)
+    assert_redirected_to root_path
   end
 end
