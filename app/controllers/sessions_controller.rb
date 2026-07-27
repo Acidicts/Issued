@@ -78,7 +78,15 @@ class SessionsController < ApplicationController
   end
 
   def failure
-    reason = params[:message].presence || request.env.dig("omniauth.error", "error") || request.env.dig("omniauth.error", "error_reason") || "Unknown error"
+    error = request.env["omniauth.error"]
+    error_type = request.env["omniauth.error.type"]
+
+    reason =
+      params[:message].presence ||
+      (error.respond_to?(:message) ? error.message : nil) ||
+      error_type.presence ||
+      "Unknown error"
+
     logger.warn("OmniAuth failure: #{reason}")
     redirect_to root_path, alert: "Authentication failed: #{reason}"
   end
