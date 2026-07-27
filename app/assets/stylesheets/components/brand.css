@@ -396,6 +396,9 @@
     --brand-text: #e8dfd0;
     --brand-text-secondary: #b8a890;
     --brand-text-muted: #7a6e5e;
+    --brand-success: #5aad6a;
+    --brand-warning: #d4a22a;
+    --brand-danger: #e05a45;
     --brand-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
     --brand-shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.5);
   }
@@ -416,6 +419,26 @@
   .brand-btn--ghost:hover {
     background: var(--brand-surface-alt);
     color: var(--brand-text);
+  }
+
+  .brand-badge--primary {
+    background: var(--brand-primary-light);
+    color: var(--brand-primary);
+  }
+
+  .brand-badge--success {
+    background: rgba(90, 173, 106, 0.15);
+    color: var(--brand-success);
+  }
+
+  .brand-badge--warning {
+    background: rgba(212, 162, 42, 0.15);
+    color: var(--brand-warning);
+  }
+
+  .brand-badge--danger {
+    background: rgba(224, 90, 69, 0.15);
+    color: var(--brand-danger);
   }
 
   .brand-card {

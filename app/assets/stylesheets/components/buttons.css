@@ -1,0 +1,193 @@
+/* ── Base button ── */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-family: var(--brand-font);
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 11px 20px;
+    border-radius: var(--brand-radius-sm);
+    border: 1.5px solid transparent;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease, border-color .15s ease, transform .1s ease;
+    text-decoration: none;
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+.btn:focus-visible {
+    outline: 2px solid var(--brand-primary);
+    outline-offset: 2px;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ── Button variants ── */
+
+.btn-primary {
+    background: var(--brand-text);
+    color: var(--brand-surface);
+    border-color: var(--brand-text);
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: var(--brand-secondary);
+    border-color: var(--brand-secondary);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--brand-text);
+    border-color: var(--brand-border);
+}
+
+.btn-outline:hover:not(:disabled) {
+    border-color: var(--brand-text);
+    background: var(--brand-surface-alt);
+}
+
+.btn-danger {
+    background: var(--brand-danger);
+    color: var(--brand-surface);
+    border-color: var(--brand-danger);
+}
+
+.btn-danger:hover:not(:disabled) {
+    background: var(--brand-text);
+    border-color: var(--brand-text);
+}
+
+.btn-link {
+    background: none;
+    border: none;
+    color: var(--brand-text-secondary);
+    text-decoration: underline;
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: 400;
+    padding: 4px 0;
+}
+
+.btn-link:hover {
+    color: var(--brand-primary);
+}
+
+.btn-block {
+    width: 100%;
+}
+
+/* ── Design form buttons ── */
+
+.design-form .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3rem;
+    padding: 0.35rem 1.45rem;
+    border-radius: 4px;
+    border: 1.5px solid var(--ink);
+    font-size: 0.96rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.16s ease;
+    font-family: inherit;
+}
+
+.design-form .button-primary {
+    background: var(--ink);
+    color: var(--paper);
+}
+
+.design-form .button-primary:hover,
+.design-form .button-primary:focus-visible {
+    background: var(--stamp-red);
+}
+
+.design-form .button-secondary {
+    background: var(--surface);
+    color: var(--ink);
+    border-color: var(--ink);
+}
+
+.design-form .button-secondary:hover,
+.design-form .button-secondary:focus-visible {
+    background: var(--line);
+}
+
+/* ── Standalone primary button ── */
+
+.button-primary,
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.85rem 1.6rem;
+    border-radius: 4px;
+    background: var(--ink);
+    color: var(--paper);
+    border: 1.5px solid var(--ink);
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    transition: background-color 0.16s ease, transform 0.12s ease;
+}
+
+.button-primary:hover,
+.btn-primary:hover,
+.button-primary:focus,
+.btn-primary:focus {
+    background: var(--stamp-red);
+    border-color: var(--stamp-red);
+    transform: translateY(-1px);
+}
+
+/* ── Design actions button ── */
+
+.design-actions .button-primary,
+.design-actions .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.5rem;
+    border-radius: 4px;
+    background: var(--ink);
+    color: var(--paper);
+    border: 1.5px solid var(--ink);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background-color 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease;
+}
+
+.design-actions .button-primary:hover,
+.design-actions .btn-primary:hover {
+    background: var(--stamp-red);
+    border-color: var(--stamp-red);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(214, 64, 44, 0.25);
+}
+
+@media (max-width: 480px) {
+    .design-actions .button-primary,
+    .design-actions .btn-primary {
+        width: 100%;
+        justify-content: center;
+    }
+}

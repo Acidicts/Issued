@@ -1,228 +1,35 @@
-<style>
-  .design-detail {
-    max-width: 980px;
-    margin: 4rem auto 2rem;
-    padding: 1.5rem;
-    background: #F2EAD3;
-    border-radius: 4px;
-  }
+<%= stylesheet_link_tag 'pages/designs.css', "data-turbo-track": "reload" %>
 
-  .design-detail h1 {
-    margin-top: 0;
-    margin-bottom: 0.5rem;
-    font-size: 3rem;
-    letter-spacing: -0.03em;
-  }
-
-  .design-detail p.stat {
-    margin: 0.5rem 0;
-    color: #4f637f;
-    line-height: 1.6;
-  }
-
-  .design-meta {
-    display: grid;
-    gap: 1rem;
-    margin-bottom: 1.75rem;
-  }
-
-  .design-image-preview {
-    display: grid;
-    gap: 1rem;
-    justify-content: center;
-    align-items: start;
-  }
-
-  .design-preview {
-    border: 1.5px solid #B7A878;
-    border-radius: 4px;
-    padding: 1rem;
-    background: #F2EAD3;
-    margin-bottom: 1rem;
-    overflow: hidden;
-    box-sizing: border-box;
-  }
-
-  .svg-preview {
-    width: 200px;
-    height: 200px;
-    display: grid;
-    place-items: center;
-    margin: 0 auto;
-    background: #F2EAD3;
-    border-radius: 4px;
-    border: 1.5px solid #B7A878;
-  }
-
-  .svg-preview svg {
-    width: 100%;
-    height: 100%;
-  }
-
-  .design-preview:not(.svg-preview) {
-    width: 200px;
-    height: 200px;
-    padding: 0.5rem;
-    margin: 0 auto 1rem;
-  }
-
-  .design-preview:not(.svg-preview) img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    border-radius: 3px;
-  }
-
-  .design-preview p {
-    margin: 0;
-    color: #66788a;
-  }
-
-  .design-actions {
-    margin-top: 1.5rem;
-  }
-
-  .button-primary,
-  .btn-primary {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.95rem 1.4rem;
-    border-radius: 4px;
-    background: #241D16;
-    color: #ffffff;
-    border: 1.5px solid transparent;
-    font-weight: 600;
-    text-decoration: none;
-    transition: background-color 0.15s ease;
-  }
-
-  .button-primary:hover,
-  .btn-primary:hover,
-  .button-primary:focus,
-  .btn-primary:focus {
-    background: #374151;
-  }
-
-  .design-detail-container {
-    display: flex;
-    flex-direction: row;
-    gap: 2.5rem;
-  }
-
-  .project-image-gallery {
-    max-width: 980px;
-    margin: 2rem auto;
-  }
-
-  .project-image-gallery h2 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #1e293b;
-    margin-bottom: 1rem;
-    letter-spacing: -0.01em;
-  }
-
-  .image-gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 0.75rem;
-  }
-
-  .image-history-preview {
-    position: relative;
-    border-radius: 4px;
-    overflow: hidden;
-    background: #F2EAD3;
-    border: 1.5px solid #B7A878;
-    aspect-ratio: 1;
-    cursor: pointer;
-  }
-
-  .image-history-preview:hover {
-  }
-
-  .image-history-preview img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .image-history-overlay {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: flex-end;
-    padding: 0.5rem;
-    background: rgba(15, 29, 52, 0.45);
-    opacity: 0;
-    transition: opacity 0.2s ease;
-  }
-
-  .image-history-preview:hover .image-history-overlay {
-    opacity: 1;
-  }
-
-  .image-history-overlay time {
-    font-size: 0.7rem;
-    color: #fff;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .design-detail {
-      background: #241D16;
-    }
-
-    .design-detail p.stat,
-    .design-preview p {
-      color: #D9CBA6;
-    }
-
-    .design-preview {
-      background: #241D16;
-      border-color: #374151;
-    }
-
-    .project-image-gallery h2 {
-      color: #e2e8f0;
-    }
-
-    .image-history-preview {
-      background: #241D16;
-      border-color: #374151;
-    }
-
-    .image-history-preview:hover {
-    }
-  }
-</style>
-
-<div class="design-detail design-detail-container">
+<div class="design-detail design-detail-container design">
   <div class="design-image-preview">
     <% if @design.image_exists? %>
       <div class="design-preview">
         <%= image_tag @design.image?, alt: "Additional image for #{@design.name}" %>
       </div>
+    <% else %>
+      <div class="design-preview">
+        <div class="mock-image">
+          <div class="text-mock-image">
+            <p><strong>No Image Preview</strong></p>
+            <p>No Image Provided/Exists</p>
+          </div>
+        </div>
+      </div>
     <% end %>
   </div>
   <div class="text-content">
-    <h1><%= @design.name %></h1>
+    <div class="design-title-row">
+      <div class="design-title-heading">
+        <h1><%= @design.name %></h1>
+        <h4><%= "By " + @design.user.name %></h4>
+      </div>
+      <div class="design-actions">
+        <%= link_to "Edit design", edit_design_path(@design), class: "button-primary" %>
+      </div>
+    </div>
     <div class="design-meta">
       <p class="stat"><%= @design.description %></p>
-      <% if @design.hackatime_project.present? %>
-        <p class="stat">Hackatime project: <strong><%= @design.hackatime_project %></strong></p>
-        <p class="stat">Hackatime time: <strong><%= @design.hackatime_time_formatted %></strong></p>
-      <% end %>
-      <p class="stat">Updated: <strong><%= @design.updated_at.strftime("%B %d, %Y at %I:%M %p") %></strong></p>
     </div>
-  </div>
-
-  <div class="design-actions">
-    <p><%= link_to "Edit design", edit_design_path(@design), class: "button-primary" %></p>
   </div>
 </div>
 

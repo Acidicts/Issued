@@ -1,39 +1,15 @@
 <%= stylesheet_link_tag "pages/designs.css"%>
 
-<div id="container">
-  <div style="display:inline-flex justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
+<div class="design">
+  <div class="design-heading-actions">
     <h1 id="your-designs-heading">Your Designs</h1>
     <% if !current_user.designs.empty? %>
-      <%= link_to "Create New Design", new_design_path, class: "create-link", style: "margin-bottom: 1.5rem; display: inline-block;" %>
+      <%= link_to "Create New Design", new_design_path, class: "btn" %>
     <% end %>
   </div>
   <hr style="margin-bottom: 2rem">
   <div class="designs-list">
-    <% @designs.each do |design| %>
-      <div class="design-item">
-        <div class="design-preview">
-          <% if design.image_exists? %>
-            <%= image_tag design.image?, alt: "Additional image for #{design.name}" %>
-          <% else %>
-            <p>No preview available.</p>
-          <% end %>
-        </div>
-        <div class="design-details">
-          <h2 class="design-name"> <%= design.name %></h2>
-          <div class="design-meta">
-            <div><span>Last edited:</span> <%= design.updated_at.strftime("%b %d, %Y") %></div>
-            <% if design.hackatime_project.present? %>
-              <div><span>Hackatime:</span> <%= design.hackatime_project %> (<%= design.hackatime_time_formatted %>)</div>
-            <% end %>
-            <div><span>Time:</span> <%= design.elapsed_time_formatted %></div>
-          </div>
-          <div class="design-actions">
-            <%= link_to "Edit", edit_design_path(design), class: "edit-link" %>
-            <%= link_to "View", design_path(design), class: "create-link" %>
-          </div>
-        </div>
-      </div>
-    <% end %>
+    <%= render @designs %>
     <% if @designs.empty? %>
       <div class="empty-state">
         <p>You haven't created any designs yet.</p>

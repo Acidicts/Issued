@@ -1,0 +1,8 @@
+<tr>
+    <td><%= order.id %></td>
+    <td><%= order.user.name %></td>
+    <td><%= order.status %></td>
+    <td>
+    <%= button_to "Cancel", cancel_admin_order_path(order), method: :delete, class: "btn btn-danger", data: { turbo: false } %>
+    </td>
+</tr>

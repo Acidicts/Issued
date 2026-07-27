@@ -1,6 +1,6 @@
 class DesignsController < ApplicationController
   layout "application"
-  before_action :ensure_signed_in
+  before_action :require_login, except: [ :show, :image ]
   before_action :find_design, only: [ :show, :edit, :update, :image ]
   before_action :load_hackatime_projects, only: [ :new, :edit ]
 
@@ -85,7 +85,7 @@ class DesignsController < ApplicationController
   end
 
   def find_design
-    @design = current_user.designs.find(params[:id])
+    @design = Design.find(params[:id])
   end
 
   def design_params

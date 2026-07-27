@@ -1,0 +1,24 @@
+<div class="design-item">
+    <div class="design-preview">
+        <% if design.image_exists? %>
+        <%= image_tag design.image?, alt: "Additional image for #{design.name}" %>
+        <% else %>
+        <p>No preview available.</p>
+        <% end %>
+    </div>
+    <div class="design-details">
+        <h2 class="design-name"> <%= design.name %></h2>
+        <div class="design-meta">
+        <div><span>Last edited:</span> <%= design.updated_at.strftime("%b %d, %Y") %></div>
+        <% if design.hackatime_project.present? %>
+            <div>
+                <%= render partial: "designs/hackatime_pill", locals: { design: [ design.hackatime_project, design.hackatime_time_formatted ] } %>
+            </div>
+        <% end %>
+        </div>
+        <div class="design-actions">
+        <%= link_to "Edit", edit_design_path(design), class: "edit-link" %>
+        <%= link_to "View", design_path(design), class: "create-link" %>
+        </div>
+    </div>
+</div>
