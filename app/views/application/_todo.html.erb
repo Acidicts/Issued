@@ -1,5 +1,7 @@
 <%# locals: { show: false } %>
-<% if show && current_user && !@current_path.include?("rsvp") && !@current_user.guide %>
+<% show_todo = show && current_user && !@current_path.include?("rsvp") && !@current_user.guide &&
+  (current_user.slack_id.blank? || (current_user.designs.empty? && @current_path != designs_path)) %>
+<% if show_todo %>
 
   <style>
     .todo-overlay {
