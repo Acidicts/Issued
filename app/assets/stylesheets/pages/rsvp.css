@@ -1,0 +1,133 @@
+.rsvp-page {
+    --ink: #241D16;
+    --line: #B7A878;
+    --paper: #E4D9BC;
+    --card: #F2EAD3;
+    --muted: #B7A878;
+    --accent: #1F6F78;
+    --ok: #1F6F78;
+    --warn: #B97F19;
+
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 1.25rem;
+}
+
+@media (prefers-color-scheme: dark) {
+    .rsvp-page {
+        --ink: #E4D9BC;
+        --line: #5a4f3e;
+        
+        --paper: #241D16;
+        --card: #241D16;
+        --muted: #B7A878;
+        --accent: #1F6F78;
+        --ok: #1F6F78;
+        --warn: #B97F19;
+
+    }
+}
+
+body.has-nav .rsvp-page {
+    min-height: calc(100vh - 6rem);
+}
+
+.rsvp-card {
+    width: min(720px, 100%);
+    padding: 2.2rem;
+    border-radius: 4px;
+    border: 1.5px dashed var(--ink);
+    background: var(--paper);
+    color: var(--ink);
+}
+
+.rsvp-tag {
+    display: inline-block;
+    padding: 0.3rem 0.7rem;
+    border-radius: 3px;
+    border: 1px solid var(--ink);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.rsvp-title {
+    margin: 0.5rem 0 0;
+    font-family: var(--display, 'Archivo Black', 'Arial Black', sans-serif);
+    font-size: clamp(2.1rem, 8.4vw, 4rem);
+    font-weight: 700;
+    line-height: 1.08;
+}
+
+.rsvp-subtitle {
+    margin: 0.95rem 0 0;
+    font-size: clamp(1rem, 2.6vw, 1.2rem);
+    line-height: 1.5;
+    max-width: 50ch;
+    color: var(--ink-soft);
+}
+
+.rsvp-actions {
+    margin-top: 1.6rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.rsvp-btn {
+    appearance: none;
+    border: 1.5px dashed var(--ink);
+    border-radius: 4px;
+    padding: 0.72rem 1rem;
+    text-decoration: none;
+    font-family: var(--mono, 'Space Mono', monospace);
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    background: var(--card);
+    color: var(--ink, #241D16);
+    transition: background 160ms ease;
+}
+
+.rsvp-btn:hover {
+    background: var(--paper);
+}
+
+.rsvp-btn.primary {
+    background: var(--ink);
+    color: var(--paper);
+    border-style: solid;
+}
+
+.rsvp-btn.primary:hover {
+    background: var(--ink-soft);
+}
+
+.rsvp-btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.rsvp-meta {
+    margin-top: 1.25rem;
+    font-size: 0.86rem;
+    color: var(--ink-soft);
+}
+
+@media (max-width: 680px) {
+    .rsvp-card {
+        padding: 1.2rem;
+    }
+
+    .rsvp-actions {
+        flex-direction: column;
+    }
+
+    .rsvp-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
