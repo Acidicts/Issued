@@ -52,13 +52,13 @@
             </select>
             <p class="form-hint">Pick a design from your collection to preview it on the product.</p>
           <% else %>
-            <p class="form-hint" style="color: var(--brand-warning);">You have no designs yet. <%= link_to "Create one first", new_design_path %>.</p>
+            <p class="form-hint" style="color: var(--warn);">You have no designs yet. <%= link_to "Create one first", new_design_path %>.</p>
           <% end %>
         </div>
 
         <div class="form-actions">
-          <%= f.submit "Place Order", class: "btn btn-primary", disabled: @designs.empty?, data: { disable_button_target: "button" } %>
-          <%= link_to "Cancel", shop_path, class: "btn btn-outline" %>
+          <%= f.submit "Place Order", class: "btn btn-secondary", disabled: @designs.empty?, data: { disable_button_target: "button" } %>
+          <%= link_to "Cancel", shop_path, class: "btn btn-secondary btn-outline" %>
         </div>
       <% end %>
     </div>

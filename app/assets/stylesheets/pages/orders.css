@@ -1,7 +1,35 @@
 .order-wrap {
+	--ink: #241D16;
+	--line: #B7A878;
+	--paper: #E4D9BC;
+	--card: #F2EAD3;
+	--muted: #B7A878;
+	--accent: #1F6F78;
+	--ok: #1F6F78;
+	--warn: #B97F19;
+}
+
+@media (prefers-color-scheme: dark) {
+	.order-wrap {
+		--ink: #E4D9BC;
+		--line: #5a4f3e;;
+		--paper: #241D16;
+		--card: #241D16;
+		--muted: #B7A878;
+		--accent: #1F6F78;
+		--ok: #1F6F78;
+		--warn: #B97F19;
+
+	}
+}
+
+.order-wrap {
+  background: var(--paper);
   max-width: 960px;
   margin: 0 auto;
   padding: 2rem 1.25rem;
+  border-radius: 25px;
+  border: var(--muted) dashed 1px;
 }
 
 .order-header h1 {
@@ -23,7 +51,7 @@
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
   margin-top: 1.5rem;
-  align-items: start;
+  align-items: stretch;
 }
 
 @media (max-width: 720px) {
@@ -34,6 +62,14 @@
 
 .order-form-side .form-card {
   padding: 1.5rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.order-form-side .form-card .form-actions {
+  margin-top: auto;
+  padding-top: 18px;
 }
 
 .order-product-summary {
@@ -68,22 +104,28 @@
 .order-preview-side {
   position: sticky;
   top: 6rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .preview-label {
+  position: absolute;
+  top: 0;
+  left: 0;
   font-family: var(--brand-font);
   font-weight: 700;
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 1px;
   color: var(--brand-text-muted);
-  margin-bottom: 8px;
+  z-index: 1;
+  transform: translateY(-100%) translateX(2.5%);
 }
 
 .preview-canvas {
   position: relative;
   width: 100%;
-  aspect-ratio: 1;
+  flex: 1;
   border: 1.5px dashed var(--brand-border);
   border-radius: var(--brand-radius);
   background: var(--brand-surface-alt);
@@ -138,6 +180,13 @@
   font-size: 13px;
   background: rgba(242, 234, 211, 0.6);
   pointer-events: none;
+}
+
+.preview-placeholder {
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+  padding: 2rem;
 }
 
 @media (prefers-color-scheme: dark) {

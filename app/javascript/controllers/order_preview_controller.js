@@ -35,10 +35,26 @@ export default class extends Controller {
     const naturalW = img.naturalWidth
     const naturalH = img.naturalHeight
 
-    this.scale = Math.min(displayedW / naturalW, displayedH / naturalH)
+    const imgAspect = naturalW / naturalH
+    const boxAspect = displayedW / displayedH
 
-    this.imgOffsetX = imgRect.left - canvasRect.left
-    this.imgOffsetY = imgRect.top - canvasRect.top
+    let renderedW, renderedH, renderedX, renderedY
+
+    if (imgAspect >= boxAspect) {
+      renderedW = displayedW
+      renderedH = displayedW / imgAspect
+    } else {
+      renderedH = displayedH
+      renderedW = displayedH * imgAspect
+    }
+
+    renderedX = (displayedW - renderedW) / 2
+    renderedY = (displayedH - renderedH) / 2
+
+    this.scale = renderedW / naturalW
+
+    this.imgOffsetX = (imgRect.left - canvasRect.left) + renderedX
+    this.imgOffsetY = (imgRect.top - canvasRect.top) + renderedY
 
     this.positionOverlay()
   }
@@ -70,5 +86,11 @@ export default class extends Controller {
     this.designImageTarget.src = imageUrl
     this.designOverlayTarget.style.display = "flex"
     this.emptyStateTarget.style.display = "none"
+
+    if (this.designImageTarget.complete) {
+      this.positionOverlay()
+    } else {
+      this.designImageTarget.addEventListener("load", () => this.positionOverlay(), { once: true })
+    }
   }
 }
