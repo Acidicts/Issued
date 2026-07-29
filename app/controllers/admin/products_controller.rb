@@ -59,7 +59,7 @@ module Admin
     private
 
     def product_params
-      params.require(:product).permit(:type, :cost, :thread_cost, :image, :image_x, :image_y, :image_wx, :image_wy)
+      params.require(:product).permit(:type, :description, :cost, :thread_cost, :image, :image_x, :image_y, :image_wx, :image_wy)
     end
   end
 end

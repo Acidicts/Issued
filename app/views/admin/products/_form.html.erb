@@ -29,6 +29,14 @@
           <% end %>
         </div>
 
+        <div class="form-group <%= 'has-error' if @product.errors[:description].present? %>">
+          <%= f.label :description, class: 'form-label' %>
+          <%= f.text_area :description, class: 'form-input' %>
+          <% if @product.errors[:type].present? %>
+            <div class="form-error"><%= @product.errors[:type].join(', ') %></div>
+          <% end %>
+        </div>
+
         <div class="form-grid">
           <div class="form-group <%= 'has-error' if @product.errors[:cost].present? %>">
             <%= f.label :cost, "Cost (USD)", class: 'form-label' %>

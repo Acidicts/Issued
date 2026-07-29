@@ -5,6 +5,7 @@
 # Schema:
 # - id: integer (primary key)
 # - type: string (product type)
+# - description: text (product description)
 # - cost: decimal (product cost_usd)
 # - thread_cost: integer (product thread_cost)
 # - created_at: datetime
@@ -47,6 +48,8 @@ class Product < ApplicationRecord
 
   has_one_attached :image
   has_many :orders
+
+  attribute :description, default: "", null: false
 
   def cost_usd
     self.cost

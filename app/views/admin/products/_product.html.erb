@@ -1,16 +1,8 @@
-<div class="product-card">
-  <div class="product-image">
-    <% if product.image.attached? %>
-        <%= image_tag product.image, alt: product.type %>
-    <% else %>
-        <span class="placeholder">No image</span>
+<div>
+  <%= render "shared/product", product: product, actions: capture { %>
+    <%= link_to "Edit", edit_admin_product_path(product), class: "btn btn-seconday" %>
+    <%= link_to "Delete", admin_product_path(product), data: { turbo_method: :delete }, class: "btn btn-secondary" do %>
+      <%= image_tag %>
     <% end %>
-    </div>
-    <div class="product-info">
-    <h2 class="product-name"><%= product.type %></h2>
-    <p class="product-cost"><b><%= product.thread_cost %></b> threads</p>
-  </div>
-  <div class="product-card__actions">
-    <%= link_to "Edit", edit_admin_product_path(product), class: "btn btn-sm btn-outline-primary" %>
-  </div>
+  <% } %>
 </div>

@@ -99,6 +99,14 @@
   margin: 0;
 }
 
+.product-info .product-description {
+  font-family: 'Space Mono', 'Courier New', monospace;
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--muted);
+  margin: 0;
+}
+
 .product-info .product-cost {
   font-size: 0.9rem;
   color: var(--muted);

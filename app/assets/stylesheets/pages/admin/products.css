@@ -7,10 +7,6 @@
 	--accent: #1F6F78;
 	--ok: #1F6F78;
 	--warn: #B97F19;
-
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 2rem 1.25rem;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -24,8 +20,14 @@
 		--ok: #1F6F78;
 		--warn: #B97F19;
 
-		background: var(--paper);
 	}
+}
+
+.products {
+  background: var(--paper);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem;
 }
 
 .admin-product-grid {
@@ -112,6 +114,10 @@
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
   align-items: start;
+}
+
+.product-form-actions {
+  display: inline;
 }
 
 @media (max-width: 720px) {

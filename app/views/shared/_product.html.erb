@@ -1,0 +1,20 @@
+<div class="product-card">
+    <div class="product-image">
+        <% if product.image.attached? %>
+            <%= image_tag product.image, alt: product.type %>
+        <% else %>
+            <span class="placeholder">No image</span>
+        <% end %>
+        </div>
+        <div class="product-info">
+        <h2 class="product-name"><%= product.type %></h2>
+        <p class="product-description"><%= product.description %></p>
+        <p class="product-cost"><b><%= product.thread_cost > 0 ? product.thread_cost.to_s + " threads" : "Free" %></b></p>
+        <div class="product-form-actions">
+            <%= link_to "Weave", new_order_path(product_id: product.id), class: "btn btn-secondary" %>
+            
+            <%# Render custom actions passed to the partial %>
+            <%= local_assigns[:actions] %>
+        </div>
+    </div>
+</div>
