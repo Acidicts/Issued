@@ -1,8 +1,8 @@
 <div>
   <%= render "shared/product", product: product, actions: capture { %>
-    <%= link_to "Edit", edit_admin_product_path(product), class: "btn btn-seconday" %>
-    <%= link_to "Delete", admin_product_path(product), data: { turbo_method: :delete }, class: "btn btn-secondary" do %>
-      <%= image_tag %>
+    <%= link_to "Edit", edit_admin_product_path(product), class: "btn btn-secondary" %>
+    <%= link_to admin_product_path(product), data: { turbo_method: :delete }, class: "btn btn-secondary" do %>
+      <%= image_tag "icons/bin.svg", alt: "Delete" %>
     <% end %>
   <% } %>
 </div>

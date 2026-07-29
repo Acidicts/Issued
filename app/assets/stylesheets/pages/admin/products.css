@@ -19,7 +19,6 @@
 		--accent: #1F6F78;
 		--ok: #1F6F78;
 		--warn: #B97F19;
-
 	}
 }
 
@@ -27,7 +26,9 @@
   background: var(--paper);
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem 1.25rem;
+  padding: 2rem;
+  border-radius: 25px;
+  border: var(--line) 1px solid;
 }
 
 .admin-product-grid {
@@ -60,6 +61,8 @@
   margin-left: 0;
   min-width: 100px;
   border-top: dashed var(--muted) 1px;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 .product-card .product-image {
@@ -117,7 +120,17 @@
 }
 
 .product-form-actions {
-  display: inline;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.products-heading {
+  display: inline-flex;
+  align-items: baseline;
+  width: 100%;
+  justify-content: space-between;
 }
 
 @media (max-width: 720px) {

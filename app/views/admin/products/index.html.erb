@@ -2,10 +2,12 @@
 <%= stylesheet_link_tag "pages/shop" %>
 
 <div class="products">
-    <h1>Product Management</h1>
-    <% if @products.any? %>
-        <%= link_to 'Add New Product', new_admin_product_path, class: 'btn btn-primary mb-1r' %>
-    <% end %>
+    <div class="products-heading">
+        <h1>Product Management</h1>
+        <% if @products.any? %>
+            <%= link_to 'Add New Product', new_admin_product_path, class: 'btn btn-primary mb-1r add-product-btn' %>
+        <% end %>
+    </div>
 
     <div class="dashed-break"></div>
 
