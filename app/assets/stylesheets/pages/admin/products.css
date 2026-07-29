@@ -1,4 +1,4 @@
-.admin-product {
+.products {
 	--ink: #241D16;
 	--line: #B7A878;
 	--paper: #E4D9BC;
@@ -14,7 +14,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-	.admin-product {
+	.products {
 		--ink: #E4D9BC;
 		--line: #5a4f3e;;
 		--paper: #241D16;
@@ -29,9 +29,18 @@
 }
 
 .admin-product-grid {
+  width: 100%;
   display: grid;
   gap: 1rem;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+
+.no-product-grid {
+  width: 100%;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
 }
 
 .product-card {
@@ -42,6 +51,13 @@
   flex-direction: column;
   gap: 0.75rem;
   background: var(--card);
+}
+
+.dashed-break {
+  width: 100%;
+  margin-left: 0;
+  min-width: 100px;
+  border-top: dashed var(--muted) 1px;
 }
 
 .product-card .product-image {

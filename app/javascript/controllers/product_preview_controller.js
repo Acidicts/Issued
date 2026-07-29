@@ -37,21 +37,28 @@ export default class extends Controller {
   // --- Image loading ---
   loadImage(url) {
     if (!url) return
-    if (!this.hasProductImageTarget) {
-      const img = document.createElement("img")
+
+    const canvas = this.canvasTarget
+    let img = canvas.querySelector('img.preview-product-img')
+
+    if (!img) {
+      const designBox = canvas.querySelector('[data-product-preview-target="designBox"]')
+      const placeholder = canvas.querySelector('[data-product-preview-target="placeholder"]')
+
+      canvas.innerHTML = ""
+
+      img = document.createElement("img")
       img.className = "preview-product-img"
       img.alt = "Product preview"
       img.dataset.productPreviewTarget = "productImage"
       img.addEventListener("load", () => this.syncFromInputs())
-      this.canvasTarget.innerHTML = ""
-      this.canvasTarget.appendChild(img)
-      this.canvasTarget.appendChild(this.designBoxTarget)
-      this.productImageTarget = img
+      canvas.appendChild(img)
+
+      if (designBox) canvas.appendChild(designBox)
+      if (placeholder) placeholder.style.display = "none"
     }
-    this.productImageTarget.src = url
-    if (this.hasPlaceholderTarget) {
-      this.placeholderTarget.style.display = "none"
-    }
+
+    img.src = url
   }
 
   imageSelected(event) {
@@ -77,7 +84,9 @@ export default class extends Controller {
     const imgX = this.getImageOffsetX()
     const imgY = this.getImageOffsetY()
 
-    const box = this.designBoxTarget
+    const box = this.designBoxTarget || this.canvasTarget.querySelector('[data-product-preview-target="designBox"]')
+    if (!box) return
+
     box.style.left = (imgX + x * this.scale) + "px"
     box.style.top = (imgY + y * this.scale) + "px"
     box.style.width = (wx * this.scale) + "px"
@@ -91,8 +100,8 @@ export default class extends Controller {
 
   // --- Drag ---
   dragStart(event) {
-    const box = this.designBoxTarget
-    if (box.style.display === "none") return
+    const box = this.designBoxTarget || this.canvasTarget.querySelector('[data-product-preview-target="designBox"]')
+    if (!box || box.style.display === "none") return
 
     const boxRect = box.getBoundingClientRect()
     const canvasRect = this.canvasTarget.getBoundingClientRect()

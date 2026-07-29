@@ -1,16 +1,23 @@
 <%= stylesheet_link_tag "pages/admin/products" %>
 
-<h1>Product Management</h1>
-<%= link_to 'Add New Product', new_admin_product_path, class: 'btn btn-primary mb-1r' %>
+<div class="products">
+    <h1>Product Management</h1>
+    <% if @products.any? %>
+        <%= link_to 'Add New Product', new_admin_product_path, class: 'btn btn-primary mb-1r' %>
+    <% end %>
 
-<div class="admin-product">
-    <div class="admin-product-grid">
-        <% @products.each do |product| %>
-            <%= render 'product', product: product %>
-        <% end %>
+    <div class="dashed-break"></div>
+
+    <div class="admin-product">
         <% if @products.empty? %>
-            <p>No products found.</p>
-            <%= link_to 'Add New Product', new_admin_product_path, class: 'btn btn-primary' %>
+            <div class="no-product-grid">
+                <p>No products found.</p>
+                <%= link_to 'Add New Product', new_admin_product_path, class: 'btn' %>
+            </div>
+        <% else %>
+            <div class="admin-product-grid">
+                <%= render @products %>
+            </div>
         <% end %>
     </div>
 </div>

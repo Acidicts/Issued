@@ -1,0 +1,194 @@
+body {
+    background:
+        radial-gradient(circle at 1px 1px, rgba(36, 29, 22, 0.05) 1px, transparent 1px) 0 0/14px 14px,
+        #E4D9BC;
+    color: #241D16;
+    font-family: 'Space Mono', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    transition: background 0.3s ease, color 0.3s ease;
+    padding-top: 4.2rem;
+    margin-top: 3rem;
+}
+
+body>header {
+    background: #F2EAD3;
+    border-bottom: 1.5px dashed #B7A878;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 50;
+    overflow: hidden;
+}
+
+body>header::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background: linear-gradient(90deg, rgba(183, 168, 120, 0.8), rgba(242, 234, 211, 0.2), rgba(183, 168, 120, 0.8));
+    background-size: 200% 100%;
+    animation: running-line 2.5s linear infinite;
+    z-index: 51;
+}
+
+@keyframes running-line {
+    0% {
+        background-position: 0% 0%;
+    }
+
+    100% {
+        background-position: -200% 0%;
+    }
+}
+
+nav {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0.75rem 1rem;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 1rem;
+    left: 1rem;
+}
+
+.nav-link {
+    font-family: 'Space Mono', 'Courier New', monospace;
+    color: #241D16;
+    text-decoration: none;
+    font-weight: 700;
+    padding: 0.5rem 0.75rem;
+    border-radius: 2px;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.nav-link:hover,
+.nav-link:focus-visible {
+    background: rgba(31, 111, 120, 0.15);
+    color: #1F6F78;
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background:
+            radial-gradient(circle at 1px 1px, rgba(232, 223, 208, 0.05) 1px, transparent 1px) 0 0/14px 14px,
+            #1a1510;
+        color: #e8dfd0;
+    }
+
+    body>header {
+        background: #241d16;
+        border-bottom-color: #5a4f3e;
+    }
+
+    body>header::after {
+        background: linear-gradient(90deg, rgba(90, 79, 62, 0.8), rgba(36, 29, 22, 0.2), rgba(90, 79, 62, 0.8));
+    }
+
+    .nav-link {
+        color: #e8dfd0;
+    }
+
+    .nav-link:hover,
+    .nav-link:focus-visible {
+        background: rgba(42, 138, 150, 0.2);
+        color: #2a8a96;
+    }
+
+    .btn {
+        border-color: rgba(232, 223, 208, 0.30);
+        background: rgba(232, 223, 208, 0.1);
+        color: #e8dfd0;
+    }
+
+    .btn:hover {
+        background: rgba(232, 223, 208, 0.2);
+    }
+}
+
+.btn {
+    transition: background 0.14s ease, box-shadow 0.14s ease, color 0.14s ease;
+}
+
+.dashboard-subnav {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.55rem 1.25rem;
+    background: #E4D9BC;
+    border-top: 1px dashed #B7A878;
+    border-bottom: 1px dashed #B7A878;
+    position: relative;
+    z-index: 49;
+}
+
+.dashboard-subnav-parent {
+    display: inline-flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.55rem 1.25rem;
+    background: #E4D9BC;
+    border-top: 1px dashed #B7A878;
+    border-bottom: 1px dashed #B7A878;
+    position: relative;
+    z-index: 49;
+}
+
+.dashboard-link {
+    font-family: 'Space Mono', 'Courier New', monospace;
+    font-size: 0.88rem;
+    color: #4B4133;
+    padding: 0.48rem 0.75rem;
+    border-radius: 2px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.dashboard-link:hover,
+.dashboard-link:focus-visible {
+    background: rgba(31, 111, 120, 0.15);
+    color: #1F6F78;
+    transform: translateY(-1px);
+}
+
+.dashboard-link.active {
+    background: #241D16;
+    color: #F2EAD3;
+    font-weight: 700;
+}
+
+@media (prefers-color-scheme: dark) {
+    .dashboard-subnav {
+        background: #241d16;
+        border-top-color: #5a4f3e;
+        border-bottom-color: #5a4f3e;
+    }
+
+    .dashboard-subnav-parent {
+        background: #241d16;
+        border-top-color: #5a4f3e;
+        border-bottom-color: #5a4f3e;
+    }
+
+    .dashboard-link {
+        color: #b8a890;
+    }
+
+    .dashboard-link:hover,
+    .dashboard-link:focus-visible {
+        background: rgba(42, 138, 150, 0.3);
+        color: #2a8a96;
+    }
+
+    .dashboard-link.active {
+        background: #1F6F78;
+        color: #F2EAD3;
+    }
+}
