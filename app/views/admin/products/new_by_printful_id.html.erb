@@ -1,0 +1,36 @@
+<%= stylesheet_link_tag "components/tokens" %>
+<%= stylesheet_link_tag "components/forms" %>
+<%= stylesheet_link_tag "pages/admin/products" %>
+
+<div class="form-card" data-controller="printful-import">
+  <div class="form-header">
+    <h1>New product from Printful</h1>
+    <p>Enter a Printful catalog product id and we'll pull in its name, description, price, and design placement automatically.</p>
+  </div>
+
+  <% if @printful_error.present? %>
+    <div class="form-error" style="margin-bottom: 16px;"><%= @printful_error %></div>
+  <% end %>
+
+  <%= form_tag import_from_printful_admin_products_path, method: :post, class: "form-card", data: { turbo: false, printful_import_target: "form", action: "submit->printful-import#submit" } do %>
+    <div class="form-group">
+      <%= label_tag :printful_id, "Printful product ID", class: "form-label" %>
+      <%= text_field_tag :printful_id, params[:printful_id], class: "form-input",
+            placeholder: "e.g. 732", inputmode: "numeric", pattern: "[0-9]*", required: true,
+            data: { printful_import_target: "input" } %>
+      <p class="form-hint">
+        Find this in the Printful catalog URL, e.g.
+        <code>printful.com/dashboard/catalog/product/<strong>732</strong></code>.
+      </p>
+    </div>
+
+    <div class="form-actions align-start">
+      <%= submit_tag "Fetch from Printful", class: "btn btn-secondary", data: { printful_import_target: "submitButton" } %>
+      <span class="form-hint" data-printful-import-target="status" style="display: none;">Fetching product from Printful&hellip;</span>
+    </div>
+  <% end %>
+
+  <p class="form-hint" style="margin-top: 16px;">
+    Prefer to fill everything in yourself? <%= link_to "Create a blank product instead.", new_admin_product_path %>
+  </p>
+</div>

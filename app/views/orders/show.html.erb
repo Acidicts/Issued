@@ -1,2 +1,32 @@
-<h1>Orders#show</h1>
-<p>Find me in app/views/orders/show.html.erb</p>
+<%= stylesheet_link_tag "pages/orders", "data-turbo-track": "reload" %>
+
+<div class="order-show">
+  <div class="order-show-image">
+    <% if @order.preview_image.attached? %>
+      <%= image_tag @order.preview_image, alt: "Order preview" %>
+    <% else %>
+      <span class="order-show-placeholder">No preview available</span>
+    <% end %>
+  </div>
+  <div class="order-show-info">
+    <div class="order-show-header">
+      <h3>Order <%= @order.id %></h3>
+      <span class="order-show-status order-show-status--<%= @order.status %>"><%= @order.status.humanize %></span>
+    </div>
+    <div class="order-show-details">
+      <div class="order-show-detail">
+        <span class="order-show-label">Product</span>
+        <span class="order-show-value"><%= @order.product.type %></span>
+      </div>
+      <div class="order-show-detail">
+        <span class="order-show-label">Design</span>
+        <span class="order-show-value"><%= @order.design.name %></span>
+      </div>
+      <div class="order-show-detail">
+        <span class="order-show-label">Placed</span>
+        <span class="order-show-value"><%= @order.created_at.strftime("%b %d, %Y") %></span>
+      </div>
+    </div>
+    <%= link_to "Back to orders", orders_path, class: "btn btn-secondary" %>
+  </div>
+</div>

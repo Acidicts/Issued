@@ -73,6 +73,7 @@
               <div class="d-flex align-items-center gap-2">
                 <%= image_tag @product.image, alt: "Product image", style: "max-width: 48px; border-radius: 4px;" %>
                 <span class="name"><%= @product.image.filename.to_s %></span>
+                <span class="name"><%= "#{@product.image.blob.metadata['width']}px x #{@product.image.blob.metadata['height']}px" %></span>
               </div>
             </div>
           <% end %>

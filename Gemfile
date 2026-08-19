@@ -20,6 +20,9 @@ gem "omniauth"
 gem "omniauth-oauth2"
 gem "csv"
 
+# image
+gem "ruby-vips"
+
 # Security fixes for dependencies
 gem "addressable", ">= 2.9.0"
 gem "concurrent-ruby", ">= 1.3.7"

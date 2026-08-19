@@ -6,6 +6,7 @@
         <h1>Product Management</h1>
         <% if @products.any? %>
             <%= link_to 'Add New Product', new_admin_product_path, class: 'btn btn-primary mb-1r add-product-btn' %>
+            <%= link_to 'Import from Printful', new_by_printful_id_admin_products_path, class: 'btn btn-secondary mb-1r' %>
         <% end %>
     </div>
 
@@ -16,6 +17,7 @@
             <div class="no-product-grid">
                 <p>No products found.</p>
                 <%= link_to 'Add New Product', new_admin_product_path, class: 'btn' %>
+                <%= link_to 'Import from Printful', new_by_printful_id_admin_products_path, class: 'btn' %>
             </div>
         <% else %>
             <div class="admin-product-grid">

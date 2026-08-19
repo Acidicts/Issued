@@ -24,6 +24,7 @@ class OrdersController < ApplicationController
     @order = Order.new(order_params)
     @order.user = current_user
     @order.status = :pending
+    @order.generate_and_attach_preview
 
     if @order.save
       redirect_to orders_path, notice: "Order placed successfully!"
@@ -58,6 +59,6 @@ class OrdersController < ApplicationController
   end
 
   def order_params
-    params.require(:order).permit(:design_id, :product_id)
+    params.require(:order).permit(:design_id, :product_id, :x, :y, :wx, :wy, :rotation)
   end
 end

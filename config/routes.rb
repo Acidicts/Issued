@@ -52,7 +52,12 @@ Rails.application.routes.draw do
     get "/", to: "dashboard#index", as: :overview
 
     resources :users,    only: %i[index show new edit create update destroy]
-    resources :products, only: %i[index show new edit create update destroy]
+    resources :products, only: %i[index show new edit create update destroy] do
+      collection do
+        get  :new_by_printful_id
+        post :import_from_printful
+      end
+    end
     resources :orders,   only: %i[index show edit update destroy] do
       member { delete :cancel }
     end

@@ -1,4 +1,6 @@
-<div>
+<%= stylesheet_link_tag "pages/orders", "data-turbo-track": "reload" %>
+
+<div class="form-card">
     <h1>Your Orders</h1>
 
     <% if @orders.any? %>

@@ -1,6 +1,10 @@
 <%= stylesheet_link_tag "pages/orders", "data-turbo-track": "reload" %>
 
-<div class="order-wrap" data-controller="order-preview">
+<div class="order-wrap" data-controller="order-preview"
+     data-order-preview-image-x-value="<%= @product.image_x %>"
+     data-order-preview-image-y-value="<%= @product.image_y %>"
+     data-order-preview-image-wx-value="<%= @product.image_wx %>"
+     data-order-preview-image-wy-value="<%= @product.image_wy %>">
   <div class="order-header">
     <h1>New Order</h1>
     <p class="sub">Choose a design to print on your <%= @product.type&.downcase || "product" %>.</p>
@@ -13,7 +17,7 @@
 
         <div class="form-group">
           <label class="form-label">
-            Pattern
+            Design
           </label>
           <div class="order-product-summary">
             <% if @product.image.attached? %>
@@ -56,6 +60,41 @@
           <% end %>
         </div>
 
+        <fieldset class="form-fieldset">
+          <legend>Design placement</legend>
+          <p class="form-hint" style="margin-bottom: 12px;">Drag, resize, or rotate the design within the print area.</p>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <%= f.label :x, "X position (px)", class: 'form-label' %>
+              <%= f.number_field :x, step: 1, class: 'form-input',
+                    data: { order_preview_target: "inputX", action: "input->order-preview#inputChanged" } %>
+            </div>
+            <div class="form-group">
+              <%= f.label :y, "Y position (px)", class: 'form-label' %>
+              <%= f.number_field :y, step: 1, class: 'form-input',
+                    data: { order_preview_target: "inputY", action: "input->order-preview#inputChanged" } %>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <%= f.label :wx, "Width (px)", class: 'form-label' %>
+              <%= f.number_field :wx, step: 1, class: 'form-input',
+                    data: { order_preview_target: "inputWx", action: "input->order-preview#inputChanged" } %>
+            </div>
+            <div class="form-group">
+              <%= f.label :wy, "Height (px)", class: 'form-label' %>
+              <%= f.number_field :wy, step: 1, class: 'form-input',
+                    data: { order_preview_target: "inputWy", action: "input->order-preview#inputChanged" } %>
+            </div>
+          </div>
+          <div class="form-group">
+            <%= f.label :rotation, "Rotation (deg)", class: 'form-label' %>
+            <%= f.number_field :rotation, step: 1, min: 0, max: 360, value: (@order.rotation || 0), class: 'form-input',
+                  data: { order_preview_target: "inputRotation", action: "input->order-preview#inputChanged" } %>
+          </div>
+        </fieldset>
+
         <div class="form-actions">
           <%= f.submit "Place Order", class: "btn btn-secondary", disabled: @designs.empty?, data: { disable_button_target: "button" } %>
           <%= link_to "Cancel", shop_path, class: "btn btn-secondary btn-outline" %>
@@ -67,19 +106,27 @@
       <div class="preview-label">Preview</div>
       <div class="preview-canvas"
            data-order-preview-target="canvas"
-           data-image-x="<%= @product.image_x %>"
-           data-image-y="<%= @product.image_y %>"
-           data-image-wx="<%= @product.image_wx %>"
-           data-image-wy="<%= @product.image_wy %>">
+           data-action="mousedown->order-preview#dragStart">
         <div class="preview-product">
           <% if @product.image.attached? %>
-            <%= image_tag @product.image, alt: @product.type, data: { order_preview_target: "productImage" } %>
+            <%= image_tag @product.image, alt: @product.type, data: { order_preview_target: "productImage" }, class: "product_image_preview" %>
           <% else %>
             <span class="preview-placeholder">No product image</span>
           <% end %>
         </div>
-        <div class="preview-design" data-order-preview-target="designOverlay" style="display: none;">
-          <img data-order-preview-target="designImage" src="" alt="Design preview">
+        <div class="preview-print-area"
+             data-order-preview-target="printArea">
+          <span class="preview-print-area-label">Print area</span>
+        </div>
+        <div class="preview-design-img-wrap"
+             data-order-preview-target="designImgWrap"
+             style="display: none;">
+          <img class="preview-design-img" data-order-preview-target="designImage" src="" alt="Design preview">
+          <div class="resize-handle resize-n" data-dir="n"></div>
+          <div class="resize-handle resize-s" data-dir="s"></div>
+          <div class="resize-handle resize-e" data-dir="e"></div>
+          <div class="resize-handle resize-w" data-dir="w"></div>
+          <div class="rotate-handle"></div>
         </div>
         <div class="preview-empty" data-order-preview-target="emptyState">
           <span>Select a design to see a preview</span>

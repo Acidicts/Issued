@@ -492,6 +492,7 @@ DEPENDENCIES
   rubocop-rails-omakase
   ruby-lsp
   ruby-lsp-rails
+  ruby-vips
   selenium-webdriver
   solid_queue
   stimulus-rails
