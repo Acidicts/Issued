@@ -13,6 +13,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y libvips-dev
+
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -31,6 +34,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y libvips-dev
+
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -46,6 +52,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y libvips-dev
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -74,9 +83,9 @@ jobs:
         ports:
           - 5432:5432
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        options: --health-cmd "pg_isready -U postgres" --health-interval 10s --health-timeout 5s --health-retries 5
+          POSTGRES_USER: coder
+          POSTGRES_PASSWORD: coder
+        options: --health-cmd "pg_isready -U coder" --health-interval 10s --health-timeout 5s --health-retries 5
       redis:
         image: valkey/valkey:8
         ports:
@@ -86,6 +95,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y libvips-dev
+
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -94,7 +106,10 @@ jobs:
       - name: Run tests
         env:
           RAILS_ENV: test
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/issued_test
+          DB_USERNAME: coder
+          DB_PASSWORD: coder
+          DB_HOST: localhost
+          DB_PORT: 5432
           REDIS_URL: redis://localhost:6379/0
         run: bin/rails db:prepare && bin/rails test
 
@@ -107,9 +122,9 @@ jobs:
         ports:
           - 5432:5432
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        options: --health-cmd "pg_isready -U postgres" --health-interval 10s --health-timeout 5s --health-retries 5
+          POSTGRES_USER: coder
+          POSTGRES_PASSWORD: coder
+        options: --health-cmd "pg_isready -U coder" --health-interval 10s --health-timeout 5s --health-retries 5
       redis:
         image: valkey/valkey:8
         ports:
@@ -119,6 +134,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y libvips-dev
+
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -127,7 +145,10 @@ jobs:
       - name: Run System Tests
         env:
           RAILS_ENV: test
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/issued_test
+          DB_USERNAME: coder
+          DB_PASSWORD: coder
+          DB_HOST: localhost
+          DB_PORT: 5432
           REDIS_URL: redis://localhost:6379/0
         run: |
           if [ -d test/system ]; then
