@@ -1,5 +1,21 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+# == Schema Information
+#
+# Table name: products
+#
+#  id          :bigint           not null, primary key
+#  cost        :integer
+#  description :text
+#  image_wx    :integer          default(0), not null
+#  image_wy    :integer          default(0), not null
+#  image_x     :integer          default(0), not null
+#  image_y     :integer          default(0), not null
+#  thread_cost :integer          default(0)
+#  type        :string
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#
 one:
   type: 
   cost: 1

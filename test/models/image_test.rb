@@ -1,5 +1,23 @@
 require "test_helper"
 
+# == Schema Information
+#
+# Table name: images
+#
+#  id         :bigint           not null, primary key
+#  from_time  :datetime
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  design_id  :bigint           not null
+#
+# Indexes
+#
+#  index_images_on_design_id  (design_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (design_id => designs.id)
+#
 class ImageTest < ActiveSupport::TestCase
   test "valid image" do
     image = Image.new(design: designs(:one))

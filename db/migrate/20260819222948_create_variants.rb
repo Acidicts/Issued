@@ -1,0 +1,11 @@
+class CreateVariants < ActiveRecord::Migration[8.1]
+  def change
+    create_table :variants do |t|
+      t.references :region, null: false, foreign_key: true
+      t.integer :printful_id
+      t.integer :cost
+
+      t.timestamps
+    end
+  end
+end

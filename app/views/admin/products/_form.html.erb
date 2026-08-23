@@ -32,8 +32,8 @@
         <div class="form-group <%= 'has-error' if @product.errors[:description].present? %>">
           <%= f.label :description, class: 'form-label' %>
           <%= f.text_area :description, class: 'form-input' %>
-          <% if @product.errors[:type].present? %>
-            <div class="form-error"><%= @product.errors[:type].join(', ') %></div>
+          <% if @product.errors[:description].present? %>
+            <div class="form-error"><%= @product.errors[:description].join(', ') %></div>
           <% end %>
         </div>
 
@@ -106,6 +106,37 @@
               <%= f.number_field :image_wy, step: 1, class: 'form-input',
                     data: { product_preview_target: "inputWy", action: "input->product-preview#inputChanged" } %>
             </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="form-fieldset">
+          <legend>Variants</legend>
+
+          <div id="variants-container" data-controller="variants">
+            <% @product.variants.group_by(&:color_hex).each do |hex, variants| %>
+              <details class="variant-color-dropdown">
+                <summary class="variant-color-summary">
+                  <span class="variant-color-dot" style="background-color: <%= hex %>;"></span>
+                  <span class="variant-color-hex"><%= hex %></span>
+                  <span class="variant-color-count"><%= variants.size %></span>
+                </summary>
+                <div class="variant-color-body">
+                  <% variants.each do |variant| %>
+                    <%= f.fields_for :variants, variant do |vf| %>
+                      <%= render "variant_fields", vf: vf %>
+                    <% end %>
+                  <% end %>
+                </div>
+              </details>
+            <% end %>
+
+            <template data-variants-target="template">
+              <%= f.fields_for :variants, Variant.new(color_hex: "#ffffff"), child_index: "NEW_RECORD" do |vf| %>
+                <%= render "variant_fields", vf: vf %>
+              <% end %>
+            </template>
+
+            <button type="button" class="btn-secondary variant-add-btn" data-action="click->variants#add">+ Add variant</button>
           </div>
         </fieldset>
 

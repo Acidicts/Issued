@@ -1,39 +1,21 @@
-# Image
-# =====
-# Image model representing images attached to designs.
+# == Schema Information
 #
-# Schema:
-# - id: integer (primary key)
-# - design_id: integer (foreign key to designs, not null)
-# - from_time: datetime (timestamp when the image was created from)
-# - created_at: datetime
-# - updated_at: datetime
+# Table name: images
 #
-# Relationships:
-# - belongs_to :design (design this image belongs to)
+#  id         :bigint           not null, primary key
+#  from_time  :datetime
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  design_id  :bigint           not null
 #
-# Validations:
-# - None
+# Indexes
 #
-# Enums:
-# - None
+#  index_images_on_design_id  (design_id)
 #
-# Attributes:
-# - from_time: datetime (virtual attribute for image creation time)
+# Foreign Keys
 #
-# Methods:
-# - set_from_time: Sets from_time to current time on creation
+#  fk_rails_...  (design_id => designs.id)
 #
-# Attachments:
-# - image_file: ActiveStorage attachment for the image file
-#
-# Scopes:
-# - None
-#
-# Callbacks:
-# - after_create :set_from_time (sets from_time on creation)
-#
-
 class Image < ApplicationRecord
   belongs_to :design
   has_one_attached :image_file

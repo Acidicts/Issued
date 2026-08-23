@@ -1,0 +1,30 @@
+<div class="variant-row" data-variants-card>
+  <%= vf.hidden_field :id %>
+  <%= vf.hidden_field :_destroy, class: "variants-destroy-flag" %>
+
+  <div class="variant-field variant-size">
+    <%= vf.select :size, Variant.sizes.keys, {}, class: "variant-input", aria: { label: "Size" } %>
+  </div>
+
+  <div class="variant-field variant-color">
+    <%= vf.text_field :color_hex, class: "variant-input", placeholder: "#000000", aria: { label: "Color" }, maxlength: 7, pattern: "#[0-9a-fA-F]{6}" %>
+  </div>
+
+  <div class="variant-stock">
+    <% Variant::REGIONS.each do |code, label| %>
+      <%
+        field_name = "#{vf.object_name}[stock_by_region][#{code}]"
+        field_id   = "#{vf.object_name}_stock_by_region_#{code}".gsub(/[\[\]]/, "_")
+      %>
+      <label class="variant-stock-check" title="<%= label %>">
+        <%= hidden_field_tag field_name, "0", id: nil %>
+        <%= check_box_tag field_name, "1",
+              vf.object.stock_for(code),
+              id: field_id %>
+        <span class="variant-stock-code"><%= code %></span>
+      </label>
+    <% end %>
+  </div>
+
+  <button type="button" class="variant-remove" data-action="click->variants#remove" title="Remove variant">&times;</button>
+</div>

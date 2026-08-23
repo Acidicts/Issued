@@ -244,3 +244,186 @@
   user-select: none;
   pointer-events: none;
 }
+
+#variants-container {
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: 4px;
+  display: flex;
+  flex-direction: column;
+}
+
+.variant-add-btn {
+  margin-top: 6px;
+  font-size: 0.8rem;
+  padding: 4px 12px;
+  align-self: flex-start;
+}
+
+/* --- Colour dropdown grouping --- */
+.variant-color-dropdown {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  display: block;
+}
+
+.variant-color-dropdown + .variant-color-dropdown {
+  margin-top: 4px;
+}
+
+.variant-color-summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  background: var(--card);
+  list-style: none;
+  font-size: 0.8rem;
+  user-select: none;
+}
+
+.variant-color-summary::-webkit-details-marker {
+  display: none;
+}
+
+.variant-color-summary::before {
+  content: "▸";
+  font-size: 10px;
+  color: var(--muted);
+  transition: transform 0.15s;
+}
+
+.variant-color-dropdown[open] > .variant-color-summary::before {
+  transform: rotate(90deg);
+}
+
+.variant-color-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.variant-color-hex {
+  font-family: 'Space Mono', monospace;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.variant-color-count {
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-left: auto;
+}
+
+.variant-color-body {
+  padding: 4px 6px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* --- Variant rows (compact) --- */
+.variant-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 6px;
+  border-bottom: 1px dashed var(--line);
+}
+
+.variant-row:last-child {
+  border-bottom: none;
+}
+
+.variant-remove {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid red;
+  background: none;
+  color: red;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+
+.variant-remove:hover {
+  background: red;
+  color: #fff;
+}
+
+.variant-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.variant-input {
+  width: 100%;
+  padding: 5px 8px;
+  border: 1.5px solid var(--line);
+  border-radius: 4px;
+  background: var(--card);
+  color: var(--ink);
+  font-size: 0.85rem;
+  box-sizing: border-box;
+}
+
+.variant-size {
+  flex: 0 0 80px;
+}
+
+.variant-color {
+  flex: 0 0 90px;
+}
+
+.variant-stock {
+  flex: 1 1 auto;
+  display: flex;
+  gap: 6px;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.variant-stock-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.variant-stock-check input {
+  margin: 0;
+  cursor: pointer;
+}
+
+.variant-stock-code {
+  font-size: 0.7rem;
+  font-family: 'Space Mono', monospace;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+  user-select: none;
+}
+
+.variant-stock-check input:checked + .variant-stock-code {
+  color: var(--accent);
+}
+
+.inline-flex {
+  display: inline-flex;
+}
+
+.align-bottom {
+  display: flex;
+  flex-direction: column;
+}

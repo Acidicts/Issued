@@ -1,38 +1,20 @@
-# Rsvp
-# =====
-# Rsvp model representing user RSVP responses to events.
+# == Schema Information
 #
-# Schema:
-# - id: integer (primary key)
-# - user_id: integer (foreign key to users)
-# - created_at: datetime
-# - updated_at: datetime
+# Table name: rsvps
 #
-# Relationships:
-# - belongs_to :user (user who RSVP'd)
+#  id         :bigint           not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  user_id    :integer          not null
 #
-# Validations:
-# - None
+# Indexes
 #
-# Enums:
-# - None
+#  index_rsvps_on_user_id  (user_id)
 #
-# Attributes:
-# - None
+# Foreign Keys
 #
-# Methods:
-# - None
+#  fk_rails_...  (user_id => users.id)
 #
-# Attachments:
-# - None
-#
-# Scopes:
-# - None
-#
-# Callbacks:
-# - None
-#
-
 class Rsvp < ApplicationRecord
   belongs_to :user
 end

@@ -1,5 +1,21 @@
 require "test_helper"
 
+# == Schema Information
+#
+# Table name: products
+#
+#  id          :bigint           not null, primary key
+#  cost        :integer
+#  description :text
+#  image_wx    :integer          default(0), not null
+#  image_wy    :integer          default(0), not null
+#  image_x     :integer          default(0), not null
+#  image_y     :integer          default(0), not null
+#  thread_cost :integer          default(0)
+#  type        :string
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#
 class ProductTest < ActiveSupport::TestCase
   test "valid product" do
     product = Product.new(type: "T-Shirt", cost: 25, thread_cost: 50)

@@ -153,6 +153,7 @@
 
 .product_image_preview {
   user-select: none;
+  background: white;
 }
 
 /* Static print area boundary from product */
@@ -275,6 +276,12 @@
   font-size: 13px;
   background: rgba(242, 234, 211, 0.6);
   z-index: 10;
+}
+
+.preview-empty span {
+  background: var(--ink);
+  border-radius: 12px;
+  padding: 12px;
 }
 
 .preview-placeholder {

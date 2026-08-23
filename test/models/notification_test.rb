@@ -1,5 +1,27 @@
 require "test_helper"
 
+# == Schema Information
+#
+# Table name: notifications
+#
+#  id         :bigint           not null, primary key
+#  body       :text
+#  kind       :string
+#  priority   :integer
+#  read       :boolean
+#  time       :string
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  user_id    :bigint           not null
+#
+# Indexes
+#
+#  index_notifications_on_user_id  (user_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (user_id => users.id)
+#
 class NotificationTest < ActiveSupport::TestCase
   test "valid notification" do
     notification = Notification.new(user: users(:one), body: "Test notification", priority: :standard)

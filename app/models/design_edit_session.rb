@@ -1,41 +1,29 @@
-# DesignEditSession
-# ==================
-# Tracks user editing sessions for designs.
+# == Schema Information
 #
-# Schema:
-# - id: integer (primary key)
-# - design_id: integer (foreign key to designs, not null)
-# - user_id: integer (foreign key to users, not null)
-# - started_at: datetime (not null)
-# - ended_at: datetime
-# - duration_seconds: integer (not null, default: 0)
-# - activity_type: string (default: "edit")
-# - created_at: datetime
-# - updated_at: datetime
+# Table name: design_edit_sessions
 #
-# Relationships:
-# - belongs_to :design
-# - belongs_to :user
+#  id               :bigint           not null, primary key
+#  activity_type    :string           default("edit")
+#  duration_seconds :integer          default(0), not null
+#  ended_at         :datetime
+#  started_at       :datetime         not null
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  design_id        :integer          not null
+#  user_id          :integer          not null
 #
-# Validations:
-# - duration_seconds: numericality (>= 0)
+# Indexes
 #
-# Enums:
-# - None
+#  index_design_edit_sessions_on_design_id                 (design_id)
+#  index_design_edit_sessions_on_design_id_and_created_at  (design_id,created_at)
+#  index_design_edit_sessions_on_user_id                   (user_id)
+#  index_design_edit_sessions_on_user_id_and_created_at    (user_id,created_at)
 #
-# Attributes:
-# - None
+# Foreign Keys
 #
-# Methods:
-# - None
+#  fk_rails_...  (design_id => designs.id)
+#  fk_rails_...  (user_id => users.id)
 #
-# Scopes:
-# - None
-#
-# Callbacks:
-# - None
-#
-
 class DesignEditSession < ApplicationRecord
   belongs_to :design
   belongs_to :user

@@ -1,5 +1,30 @@
 require "test_helper"
 
+# == Schema Information
+#
+# Table name: designs
+#
+#  id                :bigint           not null, primary key
+#  description       :string           default("")
+#  hackatime_project :string
+#  hackatime_seconds :integer
+#  name              :string           default("Untitled Design"), not null
+#  status            :integer
+#  time              :integer
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#  user_id           :integer          not null
+#
+# Indexes
+#
+#  index_designs_on_hackatime_project  (hackatime_project) UNIQUE
+#  index_designs_on_name               (name)
+#  index_designs_on_user_id            (user_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (user_id => users.id)
+#
 class DesignTest < ActiveSupport::TestCase
   test "valid design" do
     user = users(:one)

@@ -1,53 +1,28 @@
-# Design
-# =======
-# Design model representing user designs with SVG graphics and metadata.
+# == Schema Information
 #
-# Schema:
-# - id: integer (primary key)
-# - user_id: integer (foreign key to users)
-# - name: string (design name)
-# - description: text (design description)
-# - time: integer (total time spent on design)
-# - hackatime_project: string (Hackatime project identifier)
-# - hackatime_seconds: integer (Hackatime time tracking in seconds)
-# - status: integer (design status: 0=unshipped, 1=pending, 2=submitted, 3=approved, 4=rejected)
-# - created_at: datetime
-# - updated_at: datetime
+# Table name: designs
 #
-# Relationships:
-# - belongs_to :user (user who created the design)
-# - has_many :orders (dependent: :destroy)
-# - has_many :images (dependent: :destroy)
+#  id                :bigint           not null, primary key
+#  description       :string           default("")
+#  hackatime_project :string
+#  hackatime_seconds :integer
+#  name              :string           default("Untitled Design"), not null
+#  status            :integer
+#  time              :integer
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#  user_id           :integer          not null
 #
-# Validations:
-# - name: presence validation
-# - description: presence validation
-# - hackatime_project: uniqueness validation (allow blank)
-# - hackatime_seconds: numericality validation (>= 0, allow nil)
-# - hackatime_project_not_used_by_other_design: custom validation
+# Indexes
 #
-# Enums:
-# - status: { unshipped: 0, pending: 1, submitted: 2, approved: 3, rejected: 4 }
+#  index_designs_on_hackatime_project  (hackatime_project) UNIQUE
+#  index_designs_on_name               (name)
+#  index_designs_on_user_id            (user_id)
 #
-# Attributes:
-# - status: integer with default value 0
+# Foreign Keys
 #
-# Methods:
-# - elapsed_time_formatted: Formats total time as HH:MM:SS
-# - total_time_seconds: Calculates total time from time and hackatime_seconds
-# - hackatime_time_formatted: Formats hackatime seconds as HH:MM:SS
-# - default_svg: Returns default SVG template
-# - image?: Returns the most recent image file or nil
-# - hackatime_project_not_used_by_other_design: Validates hackatime project uniqueness
-# - formatted_time: Helper to format seconds as HH:MM:SS
+#  fk_rails_...  (user_id => users.id)
 #
-# Scopes:
-# - None
-#
-# Callbacks:
-# - None
-#
-
 class Design < ApplicationRecord
   belongs_to :user
   has_many :orders, dependent: :destroy

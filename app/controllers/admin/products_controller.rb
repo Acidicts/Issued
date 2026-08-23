@@ -80,7 +80,25 @@ module Admin
     private
 
     def product_params
-      params.require(:product).permit(:type, :description, :cost, :thread_cost, :image, :image_x, :image_y, :image_wx, :image_wy)
+      params.require(:product).permit(
+        :type,
+        :description,
+        :cost,
+        :thread_cost,
+        :image,
+        :image_x,
+        :image_y,
+        :image_wx,
+        :image_wy,
+        variants_attributes: [
+          :color_hex,
+          :id,
+          :printful_id,
+          :size,
+          { stock_by_region: {} },
+          :_destroy
+        ],
+        )
     end
 
     def build_product_from_printful(data)
@@ -98,7 +116,24 @@ module Admin
         content_type: content_type
       )
 
+      Array(data[:variants]).each do |variant_data|
+        product.variants.build(
+          printful_id: variant_data["id"],
+          size: variant_data["size"],
+          color_hex: variant_data["color_code"],
+          stock_by_region: stock_by_region_from_printful(variant_data)
+        )
+      end
+
       product
+    end
+
+    def stock_by_region_from_printful(variant_data)
+      Array(variant_data["availability_status"]).each_with_object({}) do |entry, hash|
+        next unless Variant::REGIONS.key?(entry["region"])
+
+        hash[entry["region"]] = entry["status"] == "in_stock"
+      end
     end
 
     def download_image(image_url)

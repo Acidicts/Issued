@@ -1,55 +1,22 @@
-# User
-# =====
-# User model representing application users with authentication, verification, and role-based access.
+# == Schema Information
 #
-# Schema:
-# - email: string (from Hack Club identity)
-# - id: integer (primary key)
-# - name: string (from Hack Club identity)
-# - slack_id: string (from Hack Club identity)
-# - ysws_eligible: boolean (YSWS eligibility status)
-# - role: integer (user role: 0=user, 1=admin, 2=superadmin, 3=reviewer)
-# - veri_level: integer (verification level: 0=unknown, 1=needs_submission, 2=pending, 3=verified, 4=ineligible)
-# - hackclub_access_token: string (OAuth access token)
-# - hackclub_refresh_token: string (OAuth refresh token)
-# - threads: integer
-# - guide: boolean
+# Table name: users
 #
-# Relationships:
-# - has_many :designs (dependent: :destroy)
-# - has_many :orders (dependent: :destroy)
+#  id                     :bigint           not null, primary key
+#  credits                :integer
+#  email                  :string
+#  guide                  :boolean          default(FALSE), not null
+#  hackclub_access_token  :text
+#  hackclub_refresh_token :text
+#  name                   :string
+#  role                   :integer
+#  threads                :integer
+#  veri_level             :integer
+#  ysws_eligible          :boolean          default(FALSE), not null
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
+#  slack_id               :string
 #
-# Validations:
-# - ysws_eligible: inclusion in [true, false]
-#
-# Enums:
-# - role: { user: 0, admin: 1, superadmin: 2, reviewer: 3 }
-# - veri_level: { unknown: 0, needs_submission: 1, pending: 2, verified: 3, ineligible: 4 }
-#
-# Attributes:
-# - veri_level: integer
-#
-# Methods:
-# - verified_for_ysws?: Checks if user is verified for YSWs
-# - admin?: Checks if user has admin privileges
-# - refresh_ysws_eligibility!: Refreshes YSWs eligibility and verification from Hack Club
-# - fetch_live_hackclub_oauth_info: Fetches user identity from Hack Club OAuth
-# - update_ysws_eligibility_from_auth_info: Updates YSWs eligibility from auth info
-# - fetch_live_hackclub_identity: Fetches user identity from Hack Club
-# - hackclub_oauth_client: Creates OAuth client for Hack Club
-# - hackclub_oauth_access_token: Creates OAuth access token
-# - refresh_hackclub_access_token!: Refreshes OAuth access token
-#
-# Attachments:
-# - None
-#
-# Scopes:
-# - None
-#
-# Callbacks:
-# - None
-#
-
 class User < ApplicationRecord
   has_many :designs, dependent: :destroy
   has_many :orders, dependent: :destroy

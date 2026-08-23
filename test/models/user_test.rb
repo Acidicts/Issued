@@ -1,5 +1,24 @@
 require "test_helper"
 
+# == Schema Information
+#
+# Table name: users
+#
+#  id                     :bigint           not null, primary key
+#  credits                :integer
+#  email                  :string
+#  guide                  :boolean          default(FALSE), not null
+#  hackclub_access_token  :text
+#  hackclub_refresh_token :text
+#  name                   :string
+#  role                   :integer
+#  threads                :integer
+#  veri_level             :integer
+#  ysws_eligible          :boolean          default(FALSE), not null
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
+#  slack_id               :string
+#
 class UserTest < ActiveSupport::TestCase
   test "fetch_live_hackclub_oauth_info returns parsed me payload" do
     user = User.new

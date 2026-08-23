@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_19_203157) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_20_221714) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -145,6 +145,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_19_203157) do
     t.boolean "ysws_eligible", default: false, null: false
   end
 
+  create_table "variants", force: :cascade do |t|
+    t.string "color_hex"
+    t.integer "cost"
+    t.datetime "created_at", null: false
+    t.integer "printful_id"
+    t.bigint "product_id", null: false
+    t.integer "size"
+    t.jsonb "stock_by_region", default: {}, null: false
+    t.datetime "updated_at", null: false
+    t.index ["product_id"], name: "index_variants_on_product_id"
+    t.index ["stock_by_region"], name: "index_variants_on_stock_by_region", using: :gin
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "design_edit_sessions", "designs"
@@ -156,4 +169,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_19_203157) do
   add_foreign_key "orders", "products"
   add_foreign_key "orders", "users"
   add_foreign_key "rsvps", "users"
+  add_foreign_key "variants", "products"
 end

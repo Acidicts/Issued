@@ -1,0 +1,13 @@
+one:
+  printful_id: 18683
+  size: "L"
+  color_hex: "#ff94ba"
+  stock_by_region: { "US": true, "EU": false }
+  product: one
+
+two:
+  printful_id: 18684
+  size: "XL"
+  color_hex: "#090909"
+  stock_by_region: { "US": true, "UK": true }
+  product: one

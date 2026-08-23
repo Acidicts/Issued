@@ -1,5 +1,34 @@
 require "test_helper"
 
+# == Schema Information
+#
+# Table name: orders
+#
+#  id         :bigint           not null, primary key
+#  rotation   :integer
+#  status     :integer
+#  wx         :integer
+#  wy         :integer
+#  x          :integer
+#  y          :integer
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  design_id  :integer          not null
+#  product_id :integer          not null
+#  user_id    :integer          not null
+#
+# Indexes
+#
+#  index_orders_on_design_id   (design_id)
+#  index_orders_on_product_id  (product_id)
+#  index_orders_on_user_id     (user_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (design_id => designs.id)
+#  fk_rails_...  (product_id => products.id)
+#  fk_rails_...  (user_id => users.id)
+#
 class OrderTest < ActiveSupport::TestCase
   test "valid order" do
     order = Order.new(user: users(:one), design: designs(:one), product: products(:one), status: :pending)

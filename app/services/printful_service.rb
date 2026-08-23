@@ -78,7 +78,8 @@ class PrintfulService
       image_y: template["print_area_top"].to_i,
       image_wx: template["print_area_width"].to_i,
       image_wy: template["print_area_height"].to_i,
-      variant_id: variant_id
+      variant_id: variant_id,
+      variants: Array(product_data["variants"])
     }
   end
 
