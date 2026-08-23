@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.1.2", ">= 8.1.2.1"
+gem "rails", "~> 8.1.2", ">= 8.1.3.1"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # Use sqlite3 as the database for Active Record
@@ -29,7 +29,7 @@ gem "concurrent-ruby", ">= 1.3.7"
 gem "crass", ">= 1.0.7"
 gem "erb", ">= 6.0.4"
 gem "faraday", ">= 2.14.3"
-gem "json", ">= 2.19.9"
+gem "json", ">= 2.21.2"
 gem "jwt", ">= 3.2.0"
 gem "loofah", ">= 2.25.2"
 gem "net-imap", ">= 0.6.4"
@@ -70,7 +70,7 @@ group :development, :test do  # Load environment variables from .env for local d
   gem "bundler-audit", require: false
 
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
-  gem "brakeman", require: false
+  gem "brakeman", ">= 8.0.6", require: false
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false

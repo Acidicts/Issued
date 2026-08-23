@@ -32,7 +32,7 @@ class ImagePreviewService
 
     # Pass a background color of 0 for all channels (including 0 for alpha transparency)
     unless @rotation.zero?
-      overlay = overlay.similarity(angle: @rotation, background: [0, 0, 0, 0])
+      overlay = overlay.similarity(angle: @rotation, background: [ 0, 0, 0, 0 ])
     end
 
     result = base.composite(overlay, :multiply, x: @x, y: @y)

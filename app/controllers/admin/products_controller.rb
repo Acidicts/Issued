@@ -36,7 +36,9 @@ module Admin
     end
 
     def new_by_printful_id
-      return unless current_user.admin?
+      unless current_user.admin?
+        nil
+      end
     end
 
     def import_from_printful

@@ -39,7 +39,7 @@ class Variant < ApplicationRecord
     "XL": 5, "2XL": 6, "3XL": 7, "4XL": 8, "5XL": 9, "6XL": 10
   }
 
-  validates :color_hex, format: { with: /\A#/ }, allow_blank: true
+  validates :color_hex, format: { with: /\A#[0-9a-fA-F]{6,8}\z/ }, allow_blank: true
   validate :stock_by_region_keys_are_valid
 
   # true/false — is this variant in stock in the given region?
