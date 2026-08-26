@@ -83,6 +83,7 @@ module Admin
 
     def product_params
       params.require(:product).permit(
+        :printful_id,
         :type,
         :description,
         :cost,

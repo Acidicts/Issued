@@ -14,7 +14,7 @@ class OrdersController < ApplicationController
 
   def new
     @product = Product.find(params[:product_id])
-    @designs = current_user.designs.order(:name)
+    @designs = current_user.designs.includes(images: :image_file_attachment)
     @order = Order.new(product: @product)
   end
 

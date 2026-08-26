@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_20_221714) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_25_222709) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -45,12 +45,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_20_221714) do
   create_table "design_edit_sessions", force: :cascade do |t|
     t.string "activity_type", default: "edit"
     t.datetime "created_at", null: false
-    t.integer "design_id", null: false
+    t.bigint "design_id", null: false
     t.integer "duration_seconds", default: 0, null: false
     t.datetime "ended_at"
     t.datetime "started_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "user_id", null: false
+    t.bigint "user_id", null: false
     t.index ["design_id", "created_at"], name: "index_design_edit_sessions_on_design_id_and_created_at"
     t.index ["design_id"], name: "index_design_edit_sessions_on_design_id"
     t.index ["user_id", "created_at"], name: "index_design_edit_sessions_on_user_id_and_created_at"
@@ -66,7 +66,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_20_221714) do
     t.integer "status"
     t.integer "time"
     t.datetime "updated_at", null: false
-    t.integer "user_id", null: false
+    t.bigint "user_id", null: false
     t.index ["hackatime_project"], name: "index_designs_on_hackatime_project", unique: true
     t.index ["name"], name: "index_designs_on_name"
     t.index ["user_id"], name: "index_designs_on_user_id"
@@ -94,12 +94,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_20_221714) do
 
   create_table "orders", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.integer "design_id", null: false
-    t.integer "product_id", null: false
+    t.bigint "design_id", null: false
+    t.bigint "product_id", null: false
     t.integer "rotation"
     t.integer "status"
     t.datetime "updated_at", null: false
-    t.integer "user_id", null: false
+    t.bigint "user_id", null: false
     t.integer "wx"
     t.integer "wy"
     t.integer "x"
@@ -117,6 +117,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_20_221714) do
     t.integer "image_wy", default: 0, null: false
     t.integer "image_x", default: 0, null: false
     t.integer "image_y", default: 0, null: false
+    t.integer "printful_id"
     t.integer "thread_cost", default: 0
     t.string "type"
     t.datetime "updated_at", null: false
@@ -125,7 +126,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_20_221714) do
   create_table "rsvps", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "user_id", null: false
+    t.bigint "user_id", null: false
     t.index ["user_id"], name: "index_rsvps_on_user_id"
   end
 

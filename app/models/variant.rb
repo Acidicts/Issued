@@ -42,6 +42,13 @@ class Variant < ApplicationRecord
   validates :color_hex, format: { with: /\A#[0-9a-fA-F]{6,8}\z/ }, allow_blank: true
   validate :stock_by_region_keys_are_valid
 
+  def check_stock
+    stock = PrintfulService.check_variant_stock(self.printful_id)
+    REGIONS.each_key do |region|
+      set_stock(region, stock[region])
+    end
+  end
+
   # true/false — is this variant in stock in the given region?
   def stock_for(region)
     ActiveModel::Type::Boolean.new.cast(stock_by_region[region.to_s])

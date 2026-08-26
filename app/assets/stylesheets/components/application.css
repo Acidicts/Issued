@@ -241,6 +241,10 @@
   margin-top: 0.5rem;
 }
 
+.space-evenly {
+  justify-content: space-evenly;
+}
+
 @media (max-width: 640px) {
   .admin-product-grid {
     grid-template-columns: 1fr;

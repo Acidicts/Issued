@@ -128,9 +128,33 @@
 
 .products-heading {
   display: inline-flex;
-  align-items: baseline;
+  align-items: center;
   width: 100%;
   justify-content: space-between;
+}
+
+.products-add-buttons {
+  display: flex;
+  flex-direction: column;
+}
+
+.products-add-buttons .btn-secondary {
+  font-size: 12px;
+  padding: 8px;
+  width: 1fr;
+  padding: auto;
+}
+
+.products-add-buttons .btn-secondary:first-child {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom: var(--line) 1px solid;
+}
+
+.products-add-buttons .btn-secondary:last-child {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-top: var(--line) 1px solid;
 }
 
 @media (max-width: 720px) {

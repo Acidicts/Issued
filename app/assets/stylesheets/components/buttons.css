@@ -57,6 +57,19 @@
     background: var(--brand-surface-alt);
 }
 
+.btn-tertiary {
+    background: transparent;
+    color: var(--brand-primary);
+    border-color: transparent;
+    padding: 6px 12px;
+    font-size: 11px;
+}
+
+.btn-tertiary:hover:not(:disabled) {
+    background: var(--brand-surface-alt);
+    color: var(--brand-primary-dark);
+}
+
 .btn-danger {
     background: var(--brand-danger);
     color: var(--brand-surface);

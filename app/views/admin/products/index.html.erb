@@ -5,8 +5,10 @@
     <div class="products-heading">
         <h1>Product Management</h1>
         <% if @products.any? %>
-            <%= link_to 'Add New Product', new_admin_product_path, class: 'btn btn-primary mb-1r add-product-btn' %>
-            <%= link_to 'Import from Printful', new_by_printful_id_admin_products_path, class: 'btn btn-secondary mb-1r' %>
+            <div class="products-add-buttons">
+                <%= link_to 'Add New Product', new_admin_product_path, class: 'btn btn-secondary' %>
+                <%= link_to 'Import from Printful', new_by_printful_id_admin_products_path, class: 'btn btn-secondary' %>
+            </div>
         <% end %>
     </div>
 

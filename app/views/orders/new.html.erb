@@ -43,7 +43,9 @@
                     data-order-preview-target="designSelect">
               <option value="">Select a design...</option>
               <% @designs.each do |design| %>
-                <%
+                <% 
+                  # Calculate values silently using <%
+                  is_selected = params[:design_id].to_s == design.id.to_s 
                   latest_image = design.images.order(created_at: :desc).first
                   img_url = if latest_image&.image_file&.attached?
                               url_for(latest_image.image_file)
@@ -51,12 +53,17 @@
                               ""
                             end
                 %>
-                <option value="<%= design.id %>" data-image-url="<%= img_url %>"><%= design.name %></option>
+                
+                <option value="<%= design.id %>" 
+                        data-image-url="<%= img_url %>",
+                        <%= 'selected' if is_selected %>>
+                  <%= design.name %>
+                </option>
               <% end %>
             </select>
             <p class="form-hint">Pick a design from your collection to preview it on the product.</p>
           <% else %>
-            <p class="form-hint" style="color: var(--warn);">You have no designs yet. <%= link_to "Create one first", new_design_path %>.</p>
+            <p class="form-hint" style="color: var(--warn);">You have no designs yet. <%= link_to "Create one first", new_design_path, class: "btn btn-tertiary" %></p>
           <% end %>
         </div>
 

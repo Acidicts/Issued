@@ -56,6 +56,21 @@ class PrintfulService
     new.import_product(printful_id, placement: placement)
   end
 
+  def self.check_variant_stock(printful_id)
+    new.check_variant_stock(printful_id)
+  end
+
+  def self.check_variants_stock(printful_id)
+    new.check_variants_stock(printful_id)
+  end
+
+  def check_variants_stock(printful_id)
+    product_data = fetch_product(printful_id)
+    {
+      variants: Array(product_data["variants"])
+    }
+  end
+
   def import_product(printful_id, placement: "front")
     raise Error, "Printful API key is not configured (set PRINTFUL_API_KEY)." unless self.class.available?
     raise Error, "Enter a Printful product id." if printful_id.blank?
@@ -81,6 +96,16 @@ class PrintfulService
       variant_id: variant_id,
       variants: Array(product_data["variants"])
     }
+  end
+
+  def check_variant_stock(printful_id)
+    raise Error, "Printful API key is not configured (set PRINTFUL_API_KEY)." unless self.class.available?
+
+    Array(fetch_variant(printful_id).dig("variant", "availability_status")).each_with_object({}) do |entry, stock|
+      next unless Variant::REGIONS.key?(entry["region"])
+
+      stock[entry["region"]] = entry["status"] == "in_stock"
+    end
   end
 
   private
@@ -109,6 +134,12 @@ class PrintfulService
     get_json("/products/#{printful_id.to_i}", store_id: self.class.store_id)
       &.fetch("result", nil)
       .tap { |result| raise Error, "Printful product ##{printful_id} was not found." unless result }
+  end
+
+  def fetch_variant(printful_id)
+    get_json("/products/variant/#{printful_id.to_i}")
+      &.fetch("result", nil)
+      .tap { |result| raise Error, "Printful product variant ##{printful_id} was not found." unless result }
   end
 
   def fetch_templates(printful_id)

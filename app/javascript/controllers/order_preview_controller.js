@@ -29,6 +29,9 @@ export default class extends Controller {
     this.startBoxH = 0
     this.startRotation = 0
 
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+
     if (this.hasProductImageTarget) {
       this.productImageTarget.addEventListener("load", () => this.computeScale())
     }
@@ -37,6 +40,10 @@ export default class extends Controller {
 
     this.resizeHandler = () => this.computeScale()
     window.addEventListener("resize", this.resizeHandler)
+
+    if (urlParams.has("design_id")) {
+      this.updateDesign();
+    }
   }
 
   disconnect() {
@@ -77,6 +84,12 @@ export default class extends Controller {
 
     const canvasRect = canvas.getBoundingClientRect()
 
+    const wasHidden = wrap.style.display === "none"
+    if (wasHidden) {
+      wrap.style.visibility = "hidden"
+      wrap.style.display = "flex"
+    }
+
     wrap.style.left = (this.imgOffsetX + x * this.scale) + "px"
     wrap.style.top = (this.imgOffsetY + y * this.scale) + "px"
     wrap.style.width = (w * this.scale) + "px"
@@ -84,6 +97,11 @@ export default class extends Controller {
     wrap.style.transform = `rotate(${rotation}deg)`
 
     const wrapRect = wrap.getBoundingClientRect()
+
+    if (wasHidden) {
+      wrap.style.display = "none"
+      wrap.style.visibility = ""
+    }
 
     const bbLeft = (wrapRect.left - canvasRect.left - this.imgOffsetX) / this.scale
     const bbTop = (wrapRect.top - canvasRect.top - this.imgOffsetY) / this.scale
@@ -223,23 +241,42 @@ export default class extends Controller {
       return
     }
 
-    const rotation = parseInt(this.inputRotationTarget?.value) || 0
-    const dw = Math.min(this.imageWxValue, 500)
-    const dh = Math.min(this.imageWyValue, 500)
-    const aabb = this.rotatedAabb(dw, dh, rotation)
-    let dx = this.imageXValue + Math.round((this.imageWxValue - aabb.w) / 2)
-    let dy = this.imageYValue + Math.round((this.imageWyValue - aabb.h) / 2)
-    const clamped = this.clampPosition(dx, dy, dw, dh, rotation)
-
-    this.inputXTarget.value = clamped.x
-    this.inputYTarget.value = clamped.y
-    this.inputWxTarget.value = dw
-    this.inputWyTarget.value = dh
-    this.inputRotationTarget.value = 0
-
     this.designImageTarget.src = imageUrl
     this.emptyStateTarget.style.display = "none"
-    this.positionDesign()
+
+    const fitAndPlace = () => {
+      const rotation = parseInt(this.inputRotationTarget?.value) || 0
+      const nw = this.designImageTarget.naturalWidth
+      const nh = this.designImageTarget.naturalHeight
+      const ratio = nw > 0 && nh > 0 ? nw / nh : 1
+
+      let dw = this.imageWxValue
+      let dh = Math.round(dw / ratio)
+      if (dh > this.imageWyValue) {
+        dh = this.imageWyValue
+        dw = Math.round(dh * ratio)
+      }
+
+      const aabb = this.rotatedAabb(dw, dh, rotation)
+      const dx = this.imageXValue + Math.round((this.imageWxValue - aabb.w) / 2)
+      const dy = this.imageYValue + Math.round((this.imageWyValue - aabb.h) / 2)
+      const clamped = this.clampPosition(dx, dy, dw, dh, rotation)
+
+      this.inputXTarget.value = clamped.x
+      this.inputYTarget.value = clamped.y
+      this.inputWxTarget.value = dw
+      this.inputWyTarget.value = dh
+      this.inputRotationTarget.value = 0
+
+      this.positionDesign()
+    }
+
+    if (this.designImageTarget.complete && this.designImageTarget.naturalWidth) {
+      fitAndPlace()
+    } else {
+      this.designImageTarget.onload = fitAndPlace
+      this.designImageTarget.onerror = fitAndPlace
+    }
   }
 
   dragStart(event) {
