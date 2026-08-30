@@ -3,21 +3,41 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = [
     "canvas", "productImage", "designBox", "placeholder",
-    "inputX", "inputY", "inputWx", "inputWy"
+    "inputX", "inputY", "inputWx", "inputWy",
+    "printAreaSelect", "printAreaName", "printAreaId", "printAreasJson",
+    "templateImage", "templateImageInput", "templateImageUrl"
   ]
-  static values = { imgUrl: String }
+  static values = {
+    imgUrl: String,
+    printAreas: Array,
+    nextTempId: Number
+  }
 
   connect() {
     this.dragging = false
     this.resizing = false
     this.resizeHandle = null
     this.scale = 1
+    this.renderedOffsetX = 0
+    this.renderedOffsetY = 0
     this.startX = 0
     this.startY = 0
     this.startBoxX = 0
     this.startBoxY = 0
     this.startBoxW = 0
     this.startBoxH = 0
+    this.activeIndex = null
+
+    this.nextTempIdValue = this.printAreasValue.length > 0
+      ? Math.max(...this.printAreasValue.map(p => p.id || 0)) + 1
+      : 1
+
+    this.rebuildSelect()
+
+    if (this.hasPrintAreaSelectTarget && this.printAreasValue.length > 0) {
+      this.printAreaSelectTarget.selectedIndex = 1
+      this.loadPrintArea(0)
+    }
 
     if (this.hasProductImageTarget) {
       this.productImageTarget.addEventListener("load", () => this.syncFromInputs())
@@ -28,13 +48,216 @@ export default class extends Controller {
     } else {
       this.syncFromInputs()
     }
+
+    this.syncTemplateImage()
   }
 
   disconnect() {
     this.stopDrag()
   }
 
+  // --- Print area switching ---
+
+  printAreaChanged() {
+    const idx = this.printAreaSelectTarget.selectedIndex - 1
+    if (idx >= 0) {
+      this.loadPrintArea(idx)
+    } else {
+      this.clearPrintAreaFields()
+    }
+  }
+
+  loadPrintArea(index) {
+    const pa = this.printAreasValue[index]
+    if (!pa) return
+
+    this.activeIndex = index
+    this.printAreaNameTarget.value = pa.name || ""
+    this.inputXTarget.value = pa.image_x
+    this.inputYTarget.value = pa.image_y
+    this.inputWxTarget.value = pa.image_wx
+    this.inputWyTarget.value = pa.image_wy
+
+    if (this.hasTemplateImageUrlTarget) {
+      this.templateImageUrlTarget.value = pa.template_image_url || ""
+    }
+
+    this.syncTemplateImage()
+    this.syncFromInputs()
+  }
+
+  clearPrintAreaFields() {
+    this.activeIndex = null
+    this.printAreaNameTarget.value = ""
+    this.inputXTarget.value = ""
+    this.inputYTarget.value = ""
+    this.inputWxTarget.value = ""
+    this.inputWyTarget.value = ""
+
+    if (this.hasTemplateImageUrlTarget) this.templateImageUrlTarget.value = ""
+    if (this.hasTemplateImageInputTarget) this.templateImageInputTarget.value = ""
+
+    const box = this.getDesignBox()
+    if (box) box.style.display = "none"
+
+    this.syncTemplateImage()
+    this.syncTemplateImagePosition()
+  }
+
+  addPrintArea() {
+    this.syncActivePrintArea()
+
+    const name = "Print Area " + (this.printAreasValue.length + 1)
+    const newPA = {
+      id: null,
+      name: name,
+      image_x: 0,
+      image_y: 0,
+      image_wx: 200,
+      image_wy: 200,
+      template_image_url: "",
+      _destroy: false
+    }
+
+    this.printAreasValue.push(newPA)
+    this.rebuildSelect()
+
+    const newIndex = this.printAreasValue.length - 1
+    this.printAreaSelectTarget.selectedIndex = newIndex + 1
+    this.loadPrintArea(newIndex)
+  }
+
+  removePrintArea() {
+    if (this.activeIndex === null) return
+
+    const pa = this.printAreasValue[this.activeIndex]
+    const displayName = pa.name || "this print area"
+    if (!confirm(`Remove "${displayName}"?`)) return
+
+    if (pa.id) {
+      pa._destroy = true
+    } else {
+      this.printAreasValue.splice(this.activeIndex, 1)
+    }
+
+    this.rebuildSelect()
+
+    if (this.printAreasValue.some(p => !p._destroy)) {
+      const nextIdx = this.findNextVisibleIndex(this.activeIndex)
+      if (nextIdx !== null) {
+        this.printAreaSelectTarget.selectedIndex = nextIdx + 1
+        this.loadPrintArea(nextIdx)
+      } else {
+        this.printAreaSelectTarget.selectedIndex = 0
+        this.clearPrintAreaFields()
+      }
+    } else {
+      this.printAreaSelectTarget.selectedIndex = 0
+      this.clearPrintAreaFields()
+    }
+  }
+
+  findNextVisibleIndex(fromIndex) {
+    for (let i = fromIndex + 1; i < this.printAreasValue.length; i++) {
+      if (!this.printAreasValue[i]._destroy) return i
+    }
+    for (let i = fromIndex - 1; i >= 0; i--) {
+      if (!this.printAreasValue[i]._destroy) return i
+    }
+    return null
+  }
+
+  rebuildSelect() {
+    const select = this.printAreaSelectTarget
+    const prevValue = select.value
+
+    while (select.options.length > 1) select.remove(1)
+
+    this.printAreasValue.forEach((pa, i) => {
+      if (pa._destroy) return
+      const opt = document.createElement("option")
+      opt.value = i
+      opt.textContent = pa.name || ("Print Area " + (i + 1))
+      select.appendChild(opt)
+    })
+
+    if (prevValue && select.querySelector(`option[value="${prevValue}"]`)) {
+      select.value = prevValue
+    }
+  }
+
+  // --- Template image upload ---
+
+  templateImageFileChanged(event) {
+    const file = event.target.files[0]
+    if (!file || this.activeIndex === null) return
+
+    const pa = this.printAreasValue[this.activeIndex]
+    pa._pendingTemplateFile = file.name
+
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      pa.template_image_url = e.target.result
+      this.syncTemplateImage()
+    }
+    reader.readAsDataURL(file)
+  }
+
+  // --- Sync on submit ---
+
+  syncBeforeSubmit() {
+    this.syncActivePrintArea()
+  }
+
+  syncActivePrintArea() {
+    if (this.activeIndex === null) return
+
+    const pa = this.printAreasValue[this.activeIndex]
+    if (!pa) return
+
+    pa.name = this.printAreaNameTarget.value
+    pa.image_x = parseInt(this.inputXTarget.value) || 0
+    pa.image_y = parseInt(this.inputYTarget.value) || 0
+    pa.image_wx = parseInt(this.inputWxTarget.value) || 0
+    pa.image_wy = parseInt(this.inputWyTarget.value) || 0
+
+    if (this.hasTemplateImageUrlTarget) {
+      pa.template_image_url = this.templateImageUrlTarget.value
+    }
+
+    this.syncPrintAreasJson()
+  }
+
+  syncPrintAreasJson() {
+    if (!this.hasPrintAreasJsonTarget) return
+    this.printAreasJsonTarget.value = JSON.stringify(this.printAreasValue)
+  }
+
+  syncTemplateImage() {
+    if (!this.hasTemplateImageTarget) return
+
+    if (this.activeIndex === null) {
+      this.templateImageTarget.style.display = "none"
+      this.templateImageTarget.src = ""
+      this.syncTemplateImagePosition()
+      return
+    }
+
+    const pa = this.printAreasValue[this.activeIndex]
+    if (!pa || !pa.template_image_url) {
+      this.templateImageTarget.style.display = "none"
+      this.templateImageTarget.src = ""
+      this.syncTemplateImagePosition()
+      return
+    }
+
+    this.templateImageTarget.src = pa.template_image_url
+    this.templateImageTarget.style.display = "block"
+    this.syncTemplateImagePosition()
+  }
+
   // --- Image loading ---
+
   loadImage(url) {
     if (!url) return
 
@@ -42,8 +265,8 @@ export default class extends Controller {
     let img = canvas.querySelector('img.preview-product-img')
 
     if (!img) {
-      const designBox = canvas.querySelector('[data-product-preview-target="designBox"]')
-      const placeholder = canvas.querySelector('[data-product-preview-target="placeholder"]')
+      const designBox = this.getDesignBox()
+      const placeholder = this.hasPlaceholderTarget ? this.placeholderTarget : null
 
       canvas.innerHTML = ""
 
@@ -51,9 +274,13 @@ export default class extends Controller {
       img.className = "preview-product-img"
       img.alt = "Product preview"
       img.dataset.productPreviewTarget = "productImage"
-      img.addEventListener("load", () => this.syncFromInputs())
+      img.addEventListener("load", () => {
+        this.syncFromInputs()
+        this.syncTemplateImagePosition()
+      })
       canvas.appendChild(img)
 
+      if (this.hasTemplateImageTarget) canvas.appendChild(this.templateImageTarget)
       if (designBox) canvas.appendChild(designBox)
       if (placeholder) placeholder.style.display = "none"
     }
@@ -70,6 +297,7 @@ export default class extends Controller {
   }
 
   // --- Sync from inputs to preview ---
+
   syncFromInputs() {
     if (!this.hasInputXTarget) return
 
@@ -80,11 +308,10 @@ export default class extends Controller {
 
     this.updateScale()
 
-    const canvasRect = this.canvasTarget.getBoundingClientRect()
     const imgX = this.getImageOffsetX()
     const imgY = this.getImageOffsetY()
 
-    const box = this.designBoxTarget || this.canvasTarget.querySelector('[data-product-preview-target="designBox"]')
+    const box = this.getDesignBox()
     if (!box) return
 
     box.style.left = (imgX + x * this.scale) + "px"
@@ -92,6 +319,34 @@ export default class extends Controller {
     box.style.width = (wx * this.scale) + "px"
     box.style.height = (wy * this.scale) + "px"
     box.style.display = (wx > 0 && wy > 0) ? "flex" : "none"
+
+    this.syncTemplateImagePosition()
+  }
+
+  syncTemplateImagePosition() {
+    if (!this.hasTemplateImageTarget) return
+
+    if (this.templateImageTarget.style.display === "none") {
+      if (this.hasProductImageTarget) this.productImageTarget.style.display = ""
+      return
+    }
+
+    if (!this.hasProductImageTarget) return
+
+    const productImg = this.productImageTarget
+    const imgRect = productImg.getBoundingClientRect()
+    if (imgRect.width === 0 || imgRect.height === 0) return
+
+    this.templateImageTarget.style.position = "absolute"
+    this.templateImageTarget.style.left = "0"
+    this.templateImageTarget.style.top = "0"
+    this.templateImageTarget.style.width = imgRect.width + "px"
+    this.templateImageTarget.style.height = imgRect.height + "px"
+    this.templateImageTarget.style.objectFit = "contain"
+    this.templateImageTarget.style.pointerEvents = "none"
+    this.templateImageTarget.style.zIndex = "2"
+
+    productImg.style.display = "none"
   }
 
   inputChanged() {
@@ -99,13 +354,12 @@ export default class extends Controller {
   }
 
   // --- Drag ---
+
   dragStart(event) {
-    const box = this.designBoxTarget || this.canvasTarget.querySelector('[data-product-preview-target="designBox"]')
+    const box = this.getDesignBox()
     if (!box || box.style.display === "none") return
 
     const boxRect = box.getBoundingClientRect()
-    const canvasRect = this.canvasTarget.getBoundingClientRect()
-
     const clientX = event.clientX
     const clientY = event.clientY
 
@@ -162,6 +416,7 @@ export default class extends Controller {
   }
 
   // --- Resize ---
+
   getResizeHandle(cx, cy, rect) {
     const zone = 10
     const nearLeft = cx - rect.left <= zone
@@ -202,26 +457,75 @@ export default class extends Controller {
   }
 
   // --- Helpers ---
+
+  getDesignBox() {
+    return this.hasDesignBoxTarget
+      ? this.designBoxTarget
+      : this.canvasTarget.querySelector('[data-product-preview-target="designBox"]')
+  }
+
   updateScale() {
-    if (!this.hasProductImageTarget || !this.productImageTarget.naturalWidth) {
+    const img = this.getDisplayImage()
+    if (!img || !img.naturalWidth) {
       this.scale = 1
+      this.renderedOffsetX = 0
+      this.renderedOffsetY = 0
       return
     }
-    const displayedW = this.productImageTarget.getBoundingClientRect().width
-    this.scale = displayedW / this.productImageTarget.naturalWidth
+
+    const imgRect = img.getBoundingClientRect()
+    const displayedW = imgRect.width
+    const displayedH = imgRect.height
+    const naturalW = img.naturalWidth
+    const naturalH = img.naturalHeight
+
+    if (displayedW === 0 || displayedH === 0) {
+      this.scale = 1
+      this.renderedOffsetX = 0
+      this.renderedOffsetY = 0
+      return
+    }
+
+    const imgAspect = naturalW / naturalH
+    const boxAspect = displayedW / displayedH
+
+    let renderedW, renderedH
+    if (imgAspect >= boxAspect) {
+      renderedW = displayedW
+      renderedH = displayedW / imgAspect
+    } else {
+      renderedH = displayedH
+      renderedW = displayedH * imgAspect
+    }
+
+    this.scale = renderedW / naturalW
+    this.renderedOffsetX = (displayedW - renderedW) / 2
+    this.renderedOffsetY = (displayedH - renderedH) / 2
+  }
+
+  getDisplayImage() {
+    if (this.hasProductImageTarget && this.productImageTarget.style.display !== "none") {
+      return this.productImageTarget
+    }
+    if (this.hasTemplateImageTarget && this.templateImageTarget.style.display !== "none") {
+      return this.templateImageTarget
+    }
+    return this.hasProductImageTarget ? this.productImageTarget : null
   }
 
   getImageOffsetX() {
-    if (!this.hasProductImageTarget) return 0
+    const img = this.getDisplayImage()
+    if (!img) return 0
     const canvasRect = this.canvasTarget.getBoundingClientRect()
-    const imgRect = this.productImageTarget.getBoundingClientRect()
-    return imgRect.left - canvasRect.left
+    const imgRect = img.getBoundingClientRect()
+    return (imgRect.left - canvasRect.left) + (this.renderedOffsetX || 0)
   }
 
   getImageOffsetY() {
-    if (!this.hasProductImageTarget) return 0
+    const img = this.getDisplayImage()
+    if (!img) return 0
     const canvasRect = this.canvasTarget.getBoundingClientRect()
-    const imgRect = this.productImageTarget.getBoundingClientRect()
-    return imgRect.top - canvasRect.top
+    const imgRect = img.getBoundingClientRect()
+    return (imgRect.top - canvasRect.top) + (this.renderedOffsetY || 0)
   }
 }

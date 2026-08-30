@@ -15,6 +15,7 @@
 #  type        :string
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
+#  printful_id :integer
 #
 one:
   type: 

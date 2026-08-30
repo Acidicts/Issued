@@ -1,0 +1,3 @@
+<%= turbo_frame_tag "order_status_#{order.id}" do %>
+  <span class="order-show-status order-show-status--<%= order.status %>"><%= order.status.humanize %></span>
+<% end %>

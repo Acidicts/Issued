@@ -11,8 +11,8 @@ require "test_helper"
 #  started_at       :datetime         not null
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
-#  design_id        :integer          not null
-#  user_id          :integer          not null
+#  design_id        :bigint           not null
+#  user_id          :bigint           not null
 #
 # Indexes
 #

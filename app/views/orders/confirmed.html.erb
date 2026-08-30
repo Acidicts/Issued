@@ -3,7 +3,7 @@
 <ul>
   <li>Order ID: <%= @order.id %></li>
   <li>Product: <%= @order.product&.name || "Unknown product" %></li>
-  <li>Design: <%= @order.design&.name || "Unknown design" %></li>
+  <li>Design: <%= @order.order_print_areas.first&.design&.name || "Unknown design" %></li>
   <li>Status: <%= @order.status %></li>
 </ul>
 <%= link_to "Back to dashboard", dashboard_path, class: "btn" %>

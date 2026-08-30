@@ -13,7 +13,6 @@
   .order-wrap {
     --ink: #E4D9BC;
     --line: #5a4f3e;
-    ;
     --paper: #241D16;
     --card: #241D16;
     --muted: #B7A878;
@@ -142,6 +141,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  background: var(--brand-text-secondary);
 }
 
 .preview-product img {
@@ -152,8 +152,9 @@
 }
 
 .product_image_preview {
+  transition: background-color ease-out 0.2s;
   user-select: none;
-  background: white;
+  background-color: white;
 }
 
 /* Static print area boundary from product */
@@ -162,7 +163,8 @@
   border: 2px dashed var(--accent);
   z-index: 1;
   pointer-events: none;
-  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0);
+  transition: box-shadow 0.15s ease;
 }
 
 .preview-print-area-label {
@@ -505,4 +507,119 @@
   .order-show-header h3 {
     font-size: 1.35rem;
   }
+}
+
+/* 1. Container styling to line them up nicely */
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px; /* Adds space between the squares */
+}
+
+/* 2. Hide the default Rails radio buttons completely */
+.swatches input[type="radio"] {
+  display: none; 
+}
+
+/* 3. Style the Rails labels to look like the colored squares */
+.swatches .swatch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px; /* Creates the rounded corners */
+  cursor: pointer;
+  border: 2px solid transparent; /* Invisible border to keep sizing consistent */
+  box-sizing: border-box;
+  transition: transform 0.1s ease; /* Tiny animation when clicking */
+  box-shadow: 0 0 4px #aaa;
+}
+
+/* Optional: Slight hover effect */
+.swatches .swatch:hover {
+  transform: scale(1.1);
+}
+
+/* 4. The magic: Add the dark ring when the hidden radio button is checked! */
+.swatches input[type="radio"]:checked + .swatch {
+  border: 2px solid #333; /* The dark outer selection ring */
+}
+
+.inline-flex {
+  display: inline-flex;
+}
+
+.jc-space-evenly {
+  justify-content: space-between;
+}
+
+.g-16p {
+  gap: 16px;
+}
+
+/* Print area badges */
+.print-area-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.print-area-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--brand-surface-alt);
+  border: 1px solid var(--brand-border);
+  color: var(--brand-text-muted);
+}
+
+.print-area-badge.active {
+  background: rgba(31, 111, 120, 0.12);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Print area checkboxes */
+.print-area-checkboxes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.form-checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+}
+
+/* Placement summary */
+.placement-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--brand-text-muted);
+  font-family: 'Space Mono', 'Courier New', monospace;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
 }

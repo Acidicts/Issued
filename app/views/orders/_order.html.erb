@@ -1,12 +1,12 @@
 <%= link_to order_path(order), class:"no-text-deco" do %>
     <div class="order">
-        <%= image_tag order.preview_image, alt: "preview_img" if order.preview_image.attached? %>
+        <%= image_tag order.preview_image, style: "background-color: #{order.color_hex};", alt: "preview_img" if order.preview_image.attached? %>
         <div class="info">
             <h3>Order <%= order.id %></h3>
             <p>Status: <%= order.status.humanize %></p>
             <div class="order-details">
                 <p>Product: <%= order.product.type %></p>
-                <p>Design: <%= order.design.name %></p>
+                <p>Design: <%= order.order_print_areas.first&.design&.name %></p>
             </div>
         </div>
     </div>

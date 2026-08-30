@@ -15,6 +15,7 @@ require "test_helper"
 #  type        :string
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
+#  printful_id :integer
 #
 class ProductTest < ActiveSupport::TestCase
   test "valid product" do

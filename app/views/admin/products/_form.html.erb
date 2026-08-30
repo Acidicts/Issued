@@ -8,12 +8,25 @@
             else
               ""
             end
+
+  print_areas_data = @product.print_areas.map do |pa|
+    {
+      id: pa.id,
+      name: pa.name,
+      image_x: pa.image_x.to_i,
+      image_y: pa.image_y.to_i,
+      image_wx: pa.image_wx.to_i,
+      image_wy: pa.image_wy.to_i,
+      template_image_url: pa.template_image.attached? ? url_for(pa.template_image) : ""
+    }
+  end.to_json
 %>
 
 <div data-controller="product-preview"
-     data-product-preview-img-url-value="<%= img_url %>">
+     data-product-preview-img-url-value="<%= img_url %>"
+     data-product-preview-print-areas-value="<%= print_areas_data %>">
 
-  <%= form_for [:admin, @product], html: { multipart: true, class: 'form-card', data: { turbo: false } } do |f| %>
+  <%= form_for [:admin, @product], html: { multipart: true, class: 'form-card', data: { turbo: false, action: "submit->product-preview#syncBeforeSubmit" } } do |f| %>
     <div class="form-header">
       <h1><%= @product.new_record? ? "New Product" : "Edit Product" %></h1>
       <p>Manage product details, pricing, and media assets.</p>
@@ -83,6 +96,30 @@
           <legend>Design placement</legend>
           <p class="form-hint" style="margin-bottom: 12px;">Drag the overlay on the preview to position, or edit values below.</p>
 
+          <div class="print-area-controls">
+            <div class="form-group print-area-select-group">
+              <select id="product_print_area_select"
+                      class="form-select"
+                      data-product-preview-target="printAreaSelect"
+                      data-action="change->product-preview#printAreaChanged">
+                <option value="">Select a Print Area...</option>
+                <% @product.print_areas.each do |print_area| %>
+                  <option value="<%= print_area.id %>"><%= print_area.name %></option>
+                <% end %>
+              </select>
+            </div>
+            <div class="print-area-actions">
+              <button type="button" class="btn-secondary btn btn-sm" data-action="click->product-preview#addPrintArea">+ New</button>
+              <button type="button" class="btn-danger btn btn-sm" data-action="click->product-preview#removePrintArea">Delete</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Print area name</label>
+            <input type="text" class="form-input"
+                   data-product-preview-target="printAreaName">
+          </div>
+
           <div class="form-grid">
             <div class="form-group">
               <%= f.label :image_x, "X position (px)", class: 'form-label' %>
@@ -107,6 +144,21 @@
                     data: { product_preview_target: "inputWy", action: "input->product-preview#inputChanged" } %>
             </div>
           </div>
+
+          <div class="form-group">
+            <%= f.label :print_area_template_image, "Template image (optional)", class: 'form-label' %>
+            <label class="form-dropzone form-dropzone-sm" for="print_area_template_image">
+              <div class="dropzone-content">
+                <span class="label">Click to upload template image</span>
+              </div>
+              <input type="file" accept="image/*" id="print_area_template_image"
+                     data-product-preview-target="templateImageInput"
+                     data-action="change->product-preview#templateImageFileChanged">
+            </label>
+            <input type="hidden" data-product-preview-target="templateImageUrl">
+          </div>
+
+          <%= f.hidden_field :print_areas_json, value: print_areas_data, data: { product_preview_target: "printAreasJson" } %>
         </fieldset>
 
         <fieldset class="form-fieldset">
@@ -153,7 +205,7 @@
           <% if @product&.image&.attached? %>
             <%= image_tag @product.image, alt: "Product preview",
                   class: "preview-product-img",
-                  data: { product_preview_target: "productImage" } %>
+                  data: { product_preview_target: "templateImage" } %>
           <% else %>
             <div class="preview-placeholder" data-product-preview-target="placeholder">
               Upload a product image to preview

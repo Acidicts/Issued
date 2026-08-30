@@ -1,0 +1,48 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+# == Schema Information
+#
+# Table name: print_areas
+#
+#  id          :bigint           not null, primary key
+#  cost        :integer
+#  enabled     :boolean          default(FALSE)
+#  image_wx    :integer
+#  image_wy    :integer
+#  image_x     :integer
+#  image_y     :integer
+#  name        :string
+#  thread_cost :integer
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  product_id  :bigint           not null
+#
+# Indexes
+#
+#  index_print_areas_on_product_id  (product_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (product_id => products.id)
+#
+one:
+  image_x: 1
+  image_y: 1
+  image_wx: 1
+  image_wy: 1
+  product: one
+  cost: 1
+  thread_cost: 1
+  name: MyString
+  enabled: false
+
+two:
+  image_x: 1
+  image_y: 1
+  image_wx: 1
+  image_wy: 1
+  product: two
+  cost: 1
+  thread_cost: 1
+  name: MyString
+  enabled: false

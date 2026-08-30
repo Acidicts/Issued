@@ -13,6 +13,7 @@
 #  type        :string
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
+#  printful_id :integer
 #
 class Product < ApplicationRecord
   include CurrencyConvertible
@@ -22,6 +23,8 @@ class Product < ApplicationRecord
   has_one_attached :image
   has_many :orders, dependent: :destroy
   has_many :variants, dependent: :destroy
+  has_many :print_areas, dependent: :destroy
+
   accepts_nested_attributes_for :variants, allow_destroy: true
 
   attribute :description, default: "", null: false

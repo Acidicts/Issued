@@ -1,0 +1,61 @@
+<%= turbo_frame_tag "order_steps" do %>
+  <div class="order-wrap">
+    <div class="order-header">
+      <h1>Order: <%= @product.type %></h1>
+      <p class="sub">Overview of the clothes.</p>
+    </div>
+
+    <div class="order-layout">
+      <div class="order-form-side">
+        <div class="form-card">
+          <div class="form-group">
+            <div class="order-product-summary">
+              <% if @product.image.attached? %>
+                <%= image_tag @product.image, alt: @product.type, class: "order-product-thumb" %>
+              <% end %>
+              <div>
+                <strong><%= @product.type %></strong>
+                <span class="order-product-cost"><%= @product.thread_cost %> threads</span>
+              </div>
+            </div>
+          </div>
+
+          <% if @product.description.present? %>
+            <div class="form-group">
+              <p><%= @product.description %></p>
+            </div>
+          <% end %>
+
+          <div class="form-group">
+            <span class="form-label">Available print areas:</span>
+            <div class="print-area-list">
+              <% @product.print_areas.each do |pa| %>
+                <span class="print-area-badge"><%= pa.name %></span>
+              <% end %>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <%= button_to "Configure Order", new_step_orders_path, params: { order: { product_id: @product.id }, step: "overview" }, method: :post, data: { turbo_frame: "order_steps" }, class: "btn btn-secondary" %>
+            <%= link_to "Cancel", shop_path, class: "btn btn-secondary btn-outline" %>
+          </div>
+        </div>
+      </div>
+
+      <div class="order-preview-side">
+        <div class="preview-label">Preview</div>
+        <div class="preview-canvas">
+          <div class="preview-product">
+            <div class="preview-product-image-container">
+              <% if @product.image.attached? %>
+                <%= image_tag @product.image, alt: @product.type, class: "product_image_preview" %>
+              <% else %>
+                <span class="preview-placeholder">No product image</span>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

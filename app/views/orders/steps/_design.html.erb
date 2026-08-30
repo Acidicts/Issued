@@ -1,0 +1,139 @@
+<%= stylesheet_link_tag "pages/orders", "data-turbo-track": "reload" %>
+
+<%= turbo_frame_tag "order_steps" do %>
+  <div class="order-wrap" data-controller="order--order-preview"
+      data-order--order-preview-image-x-value="<%= @product.print_areas.first.image_x %>"
+      data-order--order-preview-image-y-value="<%= @product.print_areas.first.image_y %>"
+      data-order--order-preview-image-wx-value="<%= @product.print_areas.first.image_wx %>"
+      data-order--order-preview-image-wy-value="<%= @product.print_areas.first.image_wy %>"
+      data-order--order-preview-color-hex-value="<%= @order.color_hex %>">
+    <div class="order-header">
+      <h1>Place Your Design</h1>
+      <p class="sub">Drag, resize, or rotate the design within the print area.</p>
+    </div>
+
+    <div class="order-layout">
+      <div class="order-form-side">
+        <%= form_with url: new_step_orders_path, method: :post, id: "design-form", data: { turbo_frame: "order_steps" }, html: { class: "form-card" } do |f| %>
+          <%= f.hidden_field :product_id, value: @product.id %>
+          <%= hidden_field_tag "step", "design" %>
+
+          <%# Carry forward config selections %>
+          <%= f.hidden_field :color_hex, value: @order.color_hex %>
+          <% @order.print_areas.each do |name, enabled| %>
+            <%= f.hidden_field "order[print_areas][#{name}]", value: enabled ? "1" : "0" %>
+          <% end %>
+
+          <div class="form-group">
+            <label class="form-label" for="order_design_id">
+              Design
+              <span class="required">*</span>
+            </label>
+            <% if @designs.any? %>
+              <select name="order[design_id]"
+                      id="order_design_id"
+                      class="form-select"
+                      data-action="change->order--order-preview#updateDesign"
+                      data-order--order-preview-target="designSelect">
+                <option value="">Select a design...</option>
+                <% @designs.each do |design| %>
+                  <%
+                    is_selected = @order_params[:design_id].to_s == design.id.to_s
+                    latest_image = design.images.order(created_at: :desc).first
+                    img_url = if latest_image&.image_file&.attached?
+                                url_for(latest_image.image_file)
+                              else
+                                ""
+                              end
+                  %>
+                  <option value="<%= design.id %>"
+                          data-image-url="<%= img_url %>"
+                          <%= 'selected' if is_selected %>>
+                    <%= design.name %>
+                  </option>
+                <% end %>
+              </select>
+              <p class="form-hint">Pick a design from your collection to preview it on the product.</p>
+            <% else %>
+              <p class="form-hint" style="color: var(--warn);">You have no designs yet. <%= link_to "Create one first", new_design_path, class: "btn btn-tertiary" %></p>
+            <% end %>
+          </div>
+
+          <fieldset class="form-fieldset">
+            <legend>Design placement</legend>
+            <p class="form-hint" style="margin-bottom: 12px;">Drag, resize, or rotate the design within the print area.</p>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <%= f.label :x, "X position (px)", class: 'form-label' %>
+                <%= number_field_tag "order[x]", @order_params[:x], step: 1, id: "x", class: 'form-input',
+                      "data-order--order-preview-target" => "inputX", "data-action" => "input->order--order-preview#inputChanged" %>
+              </div>
+              <div class="form-group">
+                <%= f.label :y, "Y position (px)", class: 'form-label' %>
+                <%= number_field_tag "order[y]", @order_params[:y], step: 1, id: "y", class: 'form-input',
+                      "data-order--order-preview-target" => "inputY", "data-action" => "input->order--order-preview#inputChanged" %>
+              </div>
+            </div>
+            <div class="form-grid">
+              <div class="form-group">
+                <%= f.label :wx, "Width (px)", class: 'form-label' %>
+                <%= number_field_tag "order[wx]", @order_params[:wx], step: 1, id: "wx", class: 'form-input',
+                      "data-order--order-preview-target" => "inputWx", "data-action" => "input->order--order-preview#inputChanged" %>
+              </div>
+              <div class="form-group">
+                <%= f.label :wy, "Height (px)", class: 'form-label' %>
+                <%= number_field_tag "order[wy]", @order_params[:wy], step: 1, id: "wy", class: 'form-input',
+                      "data-order--order-preview-target" => "inputWy", "data-action" => "input->order--order-preview#inputChanged" %>
+              </div>
+            </div>
+            <div class="form-group">
+              <%= f.label :rotation, "Rotation (deg)", class: 'form-label' %>
+              <%= number_field_tag "order[rotation]", (@order_params[:rotation] || 0), step: 1, min: 0, max: 360, id: "rotation", class: 'form-input',
+                    "data-order--order-preview-target" => "inputRotation", "data-action" => "input->order--order-preview#inputChanged" %>
+            </div>
+          </fieldset>
+        <% end %>
+
+        <div class="form-actions">
+          <%= button_to "Back", new_step_orders_path, params: { back_step: "config", order: { product_id: @product.id, color_hex: @order.color_hex, print_areas: @order.print_areas, design_id: @order_params[:design_id], x: @order_params[:x], y: @order_params[:y], wx: @order_params[:wx], wy: @order_params[:wy], rotation: @order_params[:rotation] } }, method: :post, data: { turbo_frame: "order_steps" }, class: "btn btn-secondary btn-outline" %>
+          <input type="submit" value="Review Order" form="design-form" class="btn btn-secondary" <%= 'disabled' if @designs.empty? %> data-disable-button-target="button">
+        </div>
+      </div>
+
+      <div class="order-preview-side">
+        <div class="preview-label">Preview</div>
+        <div class="preview-canvas"
+            data-order--order-preview-target="canvas"
+            data-action="mousedown->order--order-preview#dragStart">
+          <div class="preview-product">
+            <div class="preview-product-image-container">
+              <% if @product.image.attached? %>
+                <%= image_tag @product.image, alt: @product.type, "data-order--order-preview-target" => "productImage", class: "product_image_preview", style: "background-color: #{@order.color_hex}" %>
+              <% else %>
+                <span class="preview-placeholder">No product image</span>
+              <% end %>
+            </div>
+          </div>
+          <div class="preview-print-area"
+              data-order--order-preview-target="printArea">
+            <span class="preview-print-area-label">Print area</span>
+          </div>
+          <div class="preview-design-img-wrap"
+              data-order--order-preview-target="designImgWrap"
+              style="display: none;">
+            <img class="preview-design-img" data-order--order-preview-target="designImage" src="" alt="Design preview">
+            <div class="resize-handle resize-n" data-dir="n"></div>
+            <div class="resize-handle resize-s" data-dir="s"></div>
+            <div class="resize-handle resize-e" data-dir="e"></div>
+            <div class="resize-handle resize-w" data-dir="w"></div>
+            <div class="rotate-handle"></div>
+          </div>
+          <div class="preview-empty" data-order--order-preview-target="emptyState">
+            <span>Select a design to see a preview</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

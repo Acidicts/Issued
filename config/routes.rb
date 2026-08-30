@@ -42,7 +42,12 @@ Rails.application.routes.draw do
   end
 
   # Orders
-  resources :orders, only: %i[index show new create edit update destroy]
+  resources :orders, only: %i[index show new create edit update destroy] do
+    collection do
+      delete :cancel
+      post :new_step
+    end
+  end
 
   # Settings
   get "settings/", to: "settings#index", as: :settings
@@ -59,7 +64,6 @@ Rails.application.routes.draw do
       end
     end
     resources :orders,   only: %i[index show edit update destroy] do
-      member { delete :cancel }
     end
 
     get    "rsvp/index",      to: "rsvp#index",  as: :rsvp

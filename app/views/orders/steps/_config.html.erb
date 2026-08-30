@@ -1,0 +1,117 @@
+<%= turbo_frame_tag "order_steps" do %>
+  <div class="order-wrap" data-controller="order--order-config"
+  data-order--order-config-color-hex-value="<%= @order.color_hex %>">
+    <div class="order-header">
+      <h1>Configure Order</h1>
+      <p class="sub">Select print areas and color for your <%= @order.product.type&.downcase %>.</p>
+    </div>
+
+    <div class="order-layout">
+      <div class="order-form-side">
+        <%= form_with url: new_step_orders_path, method: :post, id: "config-order-form", data: { turbo_frame: "order_steps" }, html: { class: "form-card" } do |f| %>
+          <%= f.hidden_field :product_id, value: @product.id %>
+          <%= hidden_field_tag "step", "config" %>
+
+          <%# Carry forward design selections from previous steps %>
+          <% if @order_params[:design_id].present? %>
+            <%= f.hidden_field :design_id, value: @order_params[:design_id] %>
+            <%= f.hidden_field :x, value: @order_params[:x] %>
+            <%= f.hidden_field :y, value: @order_params[:y] %>
+            <%= f.hidden_field :wx, value: @order_params[:wx] %>
+            <%= f.hidden_field :wy, value: @order_params[:wy] %>
+            <%= f.hidden_field :rotation, value: @order_params[:rotation] %>
+          <% end %>
+
+          <div class="form-group">
+            <span class="form-label">Product</span>
+            <div class="order-product-summary">
+              <% if @product.image.attached? %>
+                <%= image_tag @product.image, alt: @product.type, class: "order-product-thumb" %>
+              <% end %>
+              <div>
+                <strong><%= @product.type %></strong>
+                <span class="order-product-cost"><%= @product.thread_cost %> threads</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Print Areas</label>
+            <p class="form-hint">Choose which areas to print on.</p>
+            <div class="print-area-checkboxes">
+              <% @product.print_areas.each do |pa| %>
+                <label class="checkbox-label">
+                  <%= f.check_box "order[print_areas][#{pa.name}]",
+                        { checked: @order.print_areas[pa.name] != false,
+                          class: "form-checkbox" },
+                        "1", "0" %>
+                  <span><%= pa.name.capitalize %></span>
+                </label>
+              <% end %>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="order_color_hex">Colour</label>
+            <div class="swatches">
+              <% colors = @product.variants.pluck("LOWER(color_hex)").compact.uniq %>
+              <% colors.each do |hex_value| %>
+                <% custom_id = "color_#{hex_value.tr('#', '')}" %>
+<%= f.radio_button :color_hex, 
+                  hex_value, 
+                  id: custom_id,
+                  required: true,
+                  checked: @order.color_hex == hex_value,
+                  data: {
+                    action: "change->order--order-config#updateColorByButton",
+                    "order--order-config-target": "radioButton"
+                  } %>
+                
+                <%= f.label :color_hex, for: custom_id, class: "swatch", style: "background-color: #{hex_value};" do %>
+                    <span class="sr-only"><%= hex_value %></span>
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
+        <div class="form-actions">
+          <%= button_to "Back", new_order_path(product_id: @product.id), method: :get, class: "btn btn-secondary btn-outline" %>
+          <input type="submit" value="Choose Design" form="config-order-form" class="btn btn-secondary">
+        </div>
+      </div>
+
+      <div class="order-preview-side">
+        <div class="preview-label">Preview</div>
+        <div class="preview-canvas">
+          <div class="preview-product">
+            <div class="preview-product-image-container">
+              <% if @product.image.attached? %>
+                <%= image_tag @product.image, alt: @product.type, class: "product_image_preview", "data-order--order-config-target" => "productImage", style: "background-color: #{@order.color_hex}" %>
+              <% else %>
+                <span class="preview-placeholder">No product image</span>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Update this selector to target your specific form if needed
+        const form = document.getElementById("config-order-form")
+        const checkboxes = document.querySelectorAll('.print-area-checkboxes .form-checkbox');
+
+        form.addEventListener('submit', (event) => {
+            // .some() returns true if at least one checkbox matches the condition
+            const isAtLeastOneChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+
+            if (!isAtLeastOneChecked) {
+            event.preventDefault(); // Stop form submission
+            alert('Please select at least one print area.');
+            }
+        });
+    });
+  </script>
+<% end %>

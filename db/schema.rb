@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_25_222709) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_30_121000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -92,21 +92,46 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_25_222709) do
     t.index ["user_id"], name: "index_notifications_on_user_id"
   end
 
-  create_table "orders", force: :cascade do |t|
+  create_table "order_print_areas", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "design_id", null: false
-    t.bigint "product_id", null: false
+    t.bigint "order_id", null: false
     t.integer "rotation"
+    t.datetime "updated_at", null: false
+    t.integer "x"
+    t.integer "xw"
+    t.integer "y"
+    t.integer "yw"
+    t.index ["design_id"], name: "index_order_print_areas_on_design_id"
+    t.index ["order_id"], name: "index_order_print_areas_on_order_id"
+  end
+
+  create_table "orders", force: :cascade do |t|
+    t.string "color_hex"
+    t.datetime "created_at", null: false
+    t.jsonb "print_areas", default: {}, null: false
+    t.bigint "product_id", null: false
     t.integer "status"
+    t.integer "step"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
-    t.integer "wx"
-    t.integer "wy"
-    t.integer "x"
-    t.integer "y"
-    t.index ["design_id"], name: "index_orders_on_design_id"
     t.index ["product_id"], name: "index_orders_on_product_id"
     t.index ["user_id"], name: "index_orders_on_user_id"
+  end
+
+  create_table "print_areas", force: :cascade do |t|
+    t.integer "cost"
+    t.datetime "created_at", null: false
+    t.boolean "enabled", default: false
+    t.integer "image_wx"
+    t.integer "image_wy"
+    t.integer "image_x"
+    t.integer "image_y"
+    t.string "name"
+    t.bigint "product_id", null: false
+    t.integer "thread_cost"
+    t.datetime "updated_at", null: false
+    t.index ["product_id"], name: "index_print_areas_on_product_id"
   end
 
   create_table "products", force: :cascade do |t|
@@ -166,9 +191,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_25_222709) do
   add_foreign_key "designs", "users"
   add_foreign_key "images", "designs"
   add_foreign_key "notifications", "users"
-  add_foreign_key "orders", "designs"
+  add_foreign_key "order_print_areas", "designs"
+  add_foreign_key "order_print_areas", "orders"
   add_foreign_key "orders", "products"
   add_foreign_key "orders", "users"
+  add_foreign_key "print_areas", "products"
   add_foreign_key "rsvps", "users"
   add_foreign_key "variants", "products"
 end

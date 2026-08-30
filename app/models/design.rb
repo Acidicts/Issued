@@ -11,7 +11,7 @@
 #  time              :integer
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
-#  user_id           :integer          not null
+#  user_id           :bigint           not null
 #
 # Indexes
 #
@@ -25,7 +25,7 @@
 #
 class Design < ApplicationRecord
   belongs_to :user
-  has_many :orders, dependent: :destroy
+  has_many :order_print_areas, dependent: :destroy
 
   has_many :images, dependent: :destroy
 

@@ -3,7 +3,7 @@
 <div class="order-show">
   <div class="order-show-image">
     <% if @order.preview_image.attached? %>
-      <%= image_tag @order.preview_image, alt: "Order preview" %>
+      <%= image_tag @order.preview_image, alt: "Order preview", style: "background-color: #{@order.color_hex}" %>
     <% else %>
       <span class="order-show-placeholder">No preview available</span>
     <% end %>
@@ -11,7 +11,7 @@
   <div class="order-show-info">
     <div class="order-show-header">
       <h3>Order <%= @order.id %></h3>
-      <span class="order-show-status order-show-status--<%= @order.status %>"><%= @order.status.humanize %></span>
+      <%= render "orders/status_pill", order: @order %>
     </div>
     <div class="order-show-details">
       <div class="order-show-detail">
@@ -20,13 +20,22 @@
       </div>
       <div class="order-show-detail">
         <span class="order-show-label">Design</span>
-        <span class="order-show-value"><%= @order.design.name %></span>
+        <span class="order-show-value"><%= @order.order_print_areas.first&.design&.name %></span>
+      </div>
+      <div class="order-show-detail">
+        <span class="order-show-label">Print Areas</span>
+        <span class="order-show-value"><%= @order.active_print_area_names.join(", ").presence || "None" %></span>
       </div>
       <div class="order-show-detail">
         <span class="order-show-label">Placed</span>
         <span class="order-show-value"><%= @order.created_at.strftime("%b %d, %Y") %></span>
       </div>
     </div>
-    <%= link_to "Back to orders", orders_path, class: "btn btn-secondary" %>
+    <div class="inline-flex jc-space-evenly g-16p">
+      <% if @order.pending? && (current_user == @order.user || current_user.admin?) %>
+        <%= button_to "Cancel", cancel_orders_path(id: @order.id), method: :delete, class: "btn btn-secondary", data: { turbo_frame: "order_status_#{@order.id}" } %>
+      <% end %>
+      <%= link_to "Back to orders", orders_path, class: "btn btn-secondary" %>
+    </div>
   </div>
 </div>

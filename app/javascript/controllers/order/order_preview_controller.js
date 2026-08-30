@@ -10,7 +10,8 @@ export default class extends Controller {
     imageX: Number,
     imageY: Number,
     imageWx: Number,
-    imageWy: Number
+    imageWy: Number,
+    colorHex: String
   }
 
   connect() {
@@ -43,12 +44,23 @@ export default class extends Controller {
 
     if (urlParams.has("design_id")) {
       this.updateDesign();
+    } else if (this.designSelectTarget.value) {
+      this.updateDesign();
     }
+    this.updateColor();
   }
 
   disconnect() {
     window.removeEventListener("resize", this.resizeHandler)
     this.stopDrag()
+  }
+
+  flashClamp() {
+    if (!this.hasPrintAreaTarget) return
+    const pa = this.printAreaTarget
+    pa.style.boxShadow = "0 0 0 9999px rgba(0, 0, 0, 0.4)"
+    clearTimeout(this._clampFlashTimer)
+    this._clampFlashTimer = setTimeout(() => { pa.style.boxShadow = "" }, 200)
   }
 
   rotatedAabb(w, h, deg) {
@@ -76,10 +88,9 @@ export default class extends Controller {
     const canvas = this.canvasTarget
     if (!wrap || !canvas || w <= 0 || h <= 0) {
       const aabb = this.rotatedAabb(w, h, rotation)
-      return {
-        x: Math.max(this.imageXValue, Math.min(Math.round(x), this.imageXValue + this.imageWxValue - aabb.w)),
-        y: Math.max(this.imageYValue, Math.min(Math.round(y), this.imageYValue + this.imageWyValue - aabb.h))
-      }
+      const cx = Math.max(this.imageXValue, Math.min(Math.round(x), this.imageXValue + this.imageWxValue - aabb.w))
+      const cy = Math.max(this.imageYValue, Math.min(Math.round(y), this.imageYValue + this.imageWyValue - aabb.h))
+      return { x: cx, y: cy, clamped: cx !== Math.round(x) || cy !== Math.round(y) }
     }
 
     const canvasRect = canvas.getBoundingClientRect()
@@ -120,7 +131,7 @@ export default class extends Controller {
     if (bbTop < paT) shiftY = paT - bbTop
     else if (bbTop + bbH > paB) shiftY = paB - bbTop - bbH
 
-    return { x: Math.round(x + shiftX), y: Math.round(y + shiftY) }
+    return { x: Math.round(x + shiftX), y: Math.round(y + shiftY), clamped: shiftX !== 0 || shiftY !== 0 }
   }
 
   computeScale() {
@@ -218,11 +229,16 @@ export default class extends Controller {
 
     if (wx > 0 && wy > 0) {
       const clamped = this.clampPosition(x, y, wx, wy, rotation)
-      if (this.hasInputXTarget && parseInt(this.inputXTarget.value) !== clamped.x) this.inputXTarget.value = clamped.x
-      if (this.hasInputYTarget && parseInt(this.inputYTarget.value) !== clamped.y) this.inputYTarget.value = clamped.y
+      if (clamped.clamped) this.flashClamp()
+      if (this.hasInputXTarget) this.inputXTarget.value = clamped.x
+      if (this.hasInputYTarget) this.inputYTarget.value = clamped.y
     }
 
     this.positionDesign()
+  }
+
+  updateColor() {
+    this.productImageTarget.style.backgroundColor = this.colorHexValues
   }
 
   updateDesign() {
@@ -243,6 +259,14 @@ export default class extends Controller {
 
     this.designImageTarget.src = imageUrl
     this.emptyStateTarget.style.display = "none"
+
+    const hasExistingValues = (parseInt(this.inputXTarget?.value) || 0) > 0 ||
+                              (parseInt(this.inputWxTarget?.value) || 0) > 0
+
+    const positionFromInputs = () => {
+      this.computeScale()
+      this.positionDesign()
+    }
 
     const fitAndPlace = () => {
       const rotation = parseInt(this.inputRotationTarget?.value) || 0
@@ -271,11 +295,20 @@ export default class extends Controller {
       this.positionDesign()
     }
 
-    if (this.designImageTarget.complete && this.designImageTarget.naturalWidth) {
-      fitAndPlace()
+    if (hasExistingValues) {
+      if (this.designImageTarget.complete && this.designImageTarget.naturalWidth) {
+        positionFromInputs()
+      } else {
+        this.designImageTarget.onload = positionFromInputs
+        this.designImageTarget.onerror = positionFromInputs
+      }
     } else {
-      this.designImageTarget.onload = fitAndPlace
-      this.designImageTarget.onerror = fitAndPlace
+      if (this.designImageTarget.complete && this.designImageTarget.naturalWidth) {
+        fitAndPlace()
+      } else {
+        this.designImageTarget.onload = fitAndPlace
+        this.designImageTarget.onerror = fitAndPlace
+      }
     }
   }
 
@@ -348,12 +381,8 @@ export default class extends Controller {
       const wy = parseInt(this.inputWyTarget.value) || 0
       const rotation = parseInt(this.inputRotationTarget.value) || 0
 
-      const clamped = this.clampPosition(
-        this.startBoxX + dx,
-        this.startBoxY + dy,
-        wx, wy, rotation
-      )
-
+      const clamped = this.clampPosition(this.startBoxX + dx, this.startBoxY + dy, wx, wy, rotation)
+      if (clamped.clamped) this.flashClamp()
       this.inputXTarget.value = clamped.x
       this.inputYTarget.value = clamped.y
     } else if (this.resizing) {
@@ -411,6 +440,7 @@ export default class extends Controller {
     }
 
     const clamped = this.clampPosition(x, y, w, h, rotation)
+    if (clamped.clamped) this.flashClamp()
 
     this.inputXTarget.value = clamped.x
     this.inputYTarget.value = clamped.y
@@ -442,6 +472,7 @@ export default class extends Controller {
     const x = parseInt(this.inputXTarget.value) || 0
     const y = parseInt(this.inputYTarget.value) || 0
     const clamped = this.clampPosition(x, y, max.w, max.h, newRotation)
+    if (clamped.clamped) this.flashClamp()
     this.inputXTarget.value = clamped.x
     this.inputYTarget.value = clamped.y
   }

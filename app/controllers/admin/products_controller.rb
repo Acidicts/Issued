@@ -49,7 +49,7 @@ module Admin
 
       if @product.save
         redirect_to edit_admin_product_path(@product),
-          notice: "Imported \"#{@product.description.presence || data[:title]}\" from Printful. Review the details and design placement below."
+          notice: "Imported \"#{@product.description.presence || data[:type]}\" from Printful. Review the details and design placement below."
       else
         render :new_by_printful_id, status: :unprocessable_entity
       end
@@ -63,7 +63,9 @@ module Admin
       return unless params[:id]
 
       product = Product.find(params[:id])
+
       if product.update(product_params)
+        sync_print_areas(product) if params[:product][:print_areas_json].present?
         redirect_to admin_products_path, notice: "Product was successfully updated."
       else
         render :edit, status: :unprocessable_entity
@@ -89,10 +91,7 @@ module Admin
         :cost,
         :thread_cost,
         :image,
-        :image_x,
-        :image_y,
-        :image_wx,
-        :image_wy,
+        :print_areas_json,
         variants_attributes: [
           :color_hex,
           :id,
@@ -100,13 +99,47 @@ module Admin
           :size,
           { stock_by_region: {} },
           :_destroy
-        ],
+        ]
         )
+    end
+
+    def sync_print_areas(product)
+      print_areas_data = JSON.parse(params[:product][:print_areas_json])
+
+      submitted_ids = print_areas_data.select { |d| d["id"].present? && !d["_destroy"] }.map { |d| d["id"] }
+
+      product.print_areas.where.not(id: submitted_ids).destroy_all
+
+      print_areas_data.each do |pa_data|
+        next if pa_data["_destroy"]
+
+        if pa_data["id"].present?
+          pa = product.print_areas.find_by(id: pa_data["id"])
+          next unless pa
+
+          pa.update(
+            name: pa_data["name"],
+            image_x: pa_data["image_x"].to_i,
+            image_y: pa_data["image_y"].to_i,
+            image_wx: pa_data["image_wx"].to_i,
+            image_wy: pa_data["image_wy"].to_i
+          )
+        else
+          product.print_areas.create!(
+            name: pa_data["name"],
+            image_x: pa_data["image_x"].to_i,
+            image_y: pa_data["image_y"].to_i,
+            image_wx: pa_data["image_wx"].to_i,
+            image_wy: pa_data["image_wy"].to_i
+          )
+        end
+      end
     end
 
     def build_product_from_printful(data)
       product = Product.new(
-        description: data[:title],
+        printful_id: data[:printful_id],
+        description: data[:type],
         cost: data[:cost]
       )
 
@@ -126,6 +159,28 @@ module Admin
           color_hex: variant_data["color_code"],
           stock_by_region: stock_by_region_from_printful(variant_data)
         )
+      end
+
+      print_area_templates = PrintfulService.fetch_product_templates(product.printful_id)
+
+      print_area_templates.each do |position, template|
+        image_bytes, content_type, filename = download_image(template[:image_url])
+
+        print_area = product.print_areas.build(
+          name: position,                             # "front" / "back"
+          image_x: template[:print_area_left].to_i,
+          image_y: template[:print_area_top].to_i,
+          image_wx: template[:print_area_width].to_i,
+          image_wy: template[:print_area_height].to_i,
+          enabled: true
+        )
+
+        print_area.template_image.attach(
+          io: StringIO.new(image_bytes),
+          filename: filename,
+          content_type: content_type
+        )
+        apply_scaled_design_box(print_area, template, image_bytes)
       end
 
       product
@@ -168,10 +223,10 @@ module Admin
       scale_x ||= 1.0
       scale_y ||= 1.0
 
-      product.image_x  = (data[:image_x]  * scale_x).round
-      product.image_y  = (data[:image_y]  * scale_y).round
-      product.image_wx = (data[:image_wx] * scale_x).round
-      product.image_wy = (data[:image_wy] * scale_y).round
+      product.image_x  = (data[:print_area_left].to_i   * scale_x).round
+      product.image_y  = (data[:print_area_top].to_i    * scale_y).round
+      product.image_wx = (data[:print_area_width].to_i  * scale_x).round
+      product.image_wy = (data[:print_area_height].to_i * scale_y).round
     end
 
     def real_image_dimensions(image_bytes)

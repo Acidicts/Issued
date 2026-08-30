@@ -451,3 +451,59 @@
   display: flex;
   flex-direction: column;
 }
+
+/* --- Print area controls --- */
+.print-area-controls {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.print-area-select-group {
+  flex: 1;
+  margin-bottom: 0 !important;
+}
+
+.print-area-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.print-area-actions .btn-sm {
+  font-size: 11px;
+  padding: 5px 10px;
+  white-space: nowrap;
+}
+
+.btn-danger {
+  background: none;
+  border: 1.5px solid #c0392b;
+  color: #c0392b;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.btn-danger:hover {
+  background: #c0392b;
+  color: #fff;
+}
+
+.preview-template-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  opacity: 0.5;
+  z-index: 1;
+}
+
+.form-dropzone-sm {
+  padding: 10px;
+  font-size: 0.85rem;
+}

@@ -40,3 +40,6 @@ node_modules/*
 
 # Local planning file
 PLAN.md
+
+# Zip Exports
+*.zip

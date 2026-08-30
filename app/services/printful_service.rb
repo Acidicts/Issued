@@ -64,6 +64,41 @@ class PrintfulService
     new.check_variants_stock(printful_id)
   end
 
+  def self.fetch_product_templates(printful_id)
+    new.fetch_product_templates(printful_id)
+  end
+
+  def fetch_product_templates(printful_id)
+    templates = fetch_templates(printful_id)["templates"] || []
+
+    templates = templates.select do |template|
+      template["image_url"]&.include?("whitebg")
+    end
+
+    positions = %w[front back left right top bottom inside_out
+                  zoomed close_up flat detail lifestyle]
+
+    templates.group_by do |template|
+      path = template["image_url"].to_s.split("?").first
+      segments = path.downcase.split("/")
+      segments.find { |seg| positions.include?(seg) }
+    end.transform_values do |group|
+      first = group.first
+      {
+        image_url: first["image_url"],
+        template_width: first["template_width"],
+        template_height: first["template_height"],
+        print_area_width: first["print_area_width"],
+        print_area_height: first["print_area_height"],
+        print_area_top: first["print_area_top"],
+        print_area_left: first["print_area_left"],
+        is_template_on_front: first["is_template_on_front"],
+        orientation: first["orientation"],
+        variants: group.map { |t| { template_id: t["template_id"], background_color: t["background_color"] } }
+      }
+    end
+  end
+
   def check_variants_stock(printful_id)
     product_data = fetch_product(printful_id)
     {
@@ -83,7 +118,7 @@ class PrintfulService
 
     {
       printful_id: printful_id.to_i,
-      title: product_data.dig("product", "title") || "Imported Product ##{printful_id}",
+      type: product_data.dig("product", "title") || "Imported Product ##{printful_id}",
       description: product_data.dig("product", "description").to_s,
       cost: cheapest_price(product_data["variants"]),
       image_url: template["image_url"],
