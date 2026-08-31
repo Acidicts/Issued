@@ -3,6 +3,7 @@
 <div class="shop-wrap">
   <div class="shop-header">
     <h1>The Loom</h1>
+    <%= link_to "View Orders", orders_path, class: "btn btn-secondary" %>
   </div>
 
   <% if @products.any? %>

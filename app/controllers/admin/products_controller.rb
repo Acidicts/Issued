@@ -91,7 +91,6 @@ module Admin
         :cost,
         :thread_cost,
         :image,
-        :print_areas_json,
         variants_attributes: [
           :color_hex,
           :id,

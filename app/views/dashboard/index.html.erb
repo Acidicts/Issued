@@ -113,7 +113,11 @@
         <% @shop_items.each do |item| %>
           <div class="shop-item">
             <span class="name"><%= item[:name] %></span>
-            <span class="cost"><%= format_threads(item[:cost]) %> threads</span>
+            <% if item[:cost] == 0 %>
+              <span class="cost">FREE</span>
+            <% else %>
+              <span class="cost"><%= format_threads(item[:cost]) %> threads</span>
+            <% end %>
           </div>
         <% end %>
         <%= link_to "Open the shop", shop_path, class: "cta" %>

@@ -57,7 +57,7 @@ class DashboardController < ApplicationController
     @threads = @user.threads || 0
 
     @shop_items = @products.map do |p|
-      { name: p.type, cost: p.cost.to_i }
+      { name: p.type, cost: p.thread_cost }
     end
   end
 end

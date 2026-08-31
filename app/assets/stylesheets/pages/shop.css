@@ -27,17 +27,30 @@
   max-width: 960px;
   margin: 0 auto;
   padding: 2.5rem;
+  padding-top: 0.5rem;
   border-radius: 25px;
   border: var(--line) 1px solid;
 }
 
 .shop-header {
+  position: relative; /* CRITICAL: Anchors the ::after element to this container */
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 1rem;
   flex-wrap: wrap;
   margin-bottom: 0.5rem;
+  padding-bottom: 0.25rem;
+  /* border-bottom REMOVED from here so it doesn't draw a full-width line */
+}
+
+.shop-header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0; 
+  width: 98%; 
+  border-bottom: 2px dashed color-mix(in srgb, var(--line) 50%, transparent);
 }
 
 .shop-header h1 {

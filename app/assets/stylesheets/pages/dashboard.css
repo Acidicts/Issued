@@ -136,6 +136,11 @@ a {
   align-items: stretch;
 }
 
+.main > aside {
+  display: flex;
+  flex-direction: column;
+}
+
 .panel {
   background: var(--card);
   border: 1.5px solid var(--ink);
@@ -364,6 +369,7 @@ a {
 /* shop teaser */
 .shop-teaser {
   margin-top: 18px;
+  flex: 1;
 }
 
 .shop-item {
