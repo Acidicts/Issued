@@ -2,8 +2,24 @@
 
 <div class="order-show">
   <div class="order-show-image">
-    <% if @order.order_print_areas.first.preview_image.attached? %>
-      <%= image_tag @order.order_print_areas.first.preview_image, alt: "Order preview", style: "background-color: #{@order.color_hex}" %>
+    <%
+      images_array = @order.order_print_areas.filter_map do |area|
+        area.preview_image if area.preview_image.attached?
+      end
+    %>
+    <% if images_array.any? %>
+      <%
+        preview_index = (params[:preview_area] || 0).to_i
+        preview_index = [[preview_index, 0].max, images_array.size - 1].min
+      %>
+      <%= image_tag images_array[preview_index], alt: "Order preview", style: "background-color: #{@order.color_hex}" %>
+      <% if images_array.size > 1 %>
+        <div style="display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 12px;">
+          <%= link_to raw("&larr;"), order_path(@order, preview_area: [preview_index - 1, 0].max), class: "btn btn-tertiary", disabled: preview_index <= 0 %>
+          <span><%= preview_index + 1 %> / <%= images_array.size %></span>
+          <%= link_to raw("&rarr;"), order_path(@order, preview_area: [preview_index + 1, images_array.size - 1].min), class: "btn btn-tertiary", disabled: preview_index >= images_array.size - 1 %>
+        </div>
+      <% end %>
     <% else %>
       <span class="order-show-placeholder">No preview available</span>
     <% end %>
