@@ -2,8 +2,8 @@
 
 <div class="order-show">
   <div class="order-show-image">
-    <% if @order.preview_image.attached? %>
-      <%= image_tag @order.preview_image, alt: "Order preview", style: "background-color: #{@order.color_hex}" %>
+    <% if @order.order_print_areas.first.preview_image.attached? %>
+      <%= image_tag @order.order_print_areas.first.preview_image, alt: "Order preview", style: "background-color: #{@order.color_hex}" %>
     <% else %>
       <span class="order-show-placeholder">No preview available</span>
     <% end %>

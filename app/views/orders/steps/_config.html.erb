@@ -9,7 +9,7 @@
     <div class="order-layout">
       <div class="order-form-side">
         <%= form_with url: new_step_orders_path, method: :post, id: "config-order-form", data: { turbo_frame: "order_steps" }, html: { class: "form-card" } do |f| %>
-          <%= f.hidden_field :product_id, value: @product.id %>
+          <%= hidden_field_tag "order[product_id]", @product.id %>
           <%= hidden_field_tag "step", "config" %>
 
           <%# Carry forward design selections from previous steps %>
@@ -41,10 +41,9 @@
             <div class="print-area-checkboxes">
               <% @product.print_areas.each do |pa| %>
                 <label class="checkbox-label">
-                  <%= f.check_box "order[print_areas][#{pa.name}]",
-                        { checked: @order.print_areas[pa.name] != false,
-                          class: "form-checkbox" },
-                        "1", "0" %>
+                  <%= check_box_tag "order[print_areas][#{pa.name}]", "1",
+                        @order.print_areas[pa.name] != false,
+                        class: "form-checkbox" %>
                   <span><%= pa.name.capitalize %></span>
                 </label>
               <% end %>

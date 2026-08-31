@@ -1,5 +1,12 @@
 <%= stylesheet_link_tag "pages/orders", "data-turbo-track": "reload" %>
 
+<% enabled_area_names = @product.print_areas.select { |pa| @order.print_areas[pa.name] == true }.map(&:name) %>
+<% preview_index = (params[:preview_area] || 0).to_i %>
+<% preview_index = [preview_index, enabled_area_names.size - 1].min %>
+<% current_area_name = enabled_area_names[preview_index] %>
+<% pa = @product.print_areas.find { |p| p.name == current_area_name } %>
+<% current_config = @print_area_configs[current_area_name] || {} %>
+
 <%= turbo_frame_tag "order_steps" do %>
   <div class="order-wrap">
     <div class="order-header">
@@ -12,15 +19,16 @@
         <%= form_with model: @order, url: orders_path, method: :post, id: "confirmation-form", html: { class: "form-card", data: { turbo: false } } do |f| %>
           <%= f.hidden_field :product_id, value: @product.id %>
           <%= f.hidden_field :color_hex, value: @order.color_hex %>
-          <%= hidden_field_tag "order[design_id]", @order_params[:design_id] %>
-          <%= hidden_field_tag "order[x]", @order_params[:x] %>
-          <%= hidden_field_tag "order[y]", @order_params[:y] %>
-          <%= hidden_field_tag "order[wx]", @order_params[:wx] %>
-          <%= hidden_field_tag "order[wy]", @order_params[:wy] %>
-          <%= hidden_field_tag "order[rotation]", @order_params[:rotation] %>
+          <%= hidden_field_tag "order[preview_area]", preview_index %>
+          <%= hidden_field_tag "print_area", current_area_name %>
 
-          <% @order.print_areas.each do |name, enabled| %>
-            <%= f.hidden_field "order[print_areas][#{name}]", value: enabled ? "1" : "0" %>
+          <% @product.print_areas.each do |pa| %>
+            <%= hidden_field_tag "order[print_areas][#{pa.name}]", @order.print_areas[pa.name] == true ? "1" : "0" %>
+          <% end %>
+          <% @print_area_configs.each do |key, config| %>
+            <% config.each do |k, value| %>
+              <%= hidden_field_tag "order[print_area_configs][#{key}][#{k}]", value %>
+            <% end %>
           <% end %>
 
           <div class="form-group">
@@ -38,77 +46,147 @@
 
           <div class="form-group">
             <span class="form-label">Colour</span>
-            <div class="swatch" style="background-color: <%= @order.color_hex %>; width: 32px; height: 32px; border-radius: 4px; display: inline-block;"></div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div style="background-color: <%= @order.color_hex %>; width: 32px; height: 32px; border-radius: 4px;"></div>
+              <span><%= @order.color_hex %></span>
+            </div>
           </div>
 
           <div class="form-group">
             <span class="form-label">Print Areas</span>
-            <div class="print-area-list">
-              <% @order.print_areas.each do |name, enabled| %>
-                <span class="print-area-badge <%= 'active' if enabled %>">
-                  <%= name.capitalize %>
-                  <% if enabled %>&#10003;<% end %>
-                </span>
-              <% end %>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <span class="form-label">Design</span>
-            <span><%= @designs.find { |d| d.id.to_s == @order_params[:design_id].to_s }&.name || "Not selected" %></span>
-          </div>
-
-          <div class="form-group">
-            <span class="form-label">Placement</span>
-            <div class="placement-summary">
-              <span>X: <%= @order_params[:x] || 0 %>px</span>
-              <span>Y: <%= @order_params[:y] || 0 %>px</span>
-              <span>W: <%= @order_params[:wx] || 0 %>px</span>
-              <span>H: <%= @order_params[:wy] || 0 %>px</span>
-              <span>Rotation: <%= @order_params[:rotation] || 0 %>&deg;</span>
-            </div>
+            <% @print_area_configs.each do |area_name, config| %>
+              <% design = @designs.find { |d| d.id.to_s == config["design_id"].to_s } %>
+              <% area_pa = @product.print_areas.find { |p| p.name == area_name.to_s } %>
+              <div style="padding: 8px 0; border-bottom: 1px solid var(--border-light);">
+                <strong><%= area_name.to_s.capitalize %></strong>
+                <div style="display: flex; gap: 12px; margin-top: 4px; font-size: 0.85rem; color: var(--text-secondary);">
+                  <span>Design: <%= design&.name || "None" %></span>
+                  <span>X: <%= config["x"] || area_pa&.image_x %>px</span>
+                  <span>Y: <%= config["y"] || area_pa&.image_y %>px</span>
+                  <span>W: <%= config["wx"] || area_pa&.image_wx %>px</span>
+                  <span>H: <%= config["wy"] || area_pa&.image_wy %>px</span>
+                  <span>Rot: <%= config["rotation"] || 0 %>&deg;</span>
+                </div>
+              </div>
+            <% end %>
           </div>
         <% end %>
 
         <div class="form-actions">
-          <%= button_to "Back", new_step_orders_path, params: { back_step: "design", order: { product_id: @product.id, color_hex: @order.color_hex, design_id: @order_params[:design_id], x: @order_params[:x], y: @order_params[:y], wx: @order_params[:wx], wy: @order_params[:wy], rotation: @order_params[:rotation], print_areas: @order.print_areas } }, method: :post, data: { turbo_frame: "order_steps" }, class: "btn btn-secondary btn-outline" %>
-          <input type="submit" value="Place Order" form="confirmation-form" class="btn btn-secondary" data-disable-button-target="button">
+          <button type="submit" name="back_step" value="design" form="confirmation-form" class="btn btn-secondary btn-outline">Back</button>
+          <input type="submit" value="Place Order" form="confirmation-form" class="btn btn-secondary">
         </div>
       </div>
 
       <div class="order-preview-side">
         <div class="preview-label">Preview</div>
-        <div class="preview-canvas"
-            data-controller="order-preview"
-            data-order-preview-image-x-value="<%= @product.print_areas.first.image_x %>"
-            data-order-preview-image-y-value="<%= @product.print_areas.first.image_y %>"
-            data-order-preview-image-wx-value="<%= @product.print_areas.first.image_wx %>"
-            data-order-preview-image-wy-value="<%= @product.print_areas.first.image_wy %>"
-            data-action="mousedown->order-preview#dragStart">
+        <div class="preview-canvas" style="position: relative;">
           <div class="preview-product">
-            <div class="preview-product-image-container">
-              <% if @product.image.attached? %>
-                <%= image_tag @product.image, alt: @product.type, data: { order_preview_target: "productImage" }, class: "product_image_preview",
-                      style: "background-color: #{@order.color_hex}" %>
+            <div class="preview-product-image-container" style="position: relative;"
+                 data-confirmation-preview
+                 data-pa-x="<%= pa&.image_x %>"
+                 data-pa-y="<%= pa&.image_y %>"
+                 data-pa-wx="<%= pa&.image_wx %>"
+                 data-pa-wy="<%= pa&.image_wy %>"
+                 data-design-x="<%= current_config["x"] || pa&.image_x %>"
+                 data-design-y="<%= current_config["y"] || pa&.image_y %>"
+                 data-design-wx="<%= current_config["wx"] || pa&.image_wx %>"
+                 data-design-wy="<%= current_config["wy"] || pa&.image_wy %>"
+                 data-design-rotation="<%= current_config["rotation"] || 0 %>">
+              <% if pa&.template_image %>
+                <%= image_tag pa.template_image, alt: @product.type, class: "product_image_preview confirmation-image", style: "background-color: #{@order.color_hex}" %>
+              <% elsif @product.image.attached? %>
+                <%= image_tag @product.image, alt: @product.type, class: "product_image_preview confirmation-image", style: "background-color: #{@order.color_hex}" %>
               <% else %>
                 <span class="preview-placeholder">No product image</span>
               <% end %>
+              <% if @design_images[current_area_name.to_s] %>
+                <%= image_tag @design_images[current_area_name.to_s], alt: "Design", class: "confirmation-design-image", data: { confirmation_design: true } %>
+              <% end %>
             </div>
           </div>
-          <div class="preview-print-area"
-              data-order-preview-target="printArea">
-            <span class="preview-print-area-label">Print area</span>
-          </div>
-          <div class="preview-design-img-wrap"
-              data-order-preview-target="designImgWrap"
-              style="display: none;">
-            <img class="preview-design-img" data-order-preview-target="designImage" src="" alt="Design preview">
-          </div>
-          <div class="preview-empty" data-order-preview-target="emptyState">
-            <span>Design preview</span>
-          </div>
         </div>
+        <% if enabled_area_names.size > 1 %>
+          <div style="display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 12px;">
+            <%= button_to raw("&larr;"), new_step_orders_path, params: { order: { product_id: @product.id, color_hex: @order.color_hex, print_areas: @order.print_areas, print_area_configs: @print_area_configs }, back_step: "confirmation", preview_area: [preview_index - 1, 0].max }, method: :post, data: { turbo_frame: "order_steps" }, class: "btn btn-tertiary", disabled: preview_index <= 0 %>
+            <span><%= preview_index + 1 %> / <%= enabled_area_names.size %></span>
+            <%= button_to raw("&rarr;"), new_step_orders_path, params: { order: { product_id: @product.id, color_hex: @order.color_hex, print_areas: @order.print_areas, print_area_configs: @print_area_configs }, back_step: "confirmation", preview_area: [preview_index + 1, enabled_area_names.size - 1].min }, method: :post, data: { turbo_frame: "order_steps" }, class: "btn btn-tertiary", disabled: preview_index >= enabled_area_names.size - 1 %>
+          </div>
+        <% end %>
       </div>
     </div>
   </div>
+
+  <script>
+    (function() {
+      var container = document.querySelector("[data-confirmation-preview]");
+      if (!container) return;
+      var img = container.querySelector(".confirmation-image");
+      var design = container.querySelector("[data-confirmation-design]");
+      if (!img || !design) return;
+
+      function positionDesign() {
+        if (!img.naturalWidth || !img.clientWidth) return;
+
+        var imgAspect = img.naturalWidth / img.naturalHeight;
+        var boxAspect = img.clientWidth / img.clientHeight;
+        var renderedW, renderedH, renderedX, renderedY;
+        if (imgAspect >= boxAspect) {
+          renderedW = img.clientWidth;
+          renderedH = img.clientWidth / imgAspect;
+        } else {
+          renderedH = img.clientHeight;
+          renderedW = img.clientHeight * imgAspect;
+        }
+        renderedX = (img.clientWidth - renderedW) / 2;
+        renderedY = (img.clientHeight - renderedH) / 2;
+        var scale = renderedW / img.naturalWidth;
+        var offsetX = renderedX;
+        var offsetY = renderedY;
+
+        var paX = parseFloat(container.dataset.paX) || 0;
+        var paY = parseFloat(container.dataset.paY) || 0;
+        var paWx = parseFloat(container.dataset.paWx) || img.naturalWidth;
+        var paWy = parseFloat(container.dataset.paWy) || img.naturalHeight;
+
+        var dX = parseFloat(container.dataset.designX) || paX;
+        var dY = parseFloat(container.dataset.designY) || paY;
+        var dWx = parseFloat(container.dataset.designWx) || paWx;
+        var dWy = parseFloat(container.dataset.designWy) || paWy;
+        var rotation = parseFloat(container.dataset.designRotation) || 0;
+
+        var left = offsetX + dX * scale;
+        var top = offsetY + dY * scale;
+        var width = dWx * scale;
+        var height = dWy * scale;
+
+        design.style.position = "absolute";
+        design.style.left = left + "px";
+        design.style.top = top + "px";
+        design.style.width = width + "px";
+        design.style.height = height + "px";
+        design.style.transform = "rotate(" + rotation + "deg)";
+        design.style.transformOrigin = "center center";
+        design.style.objectFit = "contain";
+        design.style.display = "block";
+      }
+
+      function tryPosition() {
+        if (img.complete && img.naturalWidth) {
+          positionDesign();
+        } else {
+          img.addEventListener("load", positionDesign);
+        }
+      }
+
+      if (img.complete && img.naturalWidth) {
+        requestAnimationFrame(tryPosition);
+      } else {
+        img.addEventListener("load", function() {
+          requestAnimationFrame(positionDesign);
+        });
+      }
+      window.addEventListener("resize", positionDesign);
+    })();
+  </script>
 <% end %>

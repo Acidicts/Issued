@@ -27,9 +27,16 @@ class OrdersController < ApplicationController
     @order = Order.new(product: @product, color_hex: params[:order][:color_hex] || params[:color_hex])
     @order.print_areas = build_print_areas_hash
     @order_params = params[:order]
+    @print_area_configs = params[:order]&.dig(:print_area_configs) || {}
+    if @print_area_configs.respond_to?(:to_unsafe_h)
+      @print_area_configs = @print_area_configs.to_unsafe_h.transform_keys(&:to_s)
+      @print_area_configs.each_value { |v| v.transform_keys!(&:to_s) if v.respond_to?(:transform_keys!) }
+    end
 
     if params[:back_step]
       @current_step = params[:back_step]
+    elsif params[:print_area_nav] == "1"
+      @current_step = "design"
     else
       step = params[:step] || "overview"
       case step
@@ -37,10 +44,25 @@ class OrdersController < ApplicationController
         @current_step = "config"
       when "config"
         @current_step = "design"
+        enabled_names = @product.print_areas.select { |pa| @order.print_areas[pa.name] == true }.map(&:name)
+        params[:print_area] = enabled_names.first if params[:print_area].blank?
       when "design"
         @current_step = "confirmation"
       else
         @current_step = "overview"
+      end
+    end
+
+    if @current_step == "confirmation"
+      @design_images = {}
+      @print_area_configs.each do |area_name, config|
+        design = @designs.find { |d| d.id.to_s == config["design_id"].to_s }
+        if design
+          latest_image = design.images.order(created_at: :desc).first
+          if latest_image&.image_file&.attached?
+            @design_images[area_name.to_s] = url_for(latest_image.image_file)
+          end
+        end
       end
     end
 
@@ -56,14 +78,18 @@ class OrdersController < ApplicationController
     @order.print_areas = build_print_areas_hash
     @order.build_print_areas_from_product
 
-    @order.order_print_areas.build(
-      design_id: params[:order][:design_id],
-      x:         params[:order][:x],
-      y:         params[:order][:y],
-      xw:        params[:order][:wx],
-      yw:        params[:order][:wy],
-      rotation:  params[:order][:rotation],
-    )
+    print_area_configs = params[:order][:print_area_configs] || {}
+    print_area_configs.to_unsafe_h.each do |area_name, config|
+      @order.order_print_areas.build(
+        design_id: config["design_id"],
+        x:         config["x"],
+        y:         config["y"],
+        xw:        config["wx"],
+        yw:        config["wy"],
+        rotation:  config["rotation"],
+        name:      area_name.to_s,
+      )
+    end
 
     @order.generate_and_attach_preview
 
@@ -105,13 +131,13 @@ class OrdersController < ApplicationController
   end
 
   def order_params
-    params.require(:order).permit(:product_id, :color_hex, :design_id, :x, :y, :wx, :wy, :rotation)
+    params.require(:order).permit(:product_id, :color_hex)
   end
 
   def build_print_areas_hash
-    raw = params[:order][:print_areas]
-    return {} unless raw.is_a?(Hash)
+    raw = params.dig(:order, :print_areas)
+    return {} unless raw.present?
 
-    raw.transform_values { |v| v == "1" || v == "true" || v == true }
+    raw.to_unsafe_h.transform_values { |v| v == "1" || v == "true" || v == true }
   end
 end

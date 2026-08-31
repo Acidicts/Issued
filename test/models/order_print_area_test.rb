@@ -4,16 +4,18 @@ require "test_helper"
 #
 # Table name: order_print_areas
 #
-#  id         :bigint           not null, primary key
-#  rotation   :integer
-#  x          :integer
-#  xw         :integer
-#  y          :integer
-#  yw         :integer
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  design_id  :bigint           not null
-#  order_id   :bigint           not null
+#  id               :bigint           not null, primary key
+#  design_image_num :integer          default(0)
+#  name             :string           default("")
+#  rotation         :integer
+#  x                :integer
+#  xw               :integer
+#  y                :integer
+#  yw               :integer
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  design_id        :bigint           not null
+#  order_id         :bigint           not null
 #
 # Indexes
 #

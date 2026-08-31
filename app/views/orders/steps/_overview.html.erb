@@ -36,7 +36,7 @@
           </div>
 
           <div class="form-actions">
-            <%= button_to "Configure Order", new_step_orders_path, params: { order: { product_id: @product.id }, step: "overview" }, method: :post, data: { turbo_frame: "order_steps" }, class: "btn btn-secondary" %>
+            <%= button_to "Configure Order", new_step_orders_path, params: { order: { product_id: @product.id }, step: "overview", print_area: params[:print_area] }, method: :post, data: { turbo_frame: "order_steps" }, class: "btn btn-secondary" %>
             <%= link_to "Cancel", shop_path, class: "btn btn-secondary btn-outline" %>
           </div>
         </div>

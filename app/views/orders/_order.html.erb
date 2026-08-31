@@ -1,6 +1,6 @@
 <%= link_to order_path(order), class:"no-text-deco" do %>
     <div class="order">
-        <%= image_tag order.preview_image, style: "background-color: #{order.color_hex};", alt: "preview_img" if order.preview_image.attached? %>
+        <%= image_tag order.order_print_areas.first.preview_image, style: "background-color: #{order.color_hex};", alt: "preview_img" if order.order_print_areas.first.preview_image.attached? %>
         <div class="info">
             <h3>Order <%= order.id %></h3>
             <p>Status: <%= order.status.humanize %></p>

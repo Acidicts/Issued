@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_30_121000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_31_202912) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -95,6 +95,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_30_121000) do
   create_table "order_print_areas", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "design_id", null: false
+    t.integer "design_image_num", default: 0
+    t.string "name", default: ""
     t.bigint "order_id", null: false
     t.integer "rotation"
     t.datetime "updated_at", null: false
