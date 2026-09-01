@@ -134,8 +134,8 @@ class DesignTest < ActiveSupport::TestCase
     assert_respond_to design, :images
   end
 
-  test "has many orders" do
+  test "has many order_print_areas" do
     design = designs(:one)
-    assert_respond_to design, :orders
+    assert_respond_to design, :order_print_areas
   end
 end

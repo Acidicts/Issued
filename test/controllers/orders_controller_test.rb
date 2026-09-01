@@ -24,18 +24,17 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create places order and redirects" do
-    design = designs(:one)
     product = products(:one)
 
     assert_difference("Order.count", 1) do
-      post orders_path, params: { order: { design_id: design.id, product_id: product.id } }
+      post orders_path, params: { order: { product_id: product.id } }
     end
     assert_redirected_to orders_path
   end
 
   test "create with invalid params does not place order" do
     assert_no_difference("Order.count") do
-      post orders_path, params: { order: { design_id: 99999, product_id: 99999 } }
+      post orders_path, params: { order: { product_id: 99999 } }
     end
   end
 end

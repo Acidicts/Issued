@@ -34,6 +34,7 @@ one:
   xw: 1
   yw: 1
   order: one
+  design: one
 
 two:
   rotation: 1
@@ -42,3 +43,4 @@ two:
   xw: 1
   yw: 1
   order: two
+  design: two

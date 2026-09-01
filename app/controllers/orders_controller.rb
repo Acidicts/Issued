@@ -33,23 +33,29 @@ class OrdersController < ApplicationController
       @print_area_configs.each_value { |v| v.transform_keys!(&:to_s) if v.respond_to?(:transform_keys!) }
     end
 
-    if params[:back_step]
-      @current_step = params[:back_step]
-    elsif params[:print_area_nav] == "1"
-      @current_step = "design"
+    back_step = params[:back_step]
+    @current_step = case back_step
+    when "overview" then "overview"
+    when "config" then "config"
+    when "design" then "design"
+    when "confirmation" then "confirmation"
     else
-      step = params[:step] || "overview"
-      case step
-      when "overview"
-        @current_step = "config"
-      when "config"
-        @current_step = "design"
-        enabled_names = @product.print_areas.select { |pa| @order.print_areas[pa.name] == true }.map(&:name)
-        params[:print_area] = enabled_names.first if params[:print_area].blank?
-      when "design"
-        @current_step = "confirmation"
+      if params[:print_area_nav] == "1"
+        "design"
       else
-        @current_step = "overview"
+        step = params[:step] || "overview"
+        case step
+        when "overview"
+          "config"
+        when "config"
+          enabled_names = @product.print_areas.select { |pa| @order.print_areas[pa.name] == true }.map(&:name)
+          params[:print_area] = enabled_names.first if params[:print_area].blank?
+          "design"
+        when "design"
+          "confirmation"
+        else
+          "overview"
+        end
       end
     end
 
@@ -66,7 +72,7 @@ class OrdersController < ApplicationController
       end
     end
 
-    render partial: "orders/steps/#{@current_step}", formats: [:html]
+    render partial: "orders/steps/#{@current_step}", formats: [ :html ]
   end
 
   def create
@@ -79,7 +85,8 @@ class OrdersController < ApplicationController
     @order.build_print_areas_from_product
 
     print_area_configs = params[:order][:print_area_configs] || {}
-    print_area_configs.to_unsafe_h.each do |area_name, config|
+    print_area_configs = print_area_configs.to_unsafe_h if print_area_configs.respond_to?(:to_unsafe_h)
+    print_area_configs.each do |area_name, config|
       @order.order_print_areas.build(
         design_id: config["design_id"],
         x:         config["x"],

@@ -78,7 +78,7 @@
               </select>
               <p class="form-hint">Pick a design from your collection to preview it on the product.</p>
             <% else %>
-              <p class="form-hint" style="color: var(--warn);">You have no designs yet. <%= link_to "Create one first", new_design_path, class: "btn btn-tertiary" %></p>
+              <p class="form-hint" style="color: var(--warn);">You have no designs yet. <%= link_to "Create one first", new_design_path, class: "btn btn-tertiary", data: { turbo: false } %></p>
             <% end %>
           </div>
 

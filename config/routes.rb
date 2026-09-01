@@ -64,6 +64,9 @@ Rails.application.routes.draw do
       end
     end
     resources :orders,   only: %i[index show edit update destroy] do
+      member do
+        delete :cancel
+      end
     end
 
     get    "rsvp/index",      to: "rsvp#index",  as: :rsvp

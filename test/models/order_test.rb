@@ -26,18 +26,13 @@ require "test_helper"
 #
 class OrderTest < ActiveSupport::TestCase
   test "valid order" do
-    order = Order.new(user: users(:one), design: designs(:one), product: products(:one), status: :pending)
+    order = Order.new(user: users(:one), product: products(:one), status: :pending)
     assert order.valid?
   end
 
   test "belongs to user" do
     order = orders(:one)
     assert_equal users(:one), order.user
-  end
-
-  test "belongs to design" do
-    order = orders(:one)
-    assert_equal designs(:one), order.design
   end
 
   test "belongs to product" do
@@ -65,11 +60,6 @@ class OrderTest < ActiveSupport::TestCase
   test "order has a valid user" do
     order = orders(:one)
     assert order.user.persisted?
-  end
-
-  test "order has a valid design" do
-    order = orders(:one)
-    assert order.design.persisted?
   end
 
   test "order has a valid product" do
