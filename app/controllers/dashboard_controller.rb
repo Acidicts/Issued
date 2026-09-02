@@ -33,7 +33,9 @@ class DashboardController < ApplicationController
         category: "",
         status: view_status,
         swatch: SWATCHES[i % SWATCHES.size],
-        note: ""
+        note: "",
+        image: d.image?,
+        id: d.id
       }
     end
 

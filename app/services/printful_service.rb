@@ -68,20 +68,38 @@ class PrintfulService
     new.fetch_product_templates(printful_id)
   end
 
-  def fetch_product_templates(printful_id)
-    templates = fetch_templates(printful_id)["templates"] || []
+  VALID_PRINT_POSITIONS = %w[
+    front back left right sleeve_left sleeve_right
+    top bottom inside_out insidePocket inside_out_pocket
+    label_outside label_inside
+    zoomed close_up flat detail lifestyle
+  ].freeze
 
-    templates = templates.select do |template|
-      template["image_url"]&.include?("whitebg")
+  def fetch_product_templates(printful_id)
+    raw = fetch_templates(printful_id)
+    all_templates = raw["templates"] || []
+    variant_mapping = raw["variant_mapping"] || []
+
+    whitebg = all_templates.select { |t| t["image_url"]&.include?("whitebg") }
+    all_templates = whitebg if whitebg.any?
+
+    template_id_to_placement = {}
+    variant_mapping.each do |entry|
+      Array(entry["templates"]).each do |t|
+        placement = t["placement"]
+        template_id = t["template_id"]
+        if placement.present? && VALID_PRINT_POSITIONS.include?(placement)
+          template_id_to_placement[template_id] ||= placement
+        end
+      end
     end
 
-    positions = %w[front back left right top bottom inside_out
-                  zoomed close_up flat detail lifestyle]
+    mapped_templates = all_templates.select do |template|
+      template_id_to_placement.key?(template["template_id"])
+    end
 
-    templates.group_by do |template|
-      path = template["image_url"].to_s.split("?").first
-      segments = path.downcase.split("/")
-      segments.find { |seg| positions.include?(seg) }
+    mapped_templates.group_by do |template|
+      template_id_to_placement[template["template_id"]]
     end.transform_values do |group|
       first = group.first
       {
@@ -110,11 +128,20 @@ class PrintfulService
     raise Error, "Printful API key is not configured (set PRINTFUL_API_KEY)." unless self.class.available?
     raise Error, "Enter a Printful product id." if printful_id.blank?
 
-    product_data   = fetch_product(printful_id)
+    product_data   = fetch_product_catalog(printful_id)
     templates_data = fetch_templates(printful_id)
 
-    variant_id, template = pick_template(templates_data, placement: placement)
-    raise Error, "No #{placement} print template found for this product." unless template
+    files = Array(product_data.dig("product", "files"))
+
+    result = pick_template(templates_data, placement: placement)
+    unless result[:template]
+      available = result[:available_placements].presence
+      message = "No #{placement} print template found for this product."
+      message += " Available placements: #{available.join(', ')}." if available
+      raise Error, message
+    end
+    variant_id = result[:variant_id]
+    template = result[:template]
 
     {
       printful_id: printful_id.to_i,
@@ -124,12 +151,13 @@ class PrintfulService
       image_url: template["image_url"],
       template_width: template["template_width"].to_f,
       template_height: template["template_height"].to_f,
-      image_x: template["print_area_left"].to_i,
-      image_y: template["print_area_top"].to_i,
-      image_wx: template["print_area_width"].to_i,
-      image_wy: template["print_area_height"].to_i,
+      print_area_left: template["print_area_left"].to_i,
+      print_area_top: template["print_area_top"].to_i,
+      print_area_width: template["print_area_width"].to_i,
+      print_area_height: template["print_area_height"].to_i,
       variant_id: variant_id,
-      variants: Array(product_data["variants"])
+      variants: Array(product_data["variants"]),
+      files: Array(product_data.dig("product", "files"))
     }
   end
 
@@ -149,15 +177,17 @@ class PrintfulService
     mapping = templates_data["variant_mapping"] || []
     templates_by_id = (templates_data["templates"] || []).index_by { |t| t["template_id"] }
 
+    available_placements = mapping.flat_map { |e| Array(e["templates"]).map { |t| t["placement"] } }.compact.uniq
+
     mapping.each do |entry|
-      placement_entry = Array(entry["templates"]).find { |t| t["placement"] == placement }
+      placement_entry = Array(entry["templates"]).find { |t| t["placement"]&.start_with?(placement) }
       next unless placement_entry
 
       template = templates_by_id[placement_entry["template_id"]]
-      return [ entry["variant_id"], template ] if template
+      return { variant_id: entry["variant_id"], template: template, available_placements: available_placements } if template
     end
 
-    nil
+    { variant_id: nil, template: nil, available_placements: available_placements }
   end
 
   def cheapest_price(variants)
@@ -167,6 +197,12 @@ class PrintfulService
 
   def fetch_product(printful_id)
     get_json("/products/#{printful_id.to_i}", store_id: self.class.store_id)
+      &.fetch("result", nil)
+      .tap { |result| raise Error, "Printful product ##{printful_id} was not found." unless result }
+  end
+
+  def fetch_product_catalog(printful_id)
+    get_json("/products/#{printful_id.to_i}")
       &.fetch("result", nil)
       .tap { |result| raise Error, "Printful product ##{printful_id} was not found." unless result }
   end
@@ -181,6 +217,15 @@ class PrintfulService
     get_json("/mockup-generator/templates/#{printful_id.to_i}", store_id: self.class.store_id)
       &.fetch("result", nil)
       .tap { |result| raise Error, "Could not load Printful templates for ##{printful_id}." unless result }
+  end
+
+  POSITIONS = %w[front back left right top bottom inside_out
+                 zoomed close_up flat detail lifestyle].freeze
+
+  def derive_position_from_url(image_url)
+    path = image_url.to_s.split("?").first
+    segments = path.downcase.split("/")
+    segments.find { |seg| POSITIONS.any? { |pos| seg.start_with?(pos) } }
   end
 
   def get_json(path, params = {})

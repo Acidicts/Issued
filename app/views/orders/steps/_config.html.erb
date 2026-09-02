@@ -40,11 +40,25 @@
             <p class="form-hint">Choose which areas to print on.</p>
             <div class="print-area-checkboxes">
               <% @product.print_areas.each do |pa| %>
-                <label class="checkbox-label">
-                  <%= check_box_tag "order[print_areas][#{pa.name}]", "1",
-                        @order.print_areas[pa.name] != false,
-                        class: "form-checkbox" %>
-                  <span><%= pa.name.capitalize %></span>
+                <% 
+                  # If the order already has a saved state (true/false), respect it. 
+                  # Otherwise, default to checked if the thread cost is 0.
+                  is_checked = if @order.print_areas[pa.name].nil?
+                                pa.thread_cost.to_i == 0
+                              else
+                                @order.print_areas[pa.name] != false
+                              end
+                %>
+
+                <label class="checkbox-label space-between" style="width:1fr;">
+                  <div>
+                    <%= check_box_tag "order[print_areas][#{pa.name}]",
+                          "1",
+                          is_checked,
+                          class: "form-checkbox" %>
+                      <span><%= pa.name.capitalize %></span>
+                  </div>
+                  <span><%= pa.thread_cost.to_i == 0 ? "Included" : "+#{pa.thread_cost} threads" %></span>
                 </label>
               <% end %>
             </div>
@@ -75,7 +89,7 @@
         <% end %>
 
         <div class="form-actions">
-          <%= button_to "Back", new_order_path(product_id: @product.id), method: :get, class: "btn btn-secondary btn-outline" %>
+          <%= link_to "Back", new_order_path(product_id: @product.id), class: "btn btn-secondary btn-outline" %>
           <input type="submit" value="Choose Design" form="config-order-form" class="btn btn-secondary">
         </div>
       </div>

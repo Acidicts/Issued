@@ -36,7 +36,7 @@ class Variant < ApplicationRecord
   attribute :size
   enum :size, {
     "2XS": 0, "XS": 1, "S": 2, "M": 3, "L": 4,
-    "XL": 5, "2XL": 6, "3XL": 7, "4XL": 8, "5XL": 9, "6XL": 10
+    "XL": 5, "2XL": 6, "3XL": 7, "4XL": 8, "5XL": 9, "6XL": 10, "One Size": 11
   }
 
   validates :color_hex, format: { with: /\A#[0-9a-fA-F]{6,8}\z/ }, allow_blank: true

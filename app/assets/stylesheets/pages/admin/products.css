@@ -507,3 +507,8 @@
   padding: 10px;
   font-size: 0.85rem;
 }
+
+.form-checkbox {
+  border: var(--line) solid 1px;
+  padding: 1rem;
+}

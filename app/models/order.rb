@@ -46,6 +46,21 @@ class Order < ApplicationRecord
     print_areas.select { |_, v| v }.keys
   end
 
+  def total_cost_threads
+    cost = self.product.thread_cost || 0
+    cost += print_area_costs
+    cost
+  end
+
+  def print_area_costs
+    cost = 0
+    product = self.product
+    self.order_print_areas.each do |order_print_area|
+      cost += product.print_areas.where(name: order_print_area.name).first.thread_cost
+    end
+    cost
+  end
+
   def active_print_area?(name)
     print_areas[name] == true
   end

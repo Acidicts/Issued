@@ -5,7 +5,7 @@ require "test_helper"
 # Table name: print_areas
 #
 #  id          :bigint           not null, primary key
-#  cost        :integer
+#  cost        :float
 #  enabled     :boolean          default(FALSE)
 #  image_wx    :integer
 #  image_wy    :integer

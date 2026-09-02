@@ -32,6 +32,18 @@
   border: var(--muted) dashed 1px;
 }
 
+.order-header-index {
+  margin-top: 0;
+  border-bottom: var(--line) 1px solid;
+  margin-bottom: 1rem;
+}
+
+.orders-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
 .order-header h1 {
   font-family: 'Space Mono', 'Courier New', monospace;
   font-size: clamp(2rem, 5vw, 2.8rem);
@@ -318,43 +330,119 @@
 }
 
 
-.order {
-  border: 1px solid #ccc;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  border-radius: 5px;
-  margin-left: 10%;
-  margin-right: 10%;
-  display: inline-flex;
+.order-link {
+  text-decoration: none;
+  color: inherit;
+}
 
-  transition: all 0.4s ease;
+.order {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px;
+  background: var(--card);
+  border: 1.5px dashed var(--line);
+  border-radius: 6px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.18s ease;
 }
 
 .order:hover {
-  scale: 1.05;
-  transform: translateY(-5%);
-  border-color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 -3px rgba(36, 29, 22, 0.15);
+  border-color: var(--accent);
 }
 
-.order img {
-  margin-right: 1rem;
-  height: 8rem;
+.order-thumb {
+  flex-shrink: 0;
+  width: 5rem;
+  height: 5rem;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.order h3 {
-  margin-top: 0;
+.order-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.order-details {
-  margin-top: 0.5rem;
+.order-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
 }
 
-.order-details p {
-  margin: 0.25rem 0;
+.order-id {
+  font-family: 'Archivo Black', 'Arial Black', sans-serif;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink);
 }
 
-.no-text-deco {
-  text-decoration: none;
+.order-status {
+  display: inline-block;
+  align-self: flex-start;
+  font-family: 'Space Mono', 'Courier New', monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 2px 8px;
+  border-radius: 3px;
+  background: var(--accent);
+  color: var(--card);
+}
+
+.order-status--pending       { background: var(--warn); }
+.order-status--processing    { background: var(--accent); }
+.order-status--production    { background: var(--accent); }
+.order-status--completed     { background: var(--ok); }
+.order-status--cancelled     { background: var(--ink); opacity: 0.5; }
+.order-status--user_cancelled { background: var(--ink); opacity: 0.5; }
+
+.order-meta {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+}
+
+.order-meta-label {
+  font-family: 'Space Mono', 'Courier New', monospace;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+
+.order-meta-value {
+  font-family: 'Space Mono', 'Courier New', monospace;
+  font-size: 0.8rem;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 480px) {
+  .orders-gallery {
+    grid-template-columns: 1fr;
+  }
+
+  .order {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .order-thumb {
+    width: 4rem;
+    height: 4rem;
+  }
 }
 
 /* ── Order show page ── */

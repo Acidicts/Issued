@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_02_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_02_201312) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -122,7 +122,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_02_000000) do
   end
 
   create_table "print_areas", force: :cascade do |t|
-    t.integer "cost"
+    t.float "cost"
     t.datetime "created_at", null: false
     t.boolean "enabled", default: false
     t.integer "image_wx"
@@ -140,6 +140,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_02_000000) do
     t.integer "cost"
     t.datetime "created_at", null: false
     t.text "description"
+    t.boolean "enabled"
     t.integer "image_wx", default: 0, null: false
     t.integer "image_wy", default: 0, null: false
     t.integer "image_x", default: 0, null: false

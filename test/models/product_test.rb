@@ -7,6 +7,7 @@ require "test_helper"
 #  id          :bigint           not null, primary key
 #  cost        :integer
 #  description :text
+#  enabled     :boolean
 #  image_wx    :integer          default(0), not null
 #  image_wy    :integer          default(0), not null
 #  image_x     :integer          default(0), not null

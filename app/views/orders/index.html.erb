@@ -1,13 +1,17 @@
 <%= stylesheet_link_tag "pages/orders", "data-turbo-track": "reload" %>
 
-<div class="form-card">
-    <h1>Your Orders</h1>
+<div class="order-wrap">
+    <div class="order-header order-header-index">
+        <h1>Your Orders</h1>
+    </div>
 
-    <% if @orders.any? %>
-        <% @orders.each do |order| %>
-            <%= render "order", order: order %>
+    <div class="orders-gallery">
+        <% if @orders.any? %>
+            <% @orders.each do |order| %>
+                <%= render "order", order: order, orders: @orders %>
+            <% end %>
+        <% else %>
+            <p>You have no orders yet.</p>
         <% end %>
-    <% else %>
-        <p>You have no orders yet.</p>
-    <% end %>
+    </div>
 </div>

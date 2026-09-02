@@ -245,6 +245,15 @@
   justify-content: space-evenly;
 }
 
+.space-between {
+  justify-content: space-between;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
 @media (max-width: 640px) {
   .admin-product-grid {
     grid-template-columns: 1fr;

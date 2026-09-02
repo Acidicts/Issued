@@ -4,6 +4,7 @@ export default class extends Controller {
   static targets = [
     "canvas", "productImage", "designBox", "placeholder",
     "inputX", "inputY", "inputWx", "inputWy",
+    "inputCost", "inputThreadCost",
     "printAreaSelect", "printAreaName", "printAreaId", "printAreasJson",
     "templateImage", "templateImageInput", "templateImageUrl"
   ]
@@ -78,6 +79,9 @@ export default class extends Controller {
     this.inputWxTarget.value = pa.image_wx
     this.inputWyTarget.value = pa.image_wy
 
+    if (this.hasInputCostTarget) this.inputCostTarget.value = pa.cost || 0
+    if (this.hasInputThreadCostTarget) this.inputThreadCostTarget.value = pa.thread_cost || 0
+
     if (this.hasTemplateImageUrlTarget) {
       this.templateImageUrlTarget.value = pa.template_image_url || ""
     }
@@ -93,6 +97,9 @@ export default class extends Controller {
     this.inputYTarget.value = ""
     this.inputWxTarget.value = ""
     this.inputWyTarget.value = ""
+
+    if (this.hasInputCostTarget) this.inputCostTarget.value = ""
+    if (this.hasInputThreadCostTarget) this.inputThreadCostTarget.value = ""
 
     if (this.hasTemplateImageUrlTarget) this.templateImageUrlTarget.value = ""
     if (this.hasTemplateImageInputTarget) this.templateImageInputTarget.value = ""
@@ -115,6 +122,8 @@ export default class extends Controller {
       image_y: 0,
       image_wx: 200,
       image_wy: 200,
+      cost: 0,
+      thread_cost: 0,
       template_image_url: "",
       _destroy: false
     }
@@ -220,6 +229,9 @@ export default class extends Controller {
     pa.image_y = parseInt(this.inputYTarget.value) || 0
     pa.image_wx = parseInt(this.inputWxTarget.value) || 0
     pa.image_wy = parseInt(this.inputWyTarget.value) || 0
+
+    if (this.hasInputCostTarget) pa.cost = parseFloat(this.inputCostTarget.value) || 0
+    if (this.hasInputThreadCostTarget) pa.thread_cost = parseInt(this.inputThreadCostTarget.value) || 0
 
     if (this.hasTemplateImageUrlTarget) {
       pa.template_image_url = this.templateImageUrlTarget.value

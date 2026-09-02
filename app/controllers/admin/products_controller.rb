@@ -86,6 +86,7 @@ module Admin
     def product_params
       params.require(:product).permit(
         :printful_id,
+        :enabled,
         :type,
         :description,
         :cost,
@@ -121,7 +122,9 @@ module Admin
             image_x: pa_data["image_x"].to_i,
             image_y: pa_data["image_y"].to_i,
             image_wx: pa_data["image_wx"].to_i,
-            image_wy: pa_data["image_wy"].to_i
+            image_wy: pa_data["image_wy"].to_i,
+            cost: pa_data["cost"].to_f,
+            thread_cost: pa_data["thread_cost"].to_i
           )
         else
           product.print_areas.create!(
@@ -129,7 +132,9 @@ module Admin
             image_x: pa_data["image_x"].to_i,
             image_y: pa_data["image_y"].to_i,
             image_wx: pa_data["image_wx"].to_i,
-            image_wy: pa_data["image_wy"].to_i
+            image_wy: pa_data["image_wy"].to_i,
+            cost: pa_data["cost"].to_f,
+            thread_cost: pa_data["thread_cost"].to_i
           )
         end
       end
@@ -161,9 +166,16 @@ module Admin
       end
 
       print_area_templates = PrintfulService.fetch_product_templates(product.printful_id)
+      files_by_type = Array(data[:files]).index_by { |f| f["type"].to_s.downcase }
 
       print_area_templates.each do |position, template|
         image_bytes, content_type, filename = download_image(template[:image_url])
+
+        pos_key = position.to_s.downcase
+        file_entry = files_by_type[pos_key]
+        file_entry ||= files_by_type.find { |key, _| key.include?(pos_key) || pos_key.include?(key) }&.last
+        cost = file_entry.to_h["additional_price"].to_f
+        thread_cost = (cost.ceil * 2)
 
         print_area = product.print_areas.build(
           name: position,                             # "front" / "back"
@@ -171,7 +183,9 @@ module Admin
           image_y: template[:print_area_top].to_i,
           image_wx: template[:print_area_width].to_i,
           image_wy: template[:print_area_height].to_i,
-          enabled: true
+          enabled: true,
+          cost: cost,
+          thread_cost: thread_cost
         )
 
         print_area.template_image.attach(

@@ -61,22 +61,28 @@
 
       <div class="designs">
         <% @designs.each do |design| %>
-          <article class="design-card" data-design-filter-target="card" data-status="<%= design[:status] %>">
-            <span class="stamp-badge <%= design[:status] %>"><%= status_label(design[:status]) %></span>
-            <div class="swatch" style="background:<%= design[:swatch] %>;">
-              <%= design[:name].parameterize(separator: "_") %><%= design[:language] == "SVG" ? ".svg" : "" %>
-            </div>
-            <h3><%= design[:name] %></h3>
-            <div class="meta">
-              <span><%= design[:language] %></span>
-              <span><%= design[:category] %></span>
-            </div>
-            <% if design[:status] == :rejected && design[:note] %>
-              <p class="reject-note"><%= design[:note] %></p>
-            <% elsif design[:status] == :approved && design[:note] %>
-              <p class="earn-note"><%= design[:note] %></p>
-            <% end %>
-          </article>
+          <%= link_to design_path(design[:id]), style: "text-decoration:none;" do%>
+            <article class="design-card" data-design-filter-target="card" data-status="<%= design[:status] %>">
+              <span class="stamp-badge <%= design[:status] %>"><%= status_label(design[:status]) %></span>
+              <div class="swatch" style="background:<%= design[:swatch] %>; overflow:hidden; max-width: 308px;">
+                <% if design[:image].present? %>
+                  <%= image_tag design[:image].variant(:thumb) %>
+                <% else %>
+                  <%= design[:name].parameterize(separator: "_") %><%= design[:language] == "SVG" ? ".svg" : "" %>
+                <% end %>
+              </div>
+              <h3><%= design[:name].truncate(30) %></h3>
+              <div class="meta">
+                <span><%= design[:language] %></span>
+                <span><%= design[:category] %></span>
+              </div>
+              <% if design[:status] == :rejected && design[:note] %>
+                <p class="reject-note"><%= design[:note] %></p>
+              <% elsif design[:status] == :approved && design[:note] %>
+                <p class="earn-note"><%= design[:note] %></p>
+              <% end %>
+            </article>
+          <% end %>
         <% end %>
       </div>
     </section>

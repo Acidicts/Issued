@@ -5,6 +5,7 @@
 #  id          :bigint           not null, primary key
 #  cost        :integer
 #  description :text
+#  enabled     :boolean
 #  image_wx    :integer          default(0), not null
 #  image_wy    :integer          default(0), not null
 #  image_x     :integer          default(0), not null
@@ -24,14 +25,16 @@ class Product < ApplicationRecord
     attachable.variant :thumb, resize_to_limit: [ 400, 400 ], format: :webp, saver: { quality: 75, strip: true }
     attachable.variant :display, resize_to_limit: [ 1200, 1200 ], format: :webp, saver: { quality: 78, strip: true }
   end
+
   has_many :orders, dependent: :destroy
   has_many :variants, dependent: :destroy
   has_many :print_areas, dependent: :destroy
 
   accepts_nested_attributes_for :variants, allow_destroy: true
 
-  attribute :description, default: "", null: false
-  attribute :printful_id, default: nil, null: true
+  attribute :description, :string, default: ""
+  attribute :printful_id, :integer, default: nil
+  attribute :enabled, :boolean, default: true
 
   REGIONS = {
     "US"    => "United States",

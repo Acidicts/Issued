@@ -14,6 +14,11 @@ class OrdersController < ApplicationController
   end
 
   def new
+    unless params[:product_id].present?
+      redirect_to shop_path, alert: "Please select a product first."
+      return
+    end
+
     @product = Product.find(params[:product_id])
     @designs = current_user.designs.includes(images: :image_file_attachment)
     @order = Order.new(product: @product)

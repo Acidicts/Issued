@@ -17,6 +17,8 @@
       image_y: pa.image_y.to_i,
       image_wx: pa.image_wx.to_i,
       image_wy: pa.image_wy.to_i,
+      cost: pa.cost.to_f,
+      thread_cost: pa.thread_cost.to_i,
       template_image_url: pa.template_image.attached? ? url_for(pa.template_image) : ""
     }
   end.to_json
@@ -68,6 +70,16 @@
           </div>
         </div>
 
+        <div class="form-group">
+          <%= f.label :enabled, "Enabled", class: "form-check" do %>
+            <span class="form-check-label">
+              Enabled
+              <span class="desc">Choose if product is visible.</span>
+            </span>
+          <% end %>
+          <%= f.check_box :enabled, class: "form-checkbox" %>
+        </div>
+        
         <div class="form-group">
           <%= f.label :image, "Product image", class: 'form-label' %>
 
@@ -142,6 +154,32 @@
               <%= f.label :image_wy, "Height (px)", class: 'form-label' %>
               <%= f.number_field :image_wy, step: 1, class: 'form-input',
                     data: { product_preview_target: "inputWy", action: "input->product-preview#inputChanged" } %>
+            </div>
+          </div>
+
+          <legend>Costs</legend>
+          <div class="form-grid form-fieldset">
+            <div class="form-group">
+              <%= label_tag :print_area_cost, "Additional cost", class: "form-label" %>
+              <%= number_field_tag :print_area_cost, nil, 
+                    step: "0.01", 
+                    class: "form-input", 
+                    id: "print_area_cost",
+                    data: { 
+                      product_preview_target: "inputCost", 
+                      action: "input->product-preview#inputChanged" 
+                    } %>
+            </div>
+            <div class="form-group">
+              <%= label_tag :print_area_thread_cost, "Thread cost", class: "form-label" %>
+              <%= number_field_tag :print_area_thread_cost, nil, 
+                    step: "1", 
+                    class: "form-input", 
+                    id: "print_area_thread_cost",
+                    data: { 
+                      product_preview_target: "inputThreadCost", 
+                      action: "input->product-preview#inputChanged" 
+                    } %>
             </div>
           </div>
 

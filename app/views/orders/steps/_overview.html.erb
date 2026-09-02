@@ -30,7 +30,7 @@
             <span class="form-label">Available print areas:</span>
             <div class="print-area-list">
               <% @product.print_areas.each do |pa| %>
-                <span class="print-area-badge"><%= pa.name %></span>
+                <span class="print-area-badge"><%= pa.name.humanize %></span>
               <% end %>
             </div>
           </div>

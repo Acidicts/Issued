@@ -58,22 +58,14 @@
               <% design = @designs.find { |d| d.id.to_s == config["design_id"].to_s } %>
               <% area_pa = @product.print_areas.find { |p| p.name == area_name.to_s } %>
               <div style="padding: 8px 0; border-bottom: 1px solid var(--border-light);">
-                <strong><%= area_name.to_s.capitalize %></strong>
-                <div style="display: flex; gap: 12px; margin-top: 4px; font-size: 0.85rem; color: var(--text-secondary);">
-                  <span>Design: <%= design&.name || "None" %></span>
-                  <span>X: <%= config["x"] || area_pa&.image_x %>px</span>
-                  <span>Y: <%= config["y"] || area_pa&.image_y %>px</span>
-                  <span>W: <%= config["wx"] || area_pa&.image_wx %>px</span>
-                  <span>H: <%= config["wy"] || area_pa&.image_wy %>px</span>
-                  <span>Rot: <%= config["rotation"] || 0 %>&deg;</span>
-                </div>
+                <span class="print-area-badge"><%= area_name.humanize %> - <%= design.name %></span>
               </div>
             <% end %>
           </div>
         <% end %>
 
         <div class="form-actions">
-          <button type="submit" name="back_step" value="design" form="confirmation-form" class="btn btn-secondary btn-outline">Back</button>
+          <%= button_to "Back", new_step_orders_path, params: { order: { product_id: @product.id, color_hex: @order.color_hex, print_areas: @order.print_areas, print_area_configs: @print_area_configs }, back_step: "design" }, method: :post, data: { turbo_frame: "order_steps" }, class: "btn btn-secondary btn-outline" %>
           <input type="submit" value="Place Order" form="confirmation-form" class="btn btn-secondary">
         </div>
       </div>
