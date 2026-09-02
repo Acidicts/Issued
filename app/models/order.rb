@@ -26,7 +26,7 @@ class Order < ApplicationRecord
   belongs_to :user
   belongs_to :product
 
-  attribute :step, default: 3
+  attribute :step, :integer, default: 3
 
   enum :status, { pending: 0, processing: 1, production: 2, completed: 3, cancelled: 4, user_cancelled: 5 }
   enum :step, { config: 0, design: 1, complete: 2, pending: 3 }, prefix: true

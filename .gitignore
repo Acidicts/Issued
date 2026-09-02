@@ -43,3 +43,6 @@ PLAN.md
 
 # Zip Exports
 *.zip
+
+# Debuging stuff
+command.txt
