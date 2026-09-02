@@ -14,19 +14,59 @@
     padding: 1.25rem;
 }
 
+.page-shell {
+    --ink: #241D16;
+    --line: #B7A878;
+    --paper: #E4D9BC;
+    --card: #F2EAD3;
+    --muted: #B7A878;
+    --accent: #1F6F78;
+    --ok: #1F6F78;
+    --warn: #B97F19;
+
+    min-height: calc(100vh - 6rem);
+    display: grid;
+    place-items: center;
+    padding: 1.25rem;
+    background: var(--paper);
+    background-image: radial-gradient(rgba(0, 0, 0, 0.08) 0.5px, transparent 0.5px);
+    background-size: 5px 5px;
+    font-family: 'Space Mono', 'Courier New', monospace;
+    color: var(--ink);
+}
+
 @media (prefers-color-scheme: dark) {
     .rsvp-page {
         --ink: #E4D9BC;
         --line: #5a4f3e;
-        
+
         --paper: #241D16;
         --card: #241D16;
         --muted: #B7A878;
         --accent: #1F6F78;
         --ok: #1F6F78;
         --warn: #B97F19;
-
     }
+
+    .page-shell {
+        --ink: #E4D9BC;
+        --line: #5a4f3e;
+
+        --paper: #241D16;
+        --card: #241D16;
+        --muted: #B7A878;
+        --accent: #1F6F78;
+        --ok: #1F6F78;
+        --warn: #B97F19;
+    }
+}
+
+.box {
+    width: min(640px, 100%);
+    border: 2px solid var(--line);
+    border-radius: 4px;
+    background: var(--card);
+    padding: 2rem;
 }
 
 body.has-nav .rsvp-page {

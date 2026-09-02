@@ -1,40 +1,15 @@
 <%= content_for :title, "RSVP Confirmed | Issued" %>
 
+<%= stylesheet_link_tag "pages/rsvp" %>
+
 <% content_for :head do %>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono&display=swap" rel="stylesheet">
 
   <style>
-    :root {
-      --bg-a: #fff8db;
-      --bg-b: #d4ffe8;
-      --ink: #0f172a;
-      --accent: #0a8f6a;
-    }
-
     * {
       box-sizing: border-box;
-    }
-
-    .page-shell {
-      min-height: calc(100vh - 6rem);
-      display: grid;
-      place-items: center;
-      padding: 1.25rem;
-      background: #E4D9BC;
-      background-image: radial-gradient(rgba(0, 0, 0, 0.08) 0.5px, transparent 0.5px);
-      background-size: 5px 5px;
-      font-family: 'Space Mono', 'Courier New', monospace;
-      color: var(--ink);
-    }
-
-    .box {
-      width: min(640px, 100%);
-      border: 2px solid #0f172a;
-      border-radius: 4px;
-      background: #F2EAD3;
-      padding: 2rem;
     }
 
     h1 {
