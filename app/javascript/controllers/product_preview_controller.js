@@ -286,10 +286,6 @@ export default class extends Controller {
       img.className = "preview-product-img"
       img.alt = "Product preview"
       img.dataset.productPreviewTarget = "productImage"
-      img.addEventListener("load", () => {
-        this.syncFromInputs()
-        this.syncTemplateImagePosition()
-      })
       canvas.appendChild(img)
 
       if (this.hasTemplateImageTarget) canvas.appendChild(this.templateImageTarget)
@@ -297,6 +293,10 @@ export default class extends Controller {
       if (placeholder) placeholder.style.display = "none"
     }
 
+    img.addEventListener("load", () => {
+      this.syncFromInputs()
+      this.syncTemplateImagePosition()
+    }, { once: true })
     img.src = url
   }
 
