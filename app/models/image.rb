@@ -18,7 +18,10 @@
 #
 class Image < ApplicationRecord
   belongs_to :design
-  has_one_attached :image_file
+  has_one_attached :image_file do |attachable|
+    attachable.variant :thumb, resize_to_limit: [ 400, 400 ], format: :webp, saver: { quality: 75, strip: true }
+    attachable.variant :display, resize_to_limit: [ 1200, 1200 ], format: :webp, saver: { quality: 78, strip: true }
+  end
   attribute :from_time, :datetime
 
   after_create :set_from_time

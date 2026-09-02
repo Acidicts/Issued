@@ -142,7 +142,7 @@
   <% if @image&.image_file&.attached? %>
     <div class="image-viewer-card">
       <div class="image-viewer-img">
-        <%= image_tag @image.image_file %>
+        <%= image_tag @image.image_file.variant(:display) %>
       </div>
       <div class="image-viewer-meta">
         <h1><%= @image.design.name %></h1>

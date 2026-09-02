@@ -20,7 +20,10 @@ class Product < ApplicationRecord
 
   self.inheritance_column = :_type_disabled
 
-  has_one_attached :image
+  has_one_attached :image do |attachable|
+    attachable.variant :thumb, resize_to_limit: [ 400, 400 ], format: :webp, saver: { quality: 75, strip: true }
+    attachable.variant :display, resize_to_limit: [ 1200, 1200 ], format: :webp, saver: { quality: 78, strip: true }
+  end
   has_many :orders, dependent: :destroy
   has_many :variants, dependent: :destroy
   has_many :print_areas, dependent: :destroy

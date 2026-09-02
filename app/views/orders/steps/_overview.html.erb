@@ -11,7 +11,7 @@
           <div class="form-group">
             <div class="order-product-summary">
               <% if @product.image.attached? %>
-                <%= image_tag @product.image, alt: @product.type, class: "order-product-thumb" %>
+                <%= image_tag @product.image.variant(:thumb), alt: @product.type, class: "order-product-thumb" %>
               <% end %>
               <div>
                 <strong><%= @product.type %></strong>
@@ -48,7 +48,7 @@
           <div class="preview-product">
             <div class="preview-product-image-container">
               <% if @product.image.attached? %>
-                <%= image_tag @product.image, alt: @product.type, class: "product_image_preview" %>
+                <%= image_tag @product.image.variant(:display), alt: @product.type, class: "product_image_preview" %>
               <% else %>
                 <span class="preview-placeholder">No product image</span>
               <% end %>

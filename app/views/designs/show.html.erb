@@ -4,7 +4,7 @@
   <div class="design-image-preview">
     <% if @design.image_exists? %>
       <div class="design-preview">
-        <%= image_tag @design.image?, alt: "Additional image for #{@design.name}" %>
+        <%= image_tag @design.image?.variant(:display), alt: "Additional image for #{@design.name}" %>
       </div>
     <% else %>
       <div class="design-preview">

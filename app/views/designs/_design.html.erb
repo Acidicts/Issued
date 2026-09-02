@@ -1,7 +1,7 @@
 <div class="design-item">
     <div class="design-preview">
         <% if design.image_exists? %>
-        <%= image_tag design.image?, alt: "Additional image for #{design.name}" %>
+        <%= image_tag design.image?.variant(:thumb), alt: "Additional image for #{design.name}" %>
         <% else %>
         <p>No preview available.</p>
         <% end %>
