@@ -20,6 +20,62 @@ require "test_helper"
 #  slack_id               :string
 #
 class UserTest < ActiveSupport::TestCase
+  test "add_threads increases balance and creates a balance event" do
+    user = users(:one)
+    starting = user.threads.to_i
+
+    user.add_threads(amount: 10, initiator: users(:admin_user))
+
+    assert_equal starting + 10, user.reload.threads
+    event = user.balance_events.order(:created_at).last
+    assert_equal 10, event.amount
+    assert_equal users(:admin_user), event.initiator
+  end
+
+  test "add_threads creates a notification referencing the initiator" do
+    user = users(:one)
+
+    assert_difference -> { user.notifications.count }, 1 do
+      user.add_threads(amount: 5, initiator: users(:admin_user))
+    end
+
+    notification = user.notifications.order(:created_at).last
+    assert_includes notification.body, "{{user:#{users(:admin_user).id}}}"
+  end
+
+  test "remove_threads decreases balance and creates a balance event" do
+    user = users(:one)
+    user.add_threads(amount: 20, initiator: users(:admin_user))
+    starting = user.reload.threads
+
+    user.remove_threads(amount: 7, initiator: users(:admin_user))
+
+    assert_equal starting - 7, user.reload.threads
+    event = user.balance_events.order(:created_at).last
+    assert_equal(-7, event.amount)
+  end
+
+  test "remove_threads accepts name and comment as keyword args" do
+    user = users(:one)
+
+    assert_nothing_raised do
+      user.remove_threads(name: "manual adjustment", comment: "test note", amount: 3, initiator: users(:admin_user))
+    end
+
+    event = user.balance_events.order(:created_at).last
+    assert_equal "manual adjustment", event.name
+    assert_equal "test note", event.comment
+  end
+
+  test "calculate_threads sums balance_events including unsaved built records" do
+    user = users(:one)
+    user.balance_events.build(initiator: users(:admin_user), amount: 15, name: "test", comment: "test")
+
+    user.calculate_threads
+
+    assert_equal 15, user.threads
+  end
+
   test "fetch_live_hackclub_oauth_info returns parsed me payload" do
     user = User.new
     parsed_payload = { "identity" => { "name" => "Alex" }, "scopes" => [ "profile" ] }

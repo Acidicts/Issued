@@ -11,7 +11,7 @@
 
   Use app/views/layouts/application.html.erb.
 %>
-    <%= stylesheet_link_tag 'pages/dashboard.css', "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag 'pages/dashboard.css', "data-turbo-track": "reload" %>
 
 <%
     unread_count = @notifications.count { |n| !n[:read] }
@@ -102,7 +102,7 @@
             <div class="receipt-item <%= "read" if notification[:read] %>" data-notifications-target="item">
               <span class="receipt-dot"></span>
               <div class="receipt-body">
-                <p><%= raw notification[:body] %></p>
+                <p><%= render_notification_body(notification[:body]) %></p>
                 <time><%= notification[:time] %></time>
                 <% if !notification[:read] %>
                   <%= link_to "Mark as read", read_notification_path(notification[:id]) %>

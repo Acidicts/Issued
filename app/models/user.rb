@@ -23,9 +23,11 @@ class User < ApplicationRecord
   has_many :rsvps, dependent: :destroy
   has_many :notifications, dependent: :destroy
 
+  has_many :balance_events, dependent: :destroy
+
   validates :ysws_eligible, inclusion: { in: [ true, false ] }
 
-  enum :role, { user: 0, admin: 1, superadmin: 2, reviewer: 3 }, prefix: :role, default: :user
+  enum :role, { user: 0, admin: 1, superadmin: 2, reviewer: 3, system: 4 }, prefix: :role, default: :user
   attribute :veri_level, :integer
   attribute :email, :string
   attribute :threads, :integer, default: 0
@@ -39,7 +41,11 @@ class User < ApplicationRecord
   end
 
   def admin?
-    role == "admin" || role == "superadmin" || role == "reviewer"
+    role == "admin" || role == "superadmin"
+  end
+
+  def reviewer?
+    role == "reviewer"
   end
 
   def refresh_ysws_eligibility!
@@ -54,6 +60,49 @@ class User < ApplicationRecord
     end
 
     save!(validate: false) if changed?
+  end
+
+  def calculate_threads
+    calc_balance = balance_events.to_a.sum(&:amount)
+    self.threads = calc_balance
+
+    threads_changed?
+  end
+
+  def add_threads(name: nil, comment: nil, amount: 0, initiator: User.system_user)
+    name ||= "#{amount.abs} threads added"
+    comment ||= "Added by #{initiator.name}"
+
+    transaction do
+      balance_events.build(initiator: initiator, amount: amount.abs, comment: comment, name: name)
+
+      if calculate_threads
+        notifications.build(
+          priority: :info,
+          body: "#{user_token(initiator)} added #{amount.abs} threads to your balance"
+        )
+      end
+
+      save!
+    end
+  end
+
+  def remove_threads(name: nil, comment: nil, amount: 0, initiator: User.system_user)
+    name ||= "#{amount.abs} threads removed"
+    comment ||= "Removed by #{initiator.name}"
+
+    transaction do
+      balance_events.build(initiator: initiator, amount: (amount.abs * -1), comment: comment, name: name)
+
+      if calculate_threads
+        notifications.build(
+          priority: :info,
+          body: "#{user_token(initiator)} removed #{amount.abs} threads from your balance"
+        )
+      end
+
+      save!
+    end
   end
 
   def fetch_live_hackclub_oauth_info(access_token: nil, refresh_token: nil)
@@ -119,5 +168,15 @@ class User < ApplicationRecord
     save!(validate: false) if persisted? && changed?
 
     [ Current.hackclub_access_token, Current.hackclub_refresh_token ]
+  end
+
+  def self.system_user
+    find_or_create_by!(name: "System", role: :system)
+  end
+
+  private
+
+  def user_token(user)
+    "{{user:#{user.id}}}"
   end
 end

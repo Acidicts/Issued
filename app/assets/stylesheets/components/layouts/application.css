@@ -85,7 +85,7 @@ nav {
     body {
         background:
             radial-gradient(circle at 1px 1px, rgba(232, 223, 208, 0.05) 1px, transparent 1px) 0 0/14px 14px,
-            #1a1510;
+            #241D16;
         color: #e8dfd0;
     }
 
@@ -299,7 +299,7 @@ nav {
     }
 
     .tag-header .tag::after {
-        background: #1a1510;
+        background: #241D16;
         border-color: #5a4f3e;
     }
 

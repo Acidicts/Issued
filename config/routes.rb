@@ -23,11 +23,18 @@ Rails.application.routes.draw do
   # Shop
   get "/shop", to: "shop#index", as: :shop
 
+  # User
+  resources :user, only: %i[show] do
+    member do
+      get "admin"
+    end
+  end
+
   # RSVP
-  get  "rsvp/",               to: "rsvp#index",               as: :rsvp
-  post "rsvp/submit",         to: "rsvp#submit",              as: :rsvp_submit
-  get  "rsvp/submit_after_login", to: "rsvp#submit_after_login", as: :rsvp_submit_after_login
-  get  "rsvp/thanks",         to: "rsvp#thanks",              as: :rsvp_thanks
+  get "rsvp", to: "rsvp#index", as: :rsvp
+  post "rsvp/submit", to: "rsvp#submit", as: :rsvp_submit
+  get "rsvp/submit_after_login", to: "rsvp#submit_after_login", as: :rsvp_submit_after_login
+  get "rsvp/thanks", to: "rsvp#thanks", as: :rsvp_thanks
 
   # Designs
   resources :designs, only: %i[index show new create edit update] do

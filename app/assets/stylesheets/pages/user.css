@@ -1,0 +1,71 @@
+.user-wrap {
+    --ink: #241D16;
+    --line: #B7A878;
+    --paper: #E4D9BC;
+    --card: #F2EAD3;
+    --muted: #B7A878;
+    --accent: #1F6F78;
+    --ok: #1F6F78;
+    --warn: #B97F19;
+
+    background: var(--paper);
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem;
+    border-radius: 25px;
+    border: var(--line) solid 2px;
+
+}
+
+@media (prefers-color-scheme: dark) {
+    .user-wrap {
+        --ink: #E4D9BC;
+        --line: #5a4f3e;
+        --paper: #241D16;
+        --card: #241D16;
+        --muted: #B7A878;
+        --accent: #1F6F78;
+        --ok: #1F6F78;
+        --warn: #B97F19;
+    }
+}
+
+.user-wrap .header {
+    display: flex;
+    flex-direction: row;
+    width: 90%;
+    margin: 0 5%;
+    border-bottom: var(--line) solid 1px;
+    padding: 0.5rem;
+    gap: 4rem;
+}
+
+.user-wrap .header .image {
+    width: fit-content;
+}
+
+.user-wrap .header .image img {
+    border-radius: 25%;
+    border: solid 2px var(--line);
+    box-shadow: 0 0 8px var(--muted);
+}
+
+.user-wrap .header .title {
+    flex: 1;
+    width: max-content;
+    align-items: right;
+    justify-content: right;
+}
+
+.user-wrap .header .title .info table {
+    border-collapse: collapse;
+}
+
+.user-wrap .header .title .info .table-row .table-data-header {
+    border-right: var(--line) 2px solid;
+    padding-right: 1rem;
+}
+
+.user-wrap .header .title .info .table-row .table-data-data {
+    padding-left: 1rem;
+}

@@ -28,3 +28,9 @@ two:
   name: MyString
   veri_level: verified
   slack_id: U789012
+
+admin_user:
+  name: AdminPerson
+  veri_level: verified
+  role: admin
+  slack_id: U345678

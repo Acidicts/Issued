@@ -64,7 +64,7 @@ class HackclubAuthService
   def connection
     @connection ||= Faraday.new(url: BASE_URL) do |conn|
       conn.headers["Content-Type"] = "application/json"
-      conn.headers["User-Agent"] = "MetroidMania/1.0"
+      conn.headers["User-Agent"] = "Issued/1.0"
     end
   end
 end

@@ -1,0 +1,22 @@
+<%= stylesheet_link_tag 'pages/user.css', "data-turbo-track": "reload" %>
+
+<div class="user-wrap">
+    <div class="header">
+        <div class="image">
+            <%= image_tag SlackService.new.profile_image(@user.slack_id.to_s) %>
+        </div>
+        <div class="title">
+            <h2><%= SlackService.new.display_name(@user.slack_id.to_s) %></h2>
+
+            <div class="info">
+                <table>
+                    <tbody>
+                        <tr class="table-row"><td class="table-data-header"><strong>Master-Pieces Made</strong></td><td class="table-data-data"><%= @user.designs.count %></td></tr>
+                        <tr class="table-row"><td class="table-data-header"><strong>Orders Placed</strong></td><td class="table-data-data"><%= @user.orders.count %></td></tr>
+                        <tr class="table-row"><td class="table-data-header"><strong>Threads Spent</strong></td><td class="table-data-data"><%= @user.balance_events.where("amount < ?", 0).sum %></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

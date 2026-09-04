@@ -46,3 +46,6 @@ PLAN.md
 
 # Debuging stuff
 command.txt
+
+# Ignore node_modules
+node_modules

@@ -13,8 +13,8 @@
   </div>
   <% if @designs.empty? %>
     <div class="empty-state">
-      <p>You haven't created any designs yet.</p>
       <%= link_to "Create your first design", new_design_path, class: "create-link btn btn-secondary" %>
+      <p>You haven't created any designs yet.</p>
     </div>
   <% end %>
 </div>

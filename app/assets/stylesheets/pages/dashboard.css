@@ -446,7 +446,7 @@ button:focus-visible,
 /* ---------- dark mode ---------- */
 @media (prefers-color-scheme: dark) {
   :root {
-    --paper: #1a1510;
+    --paper: #241D16;
     --paper-dark: #241d16;
     --card: #241d16;
     --ink: #e8dfd0;

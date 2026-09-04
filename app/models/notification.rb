@@ -23,6 +23,7 @@
 class Notification < ApplicationRecord
   belongs_to :user
 
+  attribute :read, :boolean, default: false
   attribute :priority, :integer
   enum :priority, {
     urgent: 0,

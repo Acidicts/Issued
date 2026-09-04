@@ -8,7 +8,7 @@
   </span>
 
   <div class="receipt-body">
-    <p><%= raw notification[:body] %></p>
+    <p><%= render_notification_body(notification.body) %></p>
     <time><%= notification[:time] %></time>
   </div>
 

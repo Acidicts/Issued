@@ -6,9 +6,9 @@
 <div id="container" class="wrap">
   <section class="panel notif-page" data-controller="notifications" data-notifications-unread-class="unread">
     <div class="bell-row">
-      <div>
-        <h2 style="margin-bottom:4px;">Notifications</h2>
-        <p class="sub" style="margin-bottom:0;">
+      <div class="notif-header">
+        <h2>Notifications</h2>
+        <p class="sub">
           <span data-notifications-target="count"><%= @notifications.count { |n| !n[:read] } %></span> unread
         </p>
       </div>
