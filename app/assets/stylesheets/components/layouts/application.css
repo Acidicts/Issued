@@ -148,6 +148,18 @@ nav {
     position: relative;
 }
 
+@media (max-width: 1200px) {
+    .tag-header .tag {
+        margin: 10px 1rem 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .tag-header .tag {
+        margin: 10px 0.5rem 0;
+    }
+}
+
 .tag-header .tag::after {
     content: "";
     position: absolute;
