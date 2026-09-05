@@ -188,8 +188,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_04_220457) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "balance_events", "users"
   add_foreign_key "balance_events", "users", column: "initiator_id"
-  add_foreign_key "design_edit_sessions", "designs"
-  add_foreign_key "design_edit_sessions", "users"
   add_foreign_key "designs", "users"
   add_foreign_key "images", "designs"
   add_foreign_key "notifications", "users"

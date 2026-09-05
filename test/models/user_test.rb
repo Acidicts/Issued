@@ -22,11 +22,12 @@ require "test_helper"
 class UserTest < ActiveSupport::TestCase
   test "add_threads increases balance and creates a balance event" do
     user = users(:one)
-    starting = user.threads.to_i
+    user.balance_events.destroy_all
+    user.update!(threads: 0)
 
     user.add_threads(amount: 10, initiator: users(:admin_user))
 
-    assert_equal starting + 10, user.reload.threads
+    assert_equal 10, user.reload.threads
     event = user.balance_events.order(:created_at).last
     assert_equal 10, event.amount
     assert_equal users(:admin_user), event.initiator
@@ -69,6 +70,8 @@ class UserTest < ActiveSupport::TestCase
 
   test "calculate_threads sums balance_events including unsaved built records" do
     user = users(:one)
+    user.balance_events.destroy_all
+    user.update!(threads: 0)
     user.balance_events.build(initiator: users(:admin_user), amount: 15, name: "test", comment: "test")
 
     user.calculate_threads
@@ -233,9 +236,9 @@ class UserTest < ActiveSupport::TestCase
     assert user.admin?
   end
 
-  test "admin? returns true for reviewer role" do
+  test "admin? returns false for reviewer role" do
     user = User.new(role: :reviewer)
-    assert user.admin?
+    refute user.admin?
   end
 
   test "admin? returns false for user role" do

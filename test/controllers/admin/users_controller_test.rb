@@ -10,7 +10,7 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest
     superadmin = create_user(name: "Super Admin", role: :superadmin)
     sign_in_as(superadmin)
 
-    patch admin_user_url(@target_user), params: {
+    patch "/admin/users/#{@target_user.id}", params: {
       user: {
         name: @target_user.name,
         slack_id: @target_user.slack_id,
@@ -27,7 +27,7 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest
     admin = create_user(name: "Admin User", role: :admin)
     sign_in_as(admin)
 
-    patch admin_user_url(@target_user), params: {
+    patch "/admin/users/#{@target_user.id}", params: {
       user: {
         name: "Updated Name",
         slack_id: @target_user.slack_id,

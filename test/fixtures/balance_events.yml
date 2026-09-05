@@ -25,12 +25,14 @@
 #
 one:
   user: one
+  initiator: one
   amount: 1
   name: MyString
   comment: MyText
 
 two:
   user: two
+  initiator: two
   amount: 1
   name: MyString
   comment: MyText
