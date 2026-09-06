@@ -104,6 +104,7 @@
 .dd-toggle[aria-expanded="true"] {
     background: var(--stamp-red, #D6402C);
     border-color: var(--stamp-red, #D6402C);
+    color: #fff;
 }
 
 .dd-toggle__chevron {
@@ -142,6 +143,13 @@
     border: 1px solid var(--line, #B7A878);
     border-radius: 6px;
     padding: 1.5rem 1.5rem 0 1.5rem;
+}
+
+.dd-panel__inner_header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
 }
 
 /* ── Devlog form styles ── */
@@ -320,6 +328,21 @@
     padding-bottom: 0.65rem;
     border-bottom: 1px dashed var(--line, #B7A878);
     justify-content: space-between;
+}
+
+.devlog-card-header__time_edit {
+    justify-content: baseline;
+}
+
+.devlog-card-header__time_edit svg {
+    transform: translateY(25%);
+    transition: all 0.6s ease;
+}
+
+.devlog-card-header__time_edit svg:hover {
+    color: var(--accent);
+    transform: translateY(5%);
+    scale: 1.05;
 }
 
 .devlog-card-date {

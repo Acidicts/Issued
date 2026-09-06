@@ -47,7 +47,7 @@ Rails.application.routes.draw do
   end
 
   # Devlog
-  resources :devlogs, only: %i[create update] do
+  resources :devlogs, only: %i[create update edit] do
   end
 
   # Notifications

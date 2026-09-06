@@ -1,0 +1,88 @@
+:root {
+    --ink: #241D16;
+    --line: #B7A878;
+    --paper: #E4D9BC;
+    --card: #F2EAD3;
+    --muted: #B7A878;
+    --accent: #1F6F78;
+    --ok: #1F6F78;
+    --warn: #B97F19;
+    --ink-soft: #4B4133;
+    --surface: #F2EAD3;
+    --thread-teal: #1F6F78;
+    --stamp-red: #D6402C;
+
+    --text-generic: #000;
+    --text-generic-inverted: #fff;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --ink: #E4D9BC;
+        --line: #5a4f3e;
+        --ink-soft: #B7A878;
+        --surface: #241D16;
+        --thread-teal: #1F6F78;
+        --stamp-red: #D6402C;
+
+        --paper: #241D16;
+        --card: #241D16;
+        --muted: #B7A878;
+        --accent: #1F6F78;
+        --ok: #1F6F78;
+        --warn: #B97F19;
+
+        --text-generic: #fff;
+        --text-generic-inverted: #000;
+    }
+}
+
+/* ---- user pill ---- */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  background: var(--card);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  vertical-align: middle;
+  transition: background 0.15s ease, border-color 0.15s ease, scale 0.15s ease, transform 0.15s ease;
+  text-decoration: none;
+}
+
+.pill__name {
+  padding: 4px;
+  text-decoration: none;
+  color: var(--ink-soft);
+  font-weight: 400;
+  font-size: 0.7rem;
+}
+
+.pill:hover {
+  scale: 1.05;
+  transform: translateY(-1px);
+  background: var(--paper);
+  border-color: var(--accent);
+}
+
+.user-pill__badge {
+  font-size: 0;
+  line-height: 1;
+  vertical-align: sub;
+  display: inline-flex;
+  align-items: center;
+  margin: -2px;
+}
+
+.design-pill__name {
+  padding: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pill {
+    transition: none;
+  }
+}

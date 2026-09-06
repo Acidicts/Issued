@@ -206,44 +206,6 @@
   line-height: 1.6;
 }
 
-/* ---- user pill ---- */
-.user-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 0;
-  background: var(--card);
-  border: 1.5px solid var(--line);
-  border-radius: 10px;
-  font-size: 12px;
-  font-weight: 700;
-  vertical-align: middle;
-  transition: background 0.15s ease, border-color 0.15s ease, scale 0.15s ease, transform 0.15s ease;
-  text-decoration: none;
-}
-
-.user-pill:hover {
-  scale: 1.05;
-  transform: translateY(-1px);
-  background: var(--paper);
-  border-color: var(--accent);
-}
-
-.user-pill__name {
-  padding-left: 4px;
-  padding-right: 0;
-  margin-right: -0.5rem;
-}
-
-.user-pill__badge {
-  font-size: 0;
-  line-height: 1;
-  vertical-align: sub;
-  display: inline-flex;
-  align-items: center;
-  margin: -2px;
-}
-
 /* ---- bell row & page header ---- */
 .notif-header {
   display: flex;
@@ -310,8 +272,7 @@
   .receipt-item--full,
   .notif-mark,
   .mark-read--single,
-  .chip,
-  .user-pill {
+  .chip {
     transition: none;
   }
 }

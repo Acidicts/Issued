@@ -19,7 +19,7 @@
 
   <div class="dd-panel" id="devlog-form-panel" aria-hidden="true" data-dd-panel>
     <div class="dd-panel__inner">
-      <%= render partial: "designs/devlogs/new", locals: { devlog: design.devlogs.new } %>
+      <%= render partial: "designs/devlogs/new", locals: { devlog: design.devlogs.new(time: design.unlogged_time) } %>
     </div>
   </div>
 

@@ -20,11 +20,11 @@
   <div class="nb-form-group">
     <%= form.label :time, "Time spent (minutes)", class: "nb-label" %>
     <div style="display: flex; align-items: center; gap: 8px;">
-      <input type="number" id="duration_hours" min="0" placeholder="0" style="width: 80px; padding: 0.5rem; border: 1px solid var(--line, #B7A878); border-radius: 4px; background: var(--surface, #F2EAD3); color: var(--ink, #241D16);">
+      <input type="number" id="duration_hours" min="0" placeholder="0" value="<%= devlog.time.to_i / 3600 %>" style="width: 80px; padding: 0.5rem; border: 1px solid var(--line, #B7A878); border-radius: 4px; background: var(--surface, #F2EAD3); color: var(--ink, #241D16);">
       <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--ink-soft);">hrs</span>
-      <input type="number" id="duration_minutes_part" min="0" max="59" placeholder="0" style="width: 80px; padding: 0.5rem; border: 1px solid var(--line, #B7A878); border-radius: 4px; background: var(--surface, #F2EAD3); color: var(--ink, #241D16);">
+      <input type="number" id="duration_minutes_part" min="0" max="59" placeholder="0" value="<%= (devlog.time.to_i % 3600) / 60 %>" style="width: 80px; padding: 0.5rem; border: 1px solid var(--line, #B7A878); border-radius: 4px; background: var(--surface, #F2EAD3); color: var(--ink, #241D16);">
       <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--ink-soft);">min</span>
-      <%= form.hidden_field :time, id: "duration_minutes_total", value: devlog.time || 0 %>
+      <%= form.hidden_field :time, id: "duration_minutes_total" %>
     </div>
   </div>
 

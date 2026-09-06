@@ -54,4 +54,81 @@ module ApplicationHelper
       format("%02dhrs %02dmins", hours, minutes)
     end
   end
+
+  USER_TOKEN_PATTERN = /\{\{user:(\d+)\}\}/
+  ADMIN_USER_TOKEN_PATTERN = /\{\{admin-user:(\d+)\}\}/
+  SHIP_TOKEN_PATTERN = /\{\{ship:(\d+)\}\}/
+  SHIP_REQUEST_TOKEN_PATTERN = /\{\{ship_request:(\d+)\}\}/
+  DEVLOG_TOKEN_PATTERN = /\{\{devlog:(\d+)\}\}/
+  DESIGN_TOKEN_PATTERN = /\{\{design:(\d+)\}\}/
+
+  def render_encoded(body)
+    safe_body = ERB::Util.html_escape(body.to_s)
+
+    safe_body
+      .gsub(USER_TOKEN_PATTERN) do
+        user = User.find_by(id: $1)
+        user ? user_pill(user) : "unknown user"
+      end
+      .gsub(ADMIN_USER_TOKEN_PATTERN) do
+        user = User.find_by(id: $1)
+        user ? admin_user_pill(user) : "unknown user"
+      end
+      .gsub(SHIP_TOKEN_PATTERN) do
+        ship = Ship.find_by(id: $1)
+        ship ? ship_pill(ship) : "unknown ship"
+      end
+      .gsub(SHIP_REQUEST_TOKEN_PATTERN) do
+        ship_request = ShipRequest.find_by(id: $1)
+        ship_request ? ship_request_pill(ship_request) : "unknown ship request"
+      end
+      .gsub(DEVLOG_TOKEN_PATTERN) do
+        devlog = Devlog.find_by(id: $1)
+        devlog ? devlog_pill(devlog) : "unknown devlog"
+      end
+      .gsub(DESIGN_TOKEN_PATTERN) do
+        design = Design.find_by(id: $1)
+        design ? design_pill(design) : "unknown design"
+      end
+      .html_safe
+  end
+
+  private
+
+  def user_pill(user)
+    content_tag(:a, class: "pill user-pill", href: user_path(user)) do
+      concat content_tag(:span, user.name, class: "user-pill__name")
+    end
+  end
+
+  def admin_user_pill(user)
+    content_tag(:a, class: "pill user-pill", href: admin_user_path(user)) do
+      concat content_tag(:span, user.name, class: "user-pill__name pill__name")
+      concat content_tag(:span, admin_badge_svg(width: "1.55rem", height: "1.55rem", color: "#ec3750"), class: "user-pill__badge") if user.admin?
+    end
+  end
+
+  def design_pill(design)
+    content_tag(:a, class: "pill design-pill", href: design_path(design)) do
+      concat content_tag(:span, design.name, class: "design-pill__name pill__name")
+    end
+  end
+
+  def devlog_pill(devlog)
+    content_tag(:span, class: "pill user-pill") do
+      concat content_tag(:span, devlog.title, class: "devlog-pill__name pill__name")
+    end
+  end
+
+  def ship_pill(ship)
+    content_tag(:span, class: "pill user-pill") do
+      concat content_tag(:span, ship.title, class: "ship-pill__name pill__name")
+    end
+  end
+
+  def ship_request_pill(ship_request)
+    content_tag(:span, class: "pill user-pill") do
+      concat content_tag(:span, ship_request.title, class: "ship-request-pill__name pill__name")
+    end
+  end
 end

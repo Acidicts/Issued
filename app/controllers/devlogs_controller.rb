@@ -1,6 +1,12 @@
 class DevlogsController < ApplicationController
   before_action :require_login
 
+  def edit
+    @devlog = Devlog.find(params[:id])
+
+    render partial: "designs/devlogs/edit", formats: [ :html ]
+  end
+
   def create
     @design = Design.find(params[:devlog][:design_id])
     @design.sync_hackatime_projects
