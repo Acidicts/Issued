@@ -38,7 +38,7 @@ class HackatimeService
   end
 
   def get_project(project_name: "")
-    return [] unless @slack_id.present? && self.class.available?
+    return nil unless @slack_id.present? && self.class.available?
     projects = self.get_all_projects
     projects.find { |p| p["name"] == project_name }
   end
