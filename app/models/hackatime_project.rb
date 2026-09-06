@@ -22,6 +22,6 @@ class HackatimeProject < ApplicationRecord
 
   def sync_hackatime_project
       project = HackatimeService.new(slack_id: self.design.user.slack_id).get_project(project_name: self.name)
-      self.time = project["seconds"] if project
+      self.time = project["seconds"] if project.is_a?(Hash)
   end
 end
