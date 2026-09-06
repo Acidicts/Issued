@@ -9,6 +9,7 @@
 #  balanceable_type :string
 #  comment          :text
 #  name             :string
+#  status           :integer
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
 #  balanceable_id   :bigint

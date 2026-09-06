@@ -19,9 +19,9 @@
 #  fk_rails_...  (design_id => designs.id)
 #
 one:
-  ship: one
+  design: one
   status: 1
 
 two:
-  ship: two
+  design: two
   status: 1

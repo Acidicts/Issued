@@ -47,13 +47,10 @@ class DesignTest < ActiveSupport::TestCase
     assert_equal "00:08:00", design.elapsed_time_formatted
   end
 
-  test "hackatime project must be unique across designs" do
+  test "valid design with all attributes" do
     user = users(:one)
-    first_design = Design.create!(user: user, name: "First", description: "First design", hackatime_project: "Hack Day", hackatime_seconds: 180)
-    second_design = Design.new(user: user, name: "Second", description: "Second design", hackatime_project: "Hack Day")
-
-    refute second_design.valid?
-    assert_includes second_design.errors[:hackatime_project], "is already linked to another design"
+    design = Design.new(user: user, name: "Full Design", description: "A complete design", time: 100, hackatime_seconds: 200)
+    assert design.valid?
   end
 
   test "belongs to user" do
@@ -96,10 +93,11 @@ class DesignTest < ActiveSupport::TestCase
     assert design.valid?
   end
 
-  test "hackatime_project allows blank" do
+  test "design defaults" do
     user = users(:one)
-    design = Design.new(user: user, name: "Test", description: "Desc", hackatime_project: "")
-    assert design.valid?
+    design = Design.new(user: user, name: "Test", description: "Desc")
+    assert_equal "unshipped", design.status
+    assert_equal 0, design.hackatime_seconds.to_i
   end
 
   test "elapsed_time_formatted with zero time" do

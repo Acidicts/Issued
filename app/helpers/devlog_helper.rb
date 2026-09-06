@@ -12,8 +12,8 @@ module DevlogHelper
       .gsub(/\[(.+?)\]\((.+?)\)/, '<a href="\2">\1</a>')
       .gsub(/^- (.+)$/, '<li>\1</li>')
       .gsub(/(<li>.*<\/li>\n?)+/) { |match| "<ul>#{match}</ul>" }
-      .gsub(/\n\n/, '<br><br>')
-      .gsub(/\n/, '<br>')
+      .gsub(/\n\n/, "<br><br>")
+      .gsub(/\n/, "<br>")
 
     html.html_safe
   end

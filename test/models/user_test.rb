@@ -72,7 +72,7 @@ class UserTest < ActiveSupport::TestCase
     user = users(:one)
     user.balance_events.destroy_all
     user.update!(threads: 0)
-    user.balance_events.build(initiator: users(:admin_user), amount: 15, name: "test", comment: "test")
+    user.balance_events.build(initiator: users(:admin_user), amount: 15, name: "test", comment: "test", status: :completed)
 
     user.calculate_threads
 

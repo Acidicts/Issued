@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_05_220307) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_06_174802) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -50,6 +50,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_220307) do
     t.datetime "created_at", null: false
     t.bigint "initiator_id", null: false
     t.string "name"
+    t.integer "status"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["balanceable_type", "balanceable_id"], name: "index_balance_events_on_balanceable"

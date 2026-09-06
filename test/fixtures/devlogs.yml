@@ -27,10 +27,10 @@ one:
   title: MyString
   body: MyText
   design: one
-  ship: one
+  ship_request: one
 
 two:
   title: MyString
   body: MyText
   design: two
-  ship: two
+  ship_request: two

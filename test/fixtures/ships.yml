@@ -20,11 +20,11 @@
 #  fk_rails_...  (ship_request_id => ship_requests.id)
 #
 one:
-  design: one
+  ship_request: one
   title: MyString
   body: MyText
 
 two:
-  design: two
+  ship_request: two
   title: MyString
   body: MyText

@@ -41,7 +41,7 @@ class User < ApplicationRecord
   end
 
   def admin?
-    role == "admin" || role == "superadmin"
+    role == "admin" || role == "superadmin" || role == "system"
   end
 
   def reviewer?
@@ -63,20 +63,26 @@ class User < ApplicationRecord
   end
 
   def calculate_threads
-    calc_balance = balance_events.to_a.sum(&:amount)
+    persisted_completed = balance_events.where(status: :completed)
+    in_memory_completed = balance_events.select { |e| e.new_record? && e.status == "completed" }
+    calc_balance = (persisted_completed + in_memory_completed).sum(&:amount)
     self.threads = calc_balance
 
     threads_changed?
   end
 
-  def add_threads(name: nil, comment: nil, amount: 0, initiator: User.system_user)
+  def add_threads(name: nil, comment: nil, amount: 0, initiator: User.system_user, notification: true)
     name ||= "#{amount.abs} threads added"
     comment ||= "Added by #{initiator.name}"
 
-    transaction do
-      balance_events.build(initiator: initiator, amount: amount.abs, comment: comment, name: name)
+    unless initiator.admin? && !notification
+      notification = true
+    end
 
-      if calculate_threads
+    transaction do
+      balance_events.build(initiator: initiator, amount: amount.abs, comment: comment, name: name, status: :completed)
+
+      if calculate_threads && notification
         notifications.build(
           priority: :info,
           body: "#{user_token(initiator)} added #{amount.abs} threads to your balance"
@@ -87,14 +93,18 @@ class User < ApplicationRecord
     end
   end
 
-  def remove_threads(name: nil, comment: nil, amount: 0, initiator: User.system_user)
+  def remove_threads(name: nil, comment: nil, amount: 0, initiator: User.system_user, notification: true)
     name ||= "#{amount.abs} threads removed"
     comment ||= "Removed by #{initiator.name}"
 
-    transaction do
-      balance_events.build(initiator: initiator, amount: (amount.abs * -1), comment: comment, name: name)
+    unless initiator.admin? && !notification
+      notification = true
+    end
 
-      if calculate_threads
+    transaction do
+      balance_events.build(initiator: initiator, amount: (amount.abs * -1), comment: comment, name: name, status: :completed)
+
+      if calculate_threads && notification
         notifications.build(
           priority: :info,
           body: "#{user_token(initiator)} removed #{amount.abs} threads from your balance"
@@ -173,8 +183,6 @@ class User < ApplicationRecord
   def self.system_user
     find_or_create_by!(name: "System", role: :system)
   end
-
-  private
 
   def user_token(user)
     "{{user:#{user.id}}}"

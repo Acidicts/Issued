@@ -21,7 +21,7 @@ gem "omniauth-oauth2"
 gem "csv"
 
 # Markdown
-gem 'redcarpet'
+gem "redcarpet"
 
 # Image
 gem "ruby-vips"

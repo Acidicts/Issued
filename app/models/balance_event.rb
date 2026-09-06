@@ -7,6 +7,7 @@
 #  balanceable_type :string
 #  comment          :text
 #  name             :string
+#  status           :integer
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
 #  balanceable_id   :bigint
@@ -27,5 +28,8 @@
 class BalanceEvent < ApplicationRecord
   belongs_to :user
   belongs_to :initiator, class_name: "User"
-  belongs_to :balanceable
+  belongs_to :balanceable, optional: true
+
+  attribute :status, :integer, default: 0
+  enum :status, { pending: 0, approved: 1, rejected: 2, completed: 3, cancelled: 4 }
 end
