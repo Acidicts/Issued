@@ -23,21 +23,25 @@
         <h1><%= @design.name %></h1>
         <h4><%= "By " + @design.user.name %></h4>
       </div>
-      <div class="design-actions">
-        <%= link_to "Edit design", edit_design_path(@design), class: "button-primary" %>
-      </div>
     </div>
     <div class="design-meta">
       <p class="stat"><%= @design.description %></p>
     </div>
   </div>
+  <% if @design.user == current_user %>
+    <div class="design-actions">
+      <%= link_to "Edit design", edit_design_path(@design), class: "button-primary" %>
+    </div>
+  <% end %>
 </div>
 
-<% if @design.images.any? %>
-  <div class="project-image-gallery">
-    <h2>Project Design Image</h2>
-    <div class="image-gallery-grid">
-      <%= render partial: "designs/image_gallery_preview", collection: @design.images.order(created_at: :desc), as: :image %>
-    </div>
-  </div>
+<% if @design.hackatime_projects.any? %>
 <% end %>
+
+<div class="designs-hackatime-gallery">
+  <%= render "designs/hackatime/projects", design: @design %>
+
+  <%= render "designs/images/gallery", design: @design %>
+</div>
+
+<%= render "designs/devlogs/devlogs", design: @design %>

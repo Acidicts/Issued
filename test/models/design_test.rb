@@ -6,7 +6,7 @@ require "test_helper"
 #
 #  id                :bigint           not null, primary key
 #  description       :string           default("")
-#  hackatime_project :string
+#  devlogged_time    :integer
 #  hackatime_seconds :integer
 #  name              :string           default("Untitled Design"), not null
 #  status            :integer
@@ -17,9 +17,8 @@ require "test_helper"
 #
 # Indexes
 #
-#  index_designs_on_hackatime_project  (hackatime_project) UNIQUE
-#  index_designs_on_name               (name)
-#  index_designs_on_user_id            (user_id)
+#  index_designs_on_name     (name)
+#  index_designs_on_user_id  (user_id)
 #
 # Foreign Keys
 #

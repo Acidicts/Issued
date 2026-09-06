@@ -1,0 +1,27 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+# == Schema Information
+#
+# Table name: ship_requests
+#
+#  id         :bigint           not null, primary key
+#  status     :integer
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  design_id  :bigint           not null
+#
+# Indexes
+#
+#  index_ship_requests_on_design_id  (design_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (design_id => designs.id)
+#
+one:
+  ship: one
+  status: 1
+
+two:
+  ship: two
+  status: 1

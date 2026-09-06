@@ -37,6 +37,12 @@ class HackatimeService
     self.class.fetch_trust_status(uid)
   end
 
+  def get_project(project_name: "")
+    return [] unless @slack_id.present? && self.class.available?
+    projects = self.get_all_projects
+    projects.find { |p| p["name"] == project_name }
+  end
+
   def get_all_projects
     return [] unless @slack_id.present? && self.class.available?
 

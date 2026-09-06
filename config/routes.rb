@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get "ship_request/new"
+  get "ship/show"
   root "home#index"
 
   # Health & static
@@ -38,7 +40,14 @@ Rails.application.routes.draw do
 
   # Designs
   resources :designs, only: %i[index show new create edit update] do
-    member { get :image }
+    member do
+      get :image
+      delete :remove_hackatime_project
+    end
+  end
+
+  # Devlog
+  resources :devlogs, only: %i[create update] do
   end
 
   # Notifications

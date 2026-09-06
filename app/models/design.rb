@@ -4,7 +4,7 @@
 #
 #  id                :bigint           not null, primary key
 #  description       :string           default("")
-#  hackatime_project :string
+#  devlogged_time    :integer
 #  hackatime_seconds :integer
 #  name              :string           default("Untitled Design"), not null
 #  status            :integer
@@ -15,9 +15,8 @@
 #
 # Indexes
 #
-#  index_designs_on_hackatime_project  (hackatime_project) UNIQUE
-#  index_designs_on_name               (name)
-#  index_designs_on_user_id            (user_id)
+#  index_designs_on_name     (name)
+#  index_designs_on_user_id  (user_id)
 #
 # Foreign Keys
 #
@@ -29,12 +28,13 @@ class Design < ApplicationRecord
 
   has_many :images, dependent: :destroy
 
+  has_many :ship_requests, dependent: :destroy
+  has_many :devlogs, dependent: :destroy
+  has_many :hackatime_projects, dependent: :destroy
+
   validates :name, presence: true
   validates :description, presence: true
-  validates :hackatime_project, uniqueness: { allow_blank: true }
   validates :hackatime_seconds, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
-
-  validate :hackatime_project_not_used_by_other_design
 
   attribute :status, :integer, default: 0
 
@@ -42,6 +42,30 @@ class Design < ApplicationRecord
   attribute :description, :string, default: ""
 
   enum :status, { unshipped: 0, pending: 1, submitted: 2, approved: 3, rejected: 4 }
+
+  def sync_hackatime_projects
+    self.hackatime_projects.each do |hp|
+      hp.sync_hackatime_project
+    end
+    save!
+
+    self.update(hackatime_seconds: hackatime_projects.to_a.sum(&:time))
+  end
+
+  def update_logged_time
+    time = self.devlogs.sum(:time)
+    self.update(devlogged_time: time)
+  end
+
+  def unlogged_time
+    self.hackatime_seconds.to_i - self.devlogged_time.to_i
+  end
+
+  def can_make_devlog
+    self.sync_hackatime_projects
+    self.update_logged_time
+    unlogged_time >= 15 * 60
+  end
 
   def elapsed_time_formatted
     formatted_time(total_time_seconds)
@@ -74,13 +98,6 @@ class Design < ApplicationRecord
   end
 
   private
-
-  def hackatime_project_not_used_by_other_design
-    return if hackatime_project.blank?
-
-    existing_design = Design.where(hackatime_project: hackatime_project).where.not(id: id).exists?
-    errors.add(:hackatime_project, "is already linked to another design") if existing_design
-  end
 
   def formatted_time(seconds)
     seconds ||= 0

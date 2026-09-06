@@ -1,0 +1,10 @@
+<%# locals: hackatime_project:, design: %>
+<% removable = design.ship_requests.where("created_at > ?", hackatime_project.created_at).empty? %>
+<span class="hackatime-pill<%= ' hackatime-pill--removable' if removable %>">
+  <%= hackatime_project.name %>
+  <% if removable %>
+    <%= link_to "×", remove_hackatime_project_design_path(design, hackatime_project_id: hackatime_project.id),
+        class: "hackatime-pill-remove",
+        data: { turbo: true, turbo_method: :delete, turbo_confirm: "Remove this project?" } %>
+  <% end %>
+</span>

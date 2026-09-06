@@ -20,7 +20,10 @@ gem "omniauth"
 gem "omniauth-oauth2"
 gem "csv"
 
-# image
+# Markdown
+gem 'redcarpet'
+
+# Image
 gem "ruby-vips"
 
 # Security fixes for dependencies

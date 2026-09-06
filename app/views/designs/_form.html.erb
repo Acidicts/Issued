@@ -23,20 +23,27 @@
     <%= form.text_area :description, placeholder: "This is the best becuase " + current_user.name + " made it!" %>
   </div>
 
-  <% if @hackatime_projects.present? %>
-    <div class="field">
-      <%= form.label :hackatime_project, "Hackatime project" %>
+  <div class="field">
+    <%= form.label :hackatime_projects, "Hackatime projects" %>
+    <% if @design.hackatime_projects.any? %>
+      <div class="hackatime-pills">
+        <% @design.hackatime_projects.each do |hp| %>
+          <%= render "designs/pill", hackatime_project: hp, design: @design %>
+        <% end %>
+      </div>
+    <% end %>
+    <% available_projects = @hackatime_projects.reject { |p| @design.hackatime_projects.pluck(:name).include?(p['name']) } %>
+    <% if available_projects.present? %>
       <%= render "shared/dropdown",
           form: form,
           method: :hackatime_project,
-          choices: @hackatime_projects.map { |project| ["#{project['name']} (#{format("%02d:%02d:%02d", project['seconds'].to_i / 3600, (project['seconds'].to_i / 60) % 60, project['seconds'].to_i % 60)})", project['name']] },
-          selected: @design.hackatime_project,
-          prompt: "Select a Hackatime project" %>
-      <p class="muted">Selected Hackatime project time will be added to this design.</p>
-    </div>
-  <% elsif current_user&.slack_id.present? && HackatimeService.available? %>
-    <p class="muted">No Hackatime projects were found for your account.</p>
-  <% end %>
+          choices: available_projects.map { |project| ["#{project['name']} (#{format("%02d:%02d:%02d", project['seconds'].to_i / 3600, (project['seconds'].to_i / 60) % 60, project['seconds'].to_i % 60)})", project['name']] },
+          prompt: "Add a Hackatime project" %>
+      <p class="muted">Select a Hackatime project and save to add it.</p>
+    <% elsif @design.hackatime_projects.none? && current_user&.slack_id.present? && HackatimeService.available? %>
+      <p class="muted">No Hackatime projects were found for your account.</p>
+    <% end %>
+  </div>
 
   <div class="field file-field">
     <%= form.label :image, "Image" %>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_04_220457) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_05_220307) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -44,29 +44,63 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_04_220457) do
 
   create_table "balance_events", force: :cascade do |t|
     t.integer "amount"
+    t.bigint "balanceable_id"
+    t.string "balanceable_type"
     t.text "comment"
     t.datetime "created_at", null: false
     t.bigint "initiator_id", null: false
     t.string "name"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["balanceable_type", "balanceable_id"], name: "index_balance_events_on_balanceable"
     t.index ["initiator_id"], name: "index_balance_events_on_initiator_id"
     t.index ["user_id"], name: "index_balance_events_on_user_id"
+  end
+
+  create_table "comments", force: :cascade do |t|
+    t.text "body"
+    t.bigint "commentable_id", null: false
+    t.string "commentable_type", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["commentable_type", "commentable_id"], name: "index_comments_on_commentable"
+    t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
   create_table "designs", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "description", default: ""
-    t.string "hackatime_project"
+    t.integer "devlogged_time"
     t.integer "hackatime_seconds"
     t.string "name", default: "Untitled Design", null: false
     t.integer "status"
     t.integer "time"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
-    t.index ["hackatime_project"], name: "index_designs_on_hackatime_project", unique: true
     t.index ["name"], name: "index_designs_on_name"
     t.index ["user_id"], name: "index_designs_on_user_id"
+  end
+
+  create_table "devlogs", force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.bigint "design_id", null: false
+    t.bigint "ship_request_id"
+    t.integer "time"
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.index ["design_id"], name: "index_devlogs_on_design_id"
+    t.index ["ship_request_id"], name: "index_devlogs_on_ship_request_id"
+  end
+
+  create_table "hackatime_projects", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "design_id", null: false
+    t.string "name"
+    t.integer "time"
+    t.datetime "updated_at", null: false
+    t.index ["design_id"], name: "index_hackatime_projects_on_design_id"
   end
 
   create_table "images", force: :cascade do |t|
@@ -155,6 +189,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_04_220457) do
     t.index ["user_id"], name: "index_rsvps_on_user_id"
   end
 
+  create_table "ship_requests", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "design_id", null: false
+    t.integer "status"
+    t.datetime "updated_at", null: false
+    t.index ["design_id"], name: "index_ship_requests_on_design_id"
+  end
+
+  create_table "ships", force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.bigint "ship_request_id", null: false
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.index ["ship_request_id"], name: "index_ships_on_ship_request_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "credits"
@@ -188,7 +239,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_04_220457) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "balance_events", "users"
   add_foreign_key "balance_events", "users", column: "initiator_id"
+  add_foreign_key "comments", "users"
   add_foreign_key "designs", "users"
+  add_foreign_key "devlogs", "designs"
+  add_foreign_key "devlogs", "ship_requests"
+  add_foreign_key "hackatime_projects", "designs"
   add_foreign_key "images", "designs"
   add_foreign_key "notifications", "users"
   add_foreign_key "order_print_areas", "designs"
@@ -197,5 +252,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_04_220457) do
   add_foreign_key "orders", "users"
   add_foreign_key "print_areas", "products"
   add_foreign_key "rsvps", "users"
+  add_foreign_key "ship_requests", "designs"
+  add_foreign_key "ships", "ship_requests"
   add_foreign_key "variants", "products"
 end

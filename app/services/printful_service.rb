@@ -2,22 +2,6 @@ require "net/http"
 require "json"
 require "uri"
 
-# PrintfulService
-# ================
-# Thin client around Printful's public Catalog API used to import a product
-# by its Printful catalog product id.
-#
-# Combines three endpoints so the admin only has to supply a numeric id:
-#   - GET /products/{id}            -> title, description, base price
-#   - GET /mockup-generator/printfiles/{id} -> print file pixel dimensions
-#   - GET /mockup-generator/templates/{id}  -> per-variant template image +
-#                                               print area box (px, in the
-#                                               same coordinate space as the
-#                                               template image)
-#
-# The "front" placement is used by default since that's what most products
-# in this shop use, and it's what app/models/product.rb's image_x/y/wx/wy
-# fields are designed around (a single design box on a single image).
 class PrintfulService
   BASE_URL = "https://api.printful.com"
 

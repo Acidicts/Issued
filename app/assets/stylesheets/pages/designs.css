@@ -22,6 +22,29 @@
     background: var(--paper);
 }
 
+@media (prefers-color-scheme: dark) {
+    .design {
+        --ink: #E4D9BC;
+        --line: #5a4f3e;
+        --ink-soft: #B7A878;
+        --surface: #241D16;
+        --thread-teal: #1F6F78;
+        --stamp-red: #D6402C;
+
+        --paper: #241D16;
+        --card: #241D16;
+        --muted: #B7A878;
+        --accent: #1F6F78;
+        --ok: #1F6F78;
+        --warn: #B97F19;
+
+        --text-generic: #fff;
+        --text-generic-inverted: #000;
+
+        background: var(--paper);
+    }
+}
+
 .design-heading-actions {
     display: flex;
     align-items: baseline;
@@ -82,29 +105,6 @@
     --ok: #4A5BA0;
     --thread-teal: #4A5BA0;
     --thread-teal-light: #E8E9F0;
-}
-
-@media (prefers-color-scheme: dark) {
-    .design {
-        --ink: #E4D9BC;
-        --line: #5a4f3e;
-        --ink-soft: #B7A878;
-        --surface: #241D16;
-        --thread-teal: #1F6F78;
-        --stamp-red: #D6402C;
-
-        --paper: #241D16;
-        --card: #241D16;
-        --muted: #B7A878;
-        --accent: #1F6F78;
-        --ok: #1F6F78;
-        --warn: #B97F19;
-
-        --text-generic: #fff;
-        --text-generic-inverted: #000;
-
-        background: var(--paper);
-    }
 }
 
 .design-form .design-form-heading {
@@ -453,18 +453,22 @@
 /* ── Actions ── */
 
 .design-actions {
+    width: 100%;
+    border-top: var(--line) dashed 2px;
     flex-shrink: 0;
+    grid-column: 1 / -1;
+    padding: 1rem 1rem 0 1rem;
 }
 
 /* ── Image gallery ── */
 
 .project-image-gallery {
-    max-width: 1060px;
-    margin: 2rem auto;
     padding: clamp(1.5rem, 3vw, 2.5rem);
     background: var(--card);
     border: 1.5px solid var(--line);
     border-radius: 6px;
+    flex: 5;
+    min-width: 0;
 }
 
 .project-image-gallery h2 {
@@ -480,6 +484,24 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     gap: 0.75rem;
+}
+
+.image-history-placeholder {
+    text-align: center;
+    justify-content: center;
+}
+
+.image-history-placeholder__text {
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    padding: 4px;
+    aspect-ratio: 1/1;
+    background-color: #777;
 }
 
 .image-history-preview {
@@ -537,96 +559,151 @@
 }
 
 .designs-list {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
 }
 
 .design-item {
-  display: flex;
-  flex-direction: column;
-  border: 1.5px solid var(--line);
-  border-radius: 6px;
-  background: var(--card);
-  overflow: hidden;
-  transition: border-color 0.18s ease;
+    display: flex;
+    flex-direction: column;
+    border: 1.5px solid var(--line);
+    border-radius: 6px;
+    background: var(--card);
+    overflow: hidden;
+    transition: border-color 0.18s ease;
 }
 
 .design-item:hover {
-  border-color: var(--accent);
+    border-color: var(--accent);
 }
 
 .design-item .design-preview {
-  max-width: 100%;
-  aspect-ratio: 4/3;
-  border: none;
-  border-radius: 0;
-  border-bottom: 1.5px dashed var(--line);
+    max-width: 100%;
+    aspect-ratio: 4/3;
+    border: none;
+    border-radius: 0;
+    border-bottom: 1.5px dashed var(--line);
 }
 
 .design-item .design-preview p {
-  margin: 0;
-  font-size: 0.85rem;
-  color: var(--ink-soft);
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
 }
 
 .design-item .design-details {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 1rem;
 }
 
 .design-item .design-name {
-  margin: 0;
-  font-size: 1.05rem;
-  line-height: 1.25;
-  color: var(--ink);
-  letter-spacing: -0.01em;
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.25;
+    color: var(--ink);
+    letter-spacing: -0.01em;
 }
 
 .design-item .design-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem 0.75rem;
-  font-size: 0.8rem;
-  color: var(--ink-soft);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.75rem;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
 }
 
 .design-item .design-meta span {
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  font-size: 0.7rem;
-  color: var(--muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.7rem;
+    color: var(--muted);
 }
 
 .design-item .design-actions {
-  display: flex;
-  gap: 0.6rem;
-  margin-top: 0.35rem;
+    display: flex;
+    gap: 0.6rem;
+    margin-top: 0.35rem;
 }
 
 .design-item .design-actions .edit-link,
 .design-item .design-actions .create-link {
-  font-size: 0.82rem;
-  font-weight: 700;
-  text-decoration: none;
-  color: var(--accent);
-  transition: color 0.15s ease;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--accent);
+    transition: color 0.15s ease;
 }
 
 .design-item .design-actions .edit-link:hover,
 .design-item .design-actions .create-link:hover {
-  color: var(--ink);
+    color: var(--ink);
 }
 
 .hackatime-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     background-color: var(--muted);
     border-radius: 16px;
     height: 20px;
-    padding: 6px;
-    color: var(--text-generic-inverted) !important
+    padding: 6px 10px;
+    color: var(--text-generic-inverted) !important;
+    font-size: 0.85rem;
+}
+
+.hackatime-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.hackatime-pill-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: var(--text-generic-inverted);
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    padding: 0;
+    margin: 0 -2px 0 2px;
+    opacity: 0.7;
+}
+
+.hackatime-pill-remove:hover {
+    opacity: 1;
+}
+
+.designs-hackatime-gallery {
+    max-width: 1060px;
+    margin: 0 auto 0 auto;
+    justify-content: space-between;
+    gap: 1rem;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+    width: 100%;
+}
+
+.design-hackatime-projects {
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+    background: var(--card);
+    border: 1.5px solid var(--line);
+    border-radius: 6px;
+    flex: 2;
+    min-width: 0;
+}
+
+.design-hackatime-projects h2 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
 }
 
 /* ── Responsive ── */
@@ -644,6 +721,10 @@
     .design-detail-container {
         grid-template-columns: 1fr;
         min-height: auto;
+    }
+
+    .designs-hackatime-gallery {
+        flex-direction: column;
     }
 
     .design-image-preview {

@@ -1,0 +1,5 @@
+<%# locals: hackatime_project:, design: %>
+<% removable = design.ship_requests.where("created_at > ?", hackatime_project.created_at).empty? %>
+<span class="hackatime-pill<%= ' hackatime-pill--removable' if removable %>">
+  <%= hackatime_project.name %>
+</span>

@@ -42,4 +42,16 @@ module ApplicationHelper
   rescue URI::InvalidURIError
     nil
   end
+
+  def format_duration(total_seconds: 0, seconds_enabled: false)
+    seconds = total_seconds.to_i
+    hours = seconds / 3600
+    minutes = (seconds % 3600) / 60
+    remaining_seconds = seconds % 60
+    if seconds_enabled
+      format("%02dhrs %02dmins %02ds", hours, minutes, remaining_seconds)
+    else
+      format("%02dhrs %02dmins", hours, minutes)
+    end
+  end
 end

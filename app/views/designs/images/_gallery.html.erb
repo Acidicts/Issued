@@ -1,0 +1,22 @@
+<div class="project-image-gallery">
+  <h2>Project Design Image</h2>
+    <% if design.images.any? %>
+        <div class="image-gallery-grid">
+            <%= render partial: "designs/images/image_gallery_preview", collection: design.images.order(created_at: :desc).limit(10), as: :image %>
+        </div>
+    <% else %>
+        <div class="image-gallery-grid">
+            <div class="image-history-preview">
+                <div class="image-history-placeholder">
+                    <span class="image-history-placeholder__text">
+                        You get a Placeholder;
+                        Here ya go
+                    </span>
+                </div>
+                <div class="image-history-overlay">
+                    <time datetime="<%= Time.current.iso8601 %>"><%= Time.current.strftime("%b %d, %Y at %I:%M %p") %></time>
+                </div>
+            </div>
+        </div>
+    <% end %>
+</div>

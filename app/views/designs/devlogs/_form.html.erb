@@ -1,0 +1,120 @@
+<%= form_with model: devlog do |form| %>
+  <%= form.hidden_field :design_id %>
+  <% if devlog.errors.any? %>
+    <div class="nb-errors">
+      <h2><%= pluralize(devlog.errors.count, "error") %> prohibited this devlog from being saved:</h2>
+
+      <ul>
+        <% devlog.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="nb-form-group">
+    <%= form.label :title, class: "nb-label" %>
+    <%= form.text_field :title, class: "nb-input" %>
+  </div>
+
+  <div class="nb-form-group">
+    <%= form.label :time, "Time spent (minutes)", class: "nb-label" %>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <input type="number" id="duration_hours" min="0" placeholder="0" style="width: 80px; padding: 0.5rem; border: 1px solid var(--line, #B7A878); border-radius: 4px; background: var(--surface, #F2EAD3); color: var(--ink, #241D16);">
+      <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--ink-soft);">hrs</span>
+      <input type="number" id="duration_minutes_part" min="0" max="59" placeholder="0" style="width: 80px; padding: 0.5rem; border: 1px solid var(--line, #B7A878); border-radius: 4px; background: var(--surface, #F2EAD3); color: var(--ink, #241D16);">
+      <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--ink-soft);">min</span>
+      <%= form.hidden_field :time, id: "duration_minutes_total", value: devlog.time || 0 %>
+    </div>
+  </div>
+
+  <div class="nb-form-group">
+    <div style="display: flex; flex-direction: row; gap: 6px;">
+      <%= form.label :content, class: "nb-label", style: "position:relative; width: 50%;" %>
+      <%= form.label :"markdown live preview", class: "nb-label", style: "margin-left:6px; position:relative; width: 50%;" %>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px;">
+      <div style="display: flex; flex-direction: row; gap: 6px;">
+        <%= form.text_area :body, id: "devlog_content_input", rows: 7, style: "width:50%", class: "nb-textarea" %>
+        <div id="markdown-preview-content-div" style="margin-left: 6px; width:45%; padding: 12px; background: var(--nb-bg); border: 1px solid var(--nb-border); border-radius: 6px; overflow-y: auto; max-height: 300px;">
+          <div id="markdown-preview-content"><%= raw(markdown_to_html(devlog.body)) %></div>
+        </div>
+      </div>
+      <div class="nb-form-group">
+        <%= form.submit class: "nb-btn nb-btn-primary" %>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // lightweight client-side preview: uses `marked` + `DOMPurify` if available, falls back to simple escapep/linebreaks
+      function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+      function markdownToHtml(markdown) {
+        var md = String(markdown || '');
+        if (window.marked) {
+          try {
+            var rendered = window.marked.parse(md);
+            return window.DOMPurify ? DOMPurify.sanitize(rendered) : rendered;
+          } catch (e) {
+            return '<pre>' + escapeHtml(md) + '</pre>';
+          }
+        }
+
+        // fallback: minimal formatting (escape + preserve line breaks)
+        return escapeHtml(md).replace(/\n/g, '<br>');
+      }
+
+      // expose for other scripts
+      window.markdownToHtml = markdownToHtml;
+
+      function debounce(fn, wait) { var t; return function() { clearTimeout(t); var args = arguments; t = setTimeout(function(){ fn.apply(null, args); }, wait); }; }
+
+      var textarea = document.getElementById('devlog_content_input');
+      var preview = document.getElementById('markdown-preview-content');
+      if (!textarea || !preview) return;
+
+      var update = debounce(function() {
+        preview.innerHTML = markdownToHtml(textarea.value);
+      }, 150);
+
+      // initial render to keep server-side & client-side in sync
+      update();
+
+      textarea.addEventListener('input', update);
+
+      // load optional libraries (if not already present) and re-render when ready
+      function ensureScript(src, cb) {
+        if (document.querySelector('script[src="' + src + '"]')) { cb && cb(); return; }
+        var s = document.createElement('script'); s.src = src; s.defer = true; s.onload = cb; document.head.appendChild(s);
+      }
+
+      ensureScript('https://cdn.jsdelivr.net/npm/marked/marked.min.js', update);
+      ensureScript('https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js', update);
+    })();
+  </script>
+
+  <script>
+    (function() {
+      var hoursEl = document.getElementById('duration_hours');
+      var minsEl = document.getElementById('duration_minutes_part');
+      var totalEl = document.getElementById('duration_minutes_total');
+
+      function compute() {
+        var h = parseInt(hoursEl.value) || 0;
+        var m = parseInt(minsEl.value) || 0;
+        totalEl.value = h * 3600 + m * 60;
+      }
+
+      hoursEl.addEventListener('input', compute);
+      minsEl.addEventListener('input', compute);
+
+      var initial = parseInt(totalEl.value) || 0;
+      if (initial > 0) {
+        hoursEl.value = Math.floor(initial / 3600);
+        minsEl.value = Math.floor((initial % 3600) / 60);
+      }
+    })();
+  </script>
+<% end %>

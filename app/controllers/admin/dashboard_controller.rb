@@ -25,14 +25,6 @@ module Admin
 
     private
 
-    def format_duration(total_seconds)
-      seconds = total_seconds.to_i
-      hours = seconds / 3600
-      minutes = (seconds % 3600) / 60
-      remaining_seconds = seconds % 60
-      format("%02d:%02d:%02d", hours, minutes, remaining_seconds)
-    end
-
     def set_nav
       @nav = "dashboard"
     end

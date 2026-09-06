@@ -2,17 +2,20 @@
 #
 # Table name: balance_events
 #
-#  id           :bigint           not null, primary key
-#  amount       :integer
-#  comment      :text
-#  name         :string
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
-#  initiator_id :bigint           not null
-#  user_id      :bigint           not null
+#  id               :bigint           not null, primary key
+#  amount           :integer
+#  balanceable_type :string
+#  comment          :text
+#  name             :string
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  balanceable_id   :bigint
+#  initiator_id     :bigint           not null
+#  user_id          :bigint           not null
 #
 # Indexes
 #
+#  index_balance_events_on_balanceable   (balanceable_type,balanceable_id)
 #  index_balance_events_on_initiator_id  (initiator_id)
 #  index_balance_events_on_user_id       (user_id)
 #
@@ -24,4 +27,5 @@
 class BalanceEvent < ApplicationRecord
   belongs_to :user
   belongs_to :initiator, class_name: "User"
+  belongs_to :balanceable
 end

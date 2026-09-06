@@ -1,0 +1,17 @@
+<div class="design-hackatime-projects">
+    <h2>Hackatime Projects</h2>
+    <% if @design.hackatime_projects.any? %>
+        <div class="hackatime-pills">
+            <% @design.hackatime_projects.each do |hp| %>
+                <%= render "designs/hackatime/pill", hackatime_project: hp, design: @design %>
+            <% end %>
+        </div>
+    <% else %>
+        <div class="hackatime-pills">
+            <div class="empty-state">
+                <%= link_to "Create your first design", new_design_path, class: "create-link btn btn-secondary" %>
+                <p>You haven't created any designs yet.</p>
+            </div>
+        </div>
+    <% end %>
+</div>

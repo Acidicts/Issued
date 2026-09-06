@@ -10,9 +10,11 @@
         <h2 class="design-name"> <%= design.name %></h2>
         <div class="design-meta">
         <div><span>Last edited:</span> <%= design.updated_at.strftime("%b %d, %Y") %></div>
-        <% if design.hackatime_project.present? %>
-            <div>
-                <%= render partial: "designs/hackatime_pill", locals: { design: [ design.hackatime_project, design.hackatime_time_formatted ] } %>
+        <% if design.hackatime_projects.any? %>
+            <div class="hackatime-pills">
+                <% design.hackatime_projects.each do |hp| %>
+                    <%= render partial: "designs/hackatime/pill", locals: { hackatime_project: hp, design: design } %>
+                <% end %>
             </div>
         <% end %>
         </div>

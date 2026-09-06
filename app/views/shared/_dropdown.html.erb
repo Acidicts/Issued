@@ -26,7 +26,7 @@
         prompt: "Select a Hackatime project" %>
 
 <% choices  = local_assigns.fetch(:choices, []) %>
-<% selected = local_assigns.fetch(:selected, form.object.public_send(method)) %>
+<% selected = local_assigns.fetch(:selected, form.object.try(method)) %>
 <% prompt   = local_assigns[:prompt] %>
 <% wrapper_classes = ["dropdown", local_assigns[:small] ? "dropdown--sm" : nil, local_assigns[:css_class]].compact.join(" ") %>
 
