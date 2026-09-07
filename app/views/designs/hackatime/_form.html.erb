@@ -8,7 +8,7 @@
       </div>
     <% end %>
 
-    <% available_projects = @hackatime_projects.reject { |p| @design.hackatime_projects.pluck(:name).include?(p['name']) } %>
+    <% available_projects = Array(@hackatime_projects).reject { |p| @design.hackatime_projects.pluck(:name).include?(p['name']) } %>
     <% if available_projects.present? %>
         <%= render "shared/dropdown",
             form: form,
