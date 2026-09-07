@@ -1,6 +1,5 @@
 module Admin
   class OrdersController < Admin::DashboardController
-    before_action :require_admin
     def index
       @orders = Order.all
     end

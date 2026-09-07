@@ -17,8 +17,9 @@ require "test_helper"
 #
 # Indexes
 #
-#  index_designs_on_name     (name)
-#  index_designs_on_user_id  (user_id)
+#  index_designs_on_name              (name)
+#  index_designs_on_user_id           (user_id)
+#  index_designs_on_user_id_and_name  (user_id,name) UNIQUE
 #
 # Foreign Keys
 #

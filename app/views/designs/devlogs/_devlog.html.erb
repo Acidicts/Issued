@@ -2,7 +2,7 @@
   <% image = devlog.image %>
   <div class="devlog-card">
     <div class="devlog-card-image">
-      <% if image.image_file.attached? %>
+      <% if image&.image_file&.attached? %>
         <%= image_tag image.image_file.variant(:display) %>
       <% end %>
     </div>
@@ -17,8 +17,10 @@
 
         <div class="devlog-card-header__time_edit">
           <time>⏱ Time: <%= format_duration(total_seconds: devlog.time, seconds_enabled: false) %></time>
-          <%= link_to edit_devlog_path(devlog.id) do %>
-            <span class="devlog-card-header__edit_btn"><%= edit_svg(width: "1.55rem", height: "1.55rem", color: "var(--line)")%></span>
+          <% if devlog.design.user ==current_user%>
+            <%= link_to edit_devlog_path(devlog.id) do %>
+              <span class="devlog-card-header__edit_btn"><%= edit_svg(width: "1.55rem", height: "1.55rem", color: "var(--line)")%></span>
+            <% end %>
           <% end %>
         </div>
       </div>

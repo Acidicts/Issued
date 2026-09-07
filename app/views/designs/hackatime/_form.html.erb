@@ -1,4 +1,4 @@
-<%= form_with model: @design, url: add_hackatime_project_patch_design_path(@design), method: :patch, html: { class: "design-form design" } do |form| %>
+<%= form_with model: @design, url: design_path(@design), method: :patch, html: { class: "design-form design" } do |form| %>
     <h2>Hackatime Projects</h2>
     <% if @design.hackatime_projects.any? %>
       <div class="hackatime-pills">
@@ -26,7 +26,7 @@
     <div class="actions">
         <%= form.submit @design.persisted? ? "Update Design" : "Create Design", class: "button button-primary" %>
         <% if @design.persisted? %>
-        <%= link_to "Back", designs_path, class: "button button-secondary" %>
+            <%= link_to "Back", designs_path, class: "button button-secondary" %>
         <% end %>
     </div>
 <% end %>

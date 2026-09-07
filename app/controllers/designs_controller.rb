@@ -1,8 +1,9 @@
 class DesignsController < ApplicationController
   layout "application"
+  before_action :find_design, only: [ :show, :edit, :update, :image, :remove_hackatime_project, :add_hackatime_project ]
   before_action :require_login, except: [ :show, :image ]
-  before_action :find_design, only: [ :show, :edit, :update, :image, :remove_hackatime_project, :add_hackatime_project_patch ]
-  before_action :load_hackatime_projects, only: [ :new, :edit, :add_hackatime_project ]
+  before_action :require_owner_for_design, only: [ :edit, :update, :image, :add_hackatime_project ]
+  before_action :load_hackatime_projects, only: [ :new, :edit, :create, :update, :add_hackatime_project ]
 
   def index
     @designs = current_user.designs.order(updated_at: :desc)
@@ -33,13 +34,13 @@ class DesignsController < ApplicationController
     permitted = design_params
     image_file = permitted.delete(:image)
     should_remove_bg = ActiveModel::Type::Boolean.new.cast(permitted.delete(:remove_background))
+    hackatime_project_name = permitted.delete(:hackatime_project)
     @design = current_user.designs.new(permitted)
     @design.time ||= 0
     @design.description = "Draft description" if @design.description.blank?
 
-    @design.sync_hackatime_projects
-
     if @design.save
+      add_hackatime_project_to_design(hackatime_project_name)
       if image_file.present?
         img = @design.images.create!(image_file: image_file)
         RemoveBackgroundJob.perform_later(img.id) if should_remove_bg
@@ -60,10 +61,12 @@ class DesignsController < ApplicationController
     permitted = design_params
     image_file = permitted.delete(:image)
     should_remove_bg = ActiveModel::Type::Boolean.new.cast(permitted.delete(:remove_background))
+    hackatime_project_name = permitted.delete(:hackatime_project)
+
     @design.assign_attributes(permitted)
-    @design.sync_hackatime_projects
 
     if @design.save
+      add_hackatime_project_to_design(hackatime_project_name)
       if image_file.present?
         img = @design.images.create!(image_file: image_file)
         RemoveBackgroundJob.perform_later(img.id) if should_remove_bg
@@ -77,9 +80,11 @@ class DesignsController < ApplicationController
 
   def remove_hackatime_project
     hp = @design.hackatime_projects.find(params[:hackatime_project_id])
-    if @design.user_id != current_user.id
+    unless @design.user == current_user || current_user&.admin?
       redirect_to designs_path, alert: "You are not authorized to modify this design."
-    elsif @design.ship_requests.where("created_at > ?", hp.created_at).exists?
+      return
+    end
+    if @design.ship_requests.where("created_at > ?", hp.created_at).exists?
       redirect_to edit_design_path(@design), alert: "Cannot remove this project — a ship request was created after it was added."
     else
       hp.destroy
@@ -88,20 +93,7 @@ class DesignsController < ApplicationController
   end
 
   def add_hackatime_project
-    @design = Design.find(params[:id])
     render "designs/hackatime/_add"
-  end
-
-  def add_hackatime_project_patch
-    return unless @design
-    return unless @design.user == current_user
-    project_name = params[:design][:hackatime_project]
-    if project_name.present?
-      @design.hackatime_projects.find_or_create_by!(name: project_name)
-    end
-    @design.sync_hackatime_projects
-    @design.save!
-    redirect_to design_path(@design), notice: "Hackatime project added."
   end
 
   private
@@ -116,29 +108,25 @@ class DesignsController < ApplicationController
     redirect_to login_path(redirect: request.fullpath), alert: "Please sign in to access designs."
   end
 
+  def require_owner_for_design
+    require_owner(@design)
+  end
+
   def find_design
     @design = Design.find(params[:id])
   end
 
   def design_params
-    params.fetch(:design, {}).permit(:name, :description, :image, :remove_background)
+    params.fetch(:design, {}).permit(:name, :description, :image, :remove_background, :hackatime_project)
   end
 
-  def sync_hackatime_project
-    return unless params[:design]&.key?(:hackatime_project)
+  def add_hackatime_project_to_design(project_name)
+    return unless project_name.present?
+    return if @design.hackatime_projects.exists?(name: project_name)
 
-    project_name = params[:design][:hackatime_project].presence
-    return unless project_name.present? && current_user&.slack_id.present? && HackatimeService.available?
-
-    already_linked = @design.hackatime_projects.exists?(name: project_name)
-    return if already_linked
-
-    projects = HackatimeService.new(slack_id: current_user.slack_id).get_all_projects
-    project = projects.find { |p| p["name"] == project_name }
-    return unless project.present?
-
-    @design.hackatime_projects.new(name: project_name, time: project["seconds"])
-    @design.hackatime_seconds = @design.hackatime_projects.sum(:time)
+    @design.hackatime_projects.find_or_create_by!(name: project_name)
+    @design.sync_hackatime_projects
+    @design.save!
   end
 
   def load_hackatime_projects

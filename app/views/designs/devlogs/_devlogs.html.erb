@@ -2,26 +2,34 @@
 
 <div class="devlogs-wrap">
   <div class="devlogs-header">
-    <div class="devlogs-header-title">
-        <h3>Devlogs</h3>
-        <span class="muted">You have <%= format_duration(total_seconds: design.unlogged_time, seconds_enabled: false) %> unlogged</span>
-    </div>
-    <button class="dd-toggle" type="button" aria-expanded="false" aria-controls="devlog-form-panel" data-dd>
-      <span class="dd-toggle__label" data-dd-label data-open="Cancel" data-closed="New Devlog" title="<%= design.can_make_devlog ? "Create New Devlog" : "You need at least 15 minutes per devlog" %>">New Devlog</span>
-      <%= render "shared/info_icon", aria_label: "You need at least 15 minutes per devlog" %>
-      <span class="dd-toggle__chevron">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-          <path d="M3 4.5L6 7.5L9 4.5" />
-        </svg>
-      </span>
-    </button>
+    <% if design.user == current_user || current_user&.admin? %>
+      <div class="devlogs-header-title">
+          <h3>Devlogs</h3>
+          <span class="muted"><%= "You have " + format_duration(total_seconds: design.unlogged_time, seconds_enabled: false).to_s + " unlogged" %> </span>
+      </div>
+      <button class="dd-toggle" type="button" aria-expanded="false" aria-controls="devlog-form-panel" data-dd>
+        <span class="dd-toggle__label" data-dd-label data-open="Cancel" data-closed="New Devlog" title="<%= design.can_make_devlog ? "Create New Devlog" : "You need at least 15 minutes per devlog" %>">New Devlog</span>
+        <%= render "shared/info_icon", aria_label: "You need at least 15 minutes per devlog" %>
+        <span class="dd-toggle__chevron">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M3 4.5L6 7.5L9 4.5" />
+          </svg>
+        </span>
+      </button>
+    <% else %>
+      <div class="devlogs-header-title">
+          <h3>Devlogs</h3>
+      </div>
+    <% end %>
   </div>
 
-  <div class="dd-panel" id="devlog-form-panel" aria-hidden="true" data-dd-panel>
-    <div class="dd-panel__inner">
-      <%= render partial: "designs/devlogs/new", locals: { devlog: design.devlogs.new(time: design.unlogged_time) } %>
+  <% if design.user == current_user || current_user&.admin? %>
+    <div class="dd-panel" id="devlog-form-panel" aria-hidden="true" data-dd-panel>
+      <div class="dd-panel__inner">
+        <%= render partial: "designs/devlogs/new", locals: { devlog: design.devlogs.new(time: design.unlogged_time) } %>
+      </div>
     </div>
-  </div>
+  <% end %>
 
   <div class="devlogs-grid">
     <% if design.devlogs.any? %>

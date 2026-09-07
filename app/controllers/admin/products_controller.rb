@@ -1,8 +1,5 @@
 module Admin
   class ProductsController < Admin::DashboardController
-    before_action :require_admin
-    before_action :require_login
-
     def index
       @products = Product.all
     end
@@ -12,21 +9,16 @@ module Admin
     end
 
     def new
-      return unless current_user.admin?
-
       @product = Product.new
     end
 
     def edit
-      return unless current_user.admin?
       return unless params[:id]
 
       @product = Product.find(params[:id])
     end
 
     def create
-      return unless current_user.admin?
-
       @product = Product.new(product_params)
       if @product.save
         redirect_to admin_products_path, notice: "Product was successfully created."
@@ -36,14 +28,9 @@ module Admin
     end
 
     def new_by_printful_id
-      unless current_user.admin?
-        nil
-      end
     end
 
     def import_from_printful
-      return unless current_user.admin?
-
       data = PrintfulService.import_product(params[:printful_id])
       @product = build_product_from_printful(data)
 
@@ -59,7 +46,6 @@ module Admin
     end
 
     def update
-      return unless current_user.admin?
       return unless params[:id]
 
       product = Product.find(params[:id])
@@ -73,7 +59,6 @@ module Admin
     end
 
     def destroy
-      return unless current_user.admin?
       return unless params[:id]
 
       product = Product.find(params[:id])

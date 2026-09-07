@@ -1,17 +1,28 @@
 <div class="design-hackatime-projects">
     <h2>Hackatime Projects</h2>
-    <% if @design.hackatime_projects.any? %>
+    <% if @design.hackatime_projects.any? && @design.user == current_user || current_user&.admin? %>
         <div class="hackatime-pills">
             <% @design.hackatime_projects.each do |hp| %>
                 <%= render "designs/hackatime/pill", hackatime_project: hp, design: @design %>
             <% end %>
         </div>
         <%= link_to "Add More Hackatime Projects", add_hackatime_project_design_path(@design), class: "create-link__with_project" %>
-    <% else %>
+    <% elsif @design.hackatime_projects.any? %>
+        <div class="hackatime-pills">
+            <% @design.hackatime_projects.each do |hp| %>
+                <%= render "designs/hackatime/pill", hackatime_project: hp, design: @design %>
+            <% end %>
+        </div>
+    <% elsif design.user == current_user %>
         <div class="hackatime-pills">
             <div class="empty-state">
                 <%= link_to "Add a hackatime project", add_hackatime_project_design_path(@design), class: "create-link btn btn-secondary" %>
                 <p>You haven't linked a hackatime project.</p>
+            </div>
+        </div>
+    <% else %>
+        <div class="hackatime-pills">
+            <div class="empty-state"><p>They haven't linked a hackatime project.</p>
             </div>
         </div>
     <% end %>

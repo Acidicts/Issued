@@ -1,9 +1,10 @@
 class DevlogsController < ApplicationController
   before_action :require_login
+  before_action :set_devlog, only: [ :edit, :update ]
+  before_action :require_owner_for_edit, only: [ :edit, :update ]
+  before_action :require_owner_for_create, only: [ :create ]
 
   def edit
-    @devlog = Devlog.find(params[:id])
-
     render partial: "designs/devlogs/edit", formats: [ :html ]
   end
 
@@ -15,10 +16,6 @@ class DevlogsController < ApplicationController
     @design = Design.find(params[:devlog][:design_id])
     @design.sync_hackatime_projects
     @design.save!
-    if image_file.present?
-      img = @design.images.create!(image_file: image_file)
-      RemoveBackgroundJob.perform_later(img.id) if should_remove_bg
-    end
 
     if params[:devlog][:time].to_i > @design.unlogged_time
       redirect_to design_path(@design), alert: "You don't have that much unlogged time."
@@ -30,6 +27,10 @@ class DevlogsController < ApplicationController
     @devlog = @design.devlogs.new(permitted)
 
     if @devlog.save
+      if image_file.present?
+        img = @design.images.create!(image_file: image_file, devlog: @devlog)
+        RemoveBackgroundJob.perform_later(img.id) if should_remove_bg
+      end
       redirect_to design_path(@design), notice: "Devlog created successfully."
     else
       flash.now[:alert] = "Unable to save devlog."
@@ -45,17 +46,10 @@ class DevlogsController < ApplicationController
     @devlog = Devlog.find(params[:id])
     @design = @devlog.design
 
-    image_file = params[:devlog][:image]
-
-    if !@devlog.image
-      image = Image.new(design: @design, devlog: @devlog)
-    else
-      image = @devlog.image
-    end
-
-    if image_file
-      @devlog.image.update(image_file: image_file)
-      image.save!
+    if image_file.present?
+      image = @devlog.image || @design.images.new(devlog: @devlog)
+      image.update!(image_file: image_file)
+      RemoveBackgroundJob.perform_later(image.id) if should_remove_bg
     end
 
     if @devlog.update(permitted)
@@ -70,5 +64,18 @@ class DevlogsController < ApplicationController
 
   def devlog_params
     params.require(:devlog).permit(:title, :body, :time, :design_id, :remove_background)
+  end
+
+  def set_devlog
+    @devlog = Devlog.find(params[:id])
+  end
+
+  def require_owner_for_edit
+    require_owner(@devlog.design)
+  end
+
+  def require_owner_for_create
+    design = Design.find(params[:devlog][:design_id])
+    require_owner(design)
   end
 end

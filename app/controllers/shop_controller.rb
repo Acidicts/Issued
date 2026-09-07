@@ -1,6 +1,7 @@
 class ShopController < ApplicationController
   layout "application"
   before_action :set_nav
+  before_action :require_login
 
   def index
     @products = Product.all.order(:type)
