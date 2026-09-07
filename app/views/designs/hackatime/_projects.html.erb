@@ -6,11 +6,12 @@
                 <%= render "designs/hackatime/pill", hackatime_project: hp, design: @design %>
             <% end %>
         </div>
+        <%= link_to "Add More Hackatime Projects", add_hackatime_project_design_path(@design), class: "create-link__with_project" %>
     <% else %>
         <div class="hackatime-pills">
             <div class="empty-state">
-                <%= link_to "Create your first design", new_design_path, class: "create-link btn btn-secondary" %>
-                <p>You haven't created any designs yet.</p>
+                <%= link_to "Add a hackatime project", add_hackatime_project_design_path(@design), class: "create-link btn btn-secondary" %>
+                <p>You haven't linked a hackatime project.</p>
             </div>
         </div>
     <% end %>

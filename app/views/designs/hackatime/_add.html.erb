@@ -1,0 +1,6 @@
+<%= stylesheet_link_tag 'pages/designs.css', "data-turbo-track": "reload" %>
+
+<div class="hackatime-project-form-wrap">
+    <%= link_to "Back", design_path(@design), class: "btn btn-secondary" %>
+    <%= render "designs/hackatime/form" %>
+</div>

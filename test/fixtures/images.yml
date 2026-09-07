@@ -9,14 +9,17 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  design_id  :bigint           not null
+#  devlog_id  :bigint
 #
 # Indexes
 #
 #  index_images_on_design_id  (design_id)
+#  index_images_on_devlog_id  (devlog_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (design_id => designs.id)
+#  fk_rails_...  (devlog_id => devlogs.id)
 #
 one:
   design: one

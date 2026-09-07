@@ -1,4 +1,4 @@
-<%= form_with model: devlog do |form| %>
+<%= form_with model: devlog, html: {class:"devlog-form"} do |form| %>
   <%= form.hidden_field :design_id %>
   <% if devlog.errors.any? %>
     <div class="nb-errors">
@@ -13,18 +13,20 @@
   <% end %>
 
   <div class="nb-form-group">
-    <%= form.label :title, class: "nb-label" %>
-    <%= form.text_field :title, class: "nb-input" %>
-  </div>
+    <div class="nb-form-group">
+      <%= form.label :title, class: "nb-label" %>
+      <%= form.text_field :title, class: "nb-input" %>
+    </div>
 
-  <div class="nb-form-group">
-    <%= form.label :time, "Time spent (minutes)", class: "nb-label" %>
-    <div style="display: flex; align-items: center; gap: 8px;">
-      <input type="number" id="duration_hours" min="0" placeholder="0" value="<%= devlog.time.to_i / 3600 %>" style="width: 80px; padding: 0.5rem; border: 1px solid var(--line, #B7A878); border-radius: 4px; background: var(--surface, #F2EAD3); color: var(--ink, #241D16);">
-      <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--ink-soft);">hrs</span>
-      <input type="number" id="duration_minutes_part" min="0" max="59" placeholder="0" value="<%= (devlog.time.to_i % 3600) / 60 %>" style="width: 80px; padding: 0.5rem; border: 1px solid var(--line, #B7A878); border-radius: 4px; background: var(--surface, #F2EAD3); color: var(--ink, #241D16);">
-      <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--ink-soft);">min</span>
-      <%= form.hidden_field :time, id: "duration_minutes_total" %>
+    <div class="nb-form-group">
+      <%= form.label :time, "Time spent (minutes)", class: "nb-label" %>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <input type="number" id="duration_hours" min="0" placeholder="0" value="<%= devlog.time.to_i / 3600 %>" style="width: 80px; padding: 0.5rem; border: 1px solid var(--line, #B7A878); border-radius: 4px; background: var(--surface, #F2EAD3); color: var(--ink, #241D16);">
+        <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--ink-soft);">hrs</span>
+        <input type="number" id="duration_minutes_part" min="0" max="59" placeholder="0" value="<%= (devlog.time.to_i % 3600) / 60 %>" style="width: 80px; padding: 0.5rem; border: 1px solid var(--line, #B7A878); border-radius: 4px; background: var(--surface, #F2EAD3); color: var(--ink, #241D16);">
+        <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--ink-soft);">min</span>
+        <%= form.hidden_field :time, id: "duration_minutes_total" %>
+      </div>
     </div>
   </div>
 
@@ -40,11 +42,25 @@
           <div id="markdown-preview-content"><%= raw(markdown_to_html(devlog.body)) %></div>
         </div>
       </div>
+
+      <div class="field file-field">
+        <%= form.label :image, "Image (Should be the latest version of your design, either png or svg)" %>
+        <%= form.file_field :image %>
+      </div>
+
+      <div class="field">
+        <label>
+          <%= form.check_box :remove_background %>
+          Remove background from uploaded image
+        </label>
+      </div>
+
       <div class="nb-form-group">
         <%= form.submit class: "nb-btn nb-btn-primary" %>
       </div>
     </div>
   </div>
+  
 
   <script>
     (function() {
@@ -97,9 +113,10 @@
 
   <script>
     (function() {
-      var hoursEl = document.getElementById('duration_hours');
-      var minsEl = document.getElementById('duration_minutes_part');
-      var totalEl = document.getElementById('duration_minutes_total');
+      var form = document.currentScript.closest('form');
+      var hoursEl = form.querySelector('#duration_hours');
+      var minsEl = form.querySelector('#duration_minutes_part');
+      var totalEl = form.querySelector('#duration_minutes_total');
 
       function compute() {
         var h = parseInt(hoursEl.value) || 0;
@@ -109,6 +126,8 @@
 
       hoursEl.addEventListener('input', compute);
       minsEl.addEventListener('input', compute);
+
+      compute();
 
       var initial = parseInt(totalEl.value) || 0;
       if (initial > 0) {

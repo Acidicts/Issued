@@ -1,19 +1,30 @@
 <%= turbo_frame_tag "devlog_#{devlog.id}" do %>
+  <% image = devlog.image %>
   <div class="devlog-card">
-    <div class="devlog-card-header">
-      <time class="devlog-card-date" datetime="<%= devlog.created_at.iso8601 %>">
-        <%= devlog.created_at.strftime("%b %d, %Y") %>
-      </time>
-
-      <div class="devlog-card-header__time_edit">
-        <time>⏱ Time: <%= format_duration(total_seconds: devlog.time, seconds_enabled: false) %></time>
-        <%= link_to edit_devlog_path(devlog.id) do %>
-          <span class="devlog-card-header__edit_btn"><%= edit_svg(width: "1.55rem", height: "1.55rem", color: "var(--line)")%></span>
-        <% end %>
-      </div>
+    <div class="devlog-card-image">
+      <% if image.image_file.attached? %>
+        <%= image_tag image.image_file.variant(:display) %>
+      <% end %>
     </div>
-    <div class="devlog-card-body markdown-content">
-      <%= raw MarkdownService.convert(content: devlog.body) %>
+    <div class="devlog-card-contents">
+      <div class="devlog-card-header">
+        <div>
+          <p style="margin-bottom:0; font-size:1.25rem; font-weight:700;"><%= devlog.title%></p>
+          <time class="devlog-card-date" datetime="<%= devlog.created_at.iso8601 %>">
+            <%= devlog.created_at.strftime("%b %d, %Y") %>
+          </time>
+        </div>
+
+        <div class="devlog-card-header__time_edit">
+          <time>⏱ Time: <%= format_duration(total_seconds: devlog.time, seconds_enabled: false) %></time>
+          <%= link_to edit_devlog_path(devlog.id) do %>
+            <span class="devlog-card-header__edit_btn"><%= edit_svg(width: "1.55rem", height: "1.55rem", color: "var(--line)")%></span>
+          <% end %>
+        </div>
+      </div>
+      <div class="devlog-card-body markdown-content">
+        <%= raw MarkdownService.convert(content: devlog.body) %>
+      </div>
     </div>
   </div>
 <% end %>

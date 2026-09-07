@@ -1,8 +1,8 @@
 class DesignsController < ApplicationController
   layout "application"
   before_action :require_login, except: [ :show, :image ]
-  before_action :find_design, only: [ :show, :edit, :update, :image, :remove_hackatime_project ]
-  before_action :load_hackatime_projects, only: [ :new, :edit ]
+  before_action :find_design, only: [ :show, :edit, :update, :image, :remove_hackatime_project, :add_hackatime_project_patch ]
+  before_action :load_hackatime_projects, only: [ :new, :edit, :add_hackatime_project ]
 
   def index
     @designs = current_user.designs.order(updated_at: :desc)
@@ -85,6 +85,23 @@ class DesignsController < ApplicationController
       hp.destroy
       redirect_to edit_design_path(@design), notice: "Hackatime project removed."
     end
+  end
+
+  def add_hackatime_project
+    @design = Design.find(params[:id])
+    render "designs/hackatime/_add"
+  end
+
+  def add_hackatime_project_patch
+    return unless @design
+    return unless @design.user == current_user
+    project_name = params[:design][:hackatime_project]
+    if project_name.present?
+      @design.hackatime_projects.find_or_create_by!(name: project_name)
+    end
+    @design.sync_hackatime_projects
+    @design.save!
+    redirect_to design_path(@design), notice: "Hackatime project added."
   end
 
   private

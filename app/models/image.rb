@@ -7,17 +7,22 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  design_id  :bigint           not null
+#  devlog_id  :bigint
 #
 # Indexes
 #
 #  index_images_on_design_id  (design_id)
+#  index_images_on_devlog_id  (devlog_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (design_id => designs.id)
+#  fk_rails_...  (devlog_id => devlogs.id)
 #
 class Image < ApplicationRecord
   belongs_to :design
+  belongs_to :devlog, optional: true
+
   has_one_attached :image_file do |attachable|
     attachable.variant :thumb, resize_to_limit: [ 400, 400 ], format: :webp, saver: { quality: 75, strip: true }
     attachable.variant :display, resize_to_limit: [ 1200, 1200 ], format: :webp, saver: { quality: 78, strip: true }

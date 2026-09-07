@@ -24,6 +24,7 @@
 class Devlog < ApplicationRecord
   belongs_to :ship_request, optional: true
   belongs_to :design
+  has_one :image
 
   attribute :time, :integer, default: 0
 end

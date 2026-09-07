@@ -33,6 +33,7 @@ class Design < ApplicationRecord
   has_many :hackatime_projects, dependent: :destroy
 
   validates :name, presence: true
+  validates :name, uniqueness: { scope: :user_id, message: "has already been used for one of your designs" }
   validates :description, presence: true
   validates :hackatime_seconds, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
 
@@ -47,9 +48,7 @@ class Design < ApplicationRecord
     self.hackatime_projects.each do |hp|
       hp.sync_hackatime_project
     end
-    save!
-
-    self.update(hackatime_seconds: hackatime_projects.to_a.sum(&:time))
+    self.hackatime_seconds = hackatime_projects.to_a.sum(&:time)
   end
 
   def update_logged_time

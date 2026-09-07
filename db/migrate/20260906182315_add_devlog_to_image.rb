@@ -1,0 +1,5 @@
+class AddDevlogToImage < ActiveRecord::Migration[8.1]
+  def change
+    add_reference :images, :devlog, null: false, foreign_key: true
+  end
+end

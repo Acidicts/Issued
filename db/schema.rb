@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_06_174802) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_07_115841) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -80,6 +80,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_06_174802) do
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["name"], name: "index_designs_on_name"
+    t.index ["user_id", "name"], name: "index_designs_on_user_id_and_name", unique: true
     t.index ["user_id"], name: "index_designs_on_user_id"
   end
 
@@ -107,9 +108,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_06_174802) do
   create_table "images", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "design_id", null: false
+    t.bigint "devlog_id"
     t.datetime "from_time"
     t.datetime "updated_at", null: false
     t.index ["design_id"], name: "index_images_on_design_id"
+    t.index ["devlog_id"], name: "index_images_on_devlog_id"
   end
 
   create_table "notifications", force: :cascade do |t|
@@ -246,6 +249,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_06_174802) do
   add_foreign_key "devlogs", "ship_requests"
   add_foreign_key "hackatime_projects", "designs"
   add_foreign_key "images", "designs"
+  add_foreign_key "images", "devlogs"
   add_foreign_key "notifications", "users"
   add_foreign_key "order_print_areas", "designs"
   add_foreign_key "order_print_areas", "orders"

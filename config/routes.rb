@@ -42,6 +42,8 @@ Rails.application.routes.draw do
   resources :designs, only: %i[index show new create edit update] do
     member do
       get :image
+      get :add_hackatime_project
+      patch :add_hackatime_project_patch
       delete :remove_hackatime_project
     end
   end

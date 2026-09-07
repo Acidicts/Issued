@@ -643,6 +643,22 @@
     color: var(--ink);
 }
 
+.create-link__with_project {
+    position: relative;
+    bottom: 0;
+    text-decoration: none;
+    font-weight: 300;
+    color: var(--muted);
+    transition: all ease 0.3s;
+    margin-top: auto;
+}
+
+.create-link__with_project:hover {
+    text-decoration: dashed;
+    font-weight: 700;
+    color: var(--accent)
+}
+
 .hackatime-pill {
     display: inline-flex;
     align-items: center;
@@ -660,6 +676,7 @@
     flex-wrap: wrap;
     gap: 6px;
     margin-bottom: 8px;
+    height: 70%;
 }
 
 .hackatime-pill-remove {
@@ -679,6 +696,22 @@
 
 .hackatime-pill-remove:hover {
     opacity: 1;
+}
+
+.hackatime-project-form-wrap {
+    border: var(--line) 2px solid;
+    padding: 1rem;
+    justify-content: center;
+    max-width: 1060px;
+    align-self: center;
+    margin: auto;
+}
+
+.hackatime-form-no-projects {
+    justify-content: center;
+    text-align:center;
+    border: 2px dashed var(--line);
+    padding: 1rem;
 }
 
 .designs-hackatime-gallery {
