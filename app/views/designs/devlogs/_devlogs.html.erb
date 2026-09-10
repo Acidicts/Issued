@@ -7,7 +7,7 @@
           <h3>Devlogs</h3>
           <span class="muted"><%= "You have " + format_duration(total_seconds: design.unlogged_time, seconds_enabled: false).to_s + " unlogged" %> </span>
       </div>
-      <button class="dd-toggle" type="button" aria-expanded="false" aria-controls="devlog-form-panel" data-dd>
+      <button class="dd-toggle" type="button" aria-expanded="false" aria-controls="devlog-form-panel" data-dd <%= 'disabled' if design.unlogged_time < (60 * 15) %>>
         <span class="dd-toggle__label" data-dd-label data-open="Cancel" data-closed="New Devlog" title="<%= design.can_make_devlog ? "Create New Devlog" : "You need at least 15 minutes per devlog" %>">New Devlog</span>
         <%= render "shared/info_icon", aria_label: "You need at least 15 minutes per devlog" %>
         <span class="dd-toggle__chevron">
@@ -26,19 +26,26 @@
   <% if design.user == current_user || current_user&.admin? %>
     <div class="dd-panel" id="devlog-form-panel" aria-hidden="true" data-dd-panel>
       <div class="dd-panel__inner">
-        <%= render partial: "designs/devlogs/new", locals: { devlog: design.devlogs.new(time: design.unlogged_time) } %>
+        <%= render partial: "designs/devlogs/new", locals: { devlog: Devlog.new(design: design, time: design.unlogged_time) } %>
       </div>
     </div>
   <% end %>
 
   <div class="devlogs-grid">
-    <% if design.devlogs.any? %>
-        <% design.devlogs.order(created_at: :desc).each do |devlog| %>
-          <%= render "designs/devlogs/devlog", devlog: devlog %>
+    <% items = design.devlogs.to_a + design.ships.to_a + (current_user&.reviewer? || design.user == current_user ? design.ship_requests.to_a : []) %>
+    <% if items.any? %>
+        <% items.sort_by { |i| i.created_at || Time.at(0) }.reverse.each do |devlog| %>
+          <% if devlog.is_a?(Devlog) %>
+            <%= render "designs/devlogs/devlog", devlog: devlog %>
+          <% elsif devlog.is_a?(ShipRequest) %>
+            <%= render "designs/devlogs/ship_request", devlog: devlog %>
+          <% elsif devlog.is_a?(Ship) %>
+            <%= render "designs/devlogs/ship", devlog: devlog %>
+          <% end %>
         <% end %>
     <% else %>
       <% time_seconds = design.hackatime_seconds.to_i - design.devlogged_time.to_i %>
-      <span class="devlogs-empty">You Have No Devlogs - (You have <%= format_duration(total_seconds: time_seconds) %>)</span>
+      <span class="devlogs-empty">You Have No Devlogs - (You have <%= format_duration(total_seconds: time_seconds) %> unlogged)</span>
     <% end %>
   </div>
 </div>

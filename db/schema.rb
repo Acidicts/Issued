@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_07_115841) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_10_211951) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -109,6 +109,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_115841) do
     t.datetime "created_at", null: false
     t.bigint "design_id", null: false
     t.bigint "devlog_id"
+    t.string "devlog_type"
     t.datetime "from_time"
     t.datetime "updated_at", null: false
     t.index ["design_id"], name: "index_images_on_design_id"
@@ -194,9 +195,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_115841) do
   end
 
   create_table "ship_requests", force: :cascade do |t|
+    t.text "body"
     t.datetime "created_at", null: false
     t.bigint "design_id", null: false
     t.integer "status"
+    t.string "title"
     t.datetime "updated_at", null: false
     t.index ["design_id"], name: "index_ship_requests_on_design_id"
   end
@@ -249,7 +252,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_115841) do
   add_foreign_key "devlogs", "ship_requests"
   add_foreign_key "hackatime_projects", "designs"
   add_foreign_key "images", "designs"
-  add_foreign_key "images", "devlogs"
   add_foreign_key "notifications", "users"
   add_foreign_key "order_print_areas", "designs"
   add_foreign_key "order_print_areas", "orders"

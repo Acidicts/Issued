@@ -1,0 +1,29 @@
+<% image = devlog.image %>
+<div class="devlog-card">
+    <div class="devlog-card-image">
+        <% if image&.image_file&.attached? %>
+            <%= image_tag image.image_for(:display) %>
+        <% end %>
+    </div>
+    <div class="devlog-card-contents">
+        <div class="devlog-card-header">
+            <div>
+                <p style="margin-bottom:0; font-size:1.25rem; font-weight:700;">Ship Request: <%= devlog.title %></p>
+                <% if devlog.created_at %>
+                    <time class="devlog-card-date" datetime="<%= devlog.created_at.iso8601 %>">
+                        <%= devlog.created_at.strftime("%b %d, %Y") %>
+                    </time>
+                <% end %>
+            </div>
+
+            <div class="devlog-card-header__time_edit">
+                <div class="devlog-card-header__time_edit">
+                    <time>⏱ Time: <%= format_duration(total_seconds: devlog.total_time_seconds, seconds_enabled: false) %></time>
+                </div>
+            </div>
+        </div>
+        <div class="devlog-card-body markdown-content">
+            <%= raw MarkdownService.convert(content: devlog.body) %>
+        </div>
+    </div>
+</div>

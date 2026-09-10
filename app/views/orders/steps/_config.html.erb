@@ -100,7 +100,7 @@
           <div class="preview-product">
             <div class="preview-product-image-container">
               <% if @product.image.attached? %>
-                <%= image_tag @product.image.variant(:display), alt: @product.type, class: "product_image_preview", "data-order--order-config-target" => "productImage", style: "background-color: #{@order.color_hex}" %>
+                <%= image_tag @product.image_for(:display), alt: @product.type, class: "product_image_preview", "data-order--order-config-target" => "productImage", style: "background-color: #{@order.color_hex}" %>
               <% else %>
                 <span class="preview-placeholder">No product image</span>
               <% end %>

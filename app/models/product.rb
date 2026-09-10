@@ -26,6 +26,9 @@ class Product < ApplicationRecord
     attachable.variant :display, resize_to_limit: [ 1200, 1200 ], format: :webp, saver: { quality: 78, strip: true }
   end
 
+  after_create_commit :convert_svg_to_png
+  after_update_commit :convert_svg_to_png
+
   has_many :orders, dependent: :destroy
   has_many :variants, dependent: :destroy
   has_many :print_areas, dependent: :destroy
@@ -66,5 +69,43 @@ class Product < ApplicationRecord
         variant_obj.set_stock(region, status == "in_stock")
       end
     end
+  end
+
+  def image_for(variant_name)
+    return unless image.attached?
+
+    if image.content_type&.include?("svg")
+      convert_svg_to_png
+      reload
+    end
+    image.variant(variant_name)
+  end
+
+  private
+
+  def convert_svg_to_png
+    return unless image.attached?
+    return unless image.content_type&.include?("svg")
+
+    image.blob.open do |tempfile|
+      svg_image = Vips::Image.new_from_file(tempfile.path)
+
+      min = 800
+      scale = [ min.to_f / svg_image.width, min.to_f / svg_image.height ].max
+      svg_image = svg_image.resize(scale) if scale > 1
+
+      png_path = tempfile.path + ".png"
+      svg_image.write_to_file(png_path)
+
+      image.attach(
+        io: File.open(png_path),
+        filename: image.filename.to_s.sub(/\.[^.]+\z/, ".png"),
+        content_type: "image/png"
+      )
+
+      File.delete(png_path) if File.exist?(png_path)
+    end
+  rescue Vips::Error => e
+    Rails.logger.error("Failed to convert SVG to PNG for Product ##{id}: #{e.message}")
   end
 end

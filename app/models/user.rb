@@ -45,7 +45,7 @@ class User < ApplicationRecord
   end
 
   def reviewer?
-    role == "reviewer"
+    role == "reviewer" || role == "admin" || role == "superadmin" || role == "system"
   end
 
   def refresh_ysws_eligibility!

@@ -1,7 +1,7 @@
 <%= turbo_frame_tag "devlog_#{@devlog.id}" do %>
     <div class="dd-panel__inner">
         <div class="dd-panel__inner_header">
-            <h3><%= render_encoded("Devlog for {{design:#{@devlog.design.id}}}") %></h3>
+            <h3><%= render_encoded("Devlog for {{design:#{@devlog.design.id}}}", context: :heading) %></h3>
             <span class="nb-chip" style="margin-bottom: 20px;">⏱ Up to: <%= format_duration(total_seconds: @devlog.design.unlogged_time, seconds_enabled: false) %> will be logged</span>
         </div>
         <%= render "designs/devlogs/form", devlog: @devlog %>

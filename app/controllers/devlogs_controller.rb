@@ -23,6 +23,9 @@ class DevlogsController < ApplicationController
     elsif params[:devlog][:time].to_i < 15*60
       redirect_to design_path(@design), alert: "Log at least 15mins per devlog."
       return
+    elsif params[:devlog][:image].nil?
+      redirect_to design_path(@design), alert: "Include a image of the current design."
+      return
     end
     @devlog = @design.devlogs.new(permitted)
 

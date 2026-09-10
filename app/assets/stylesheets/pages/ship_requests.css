@@ -1,0 +1,181 @@
+/* ── Ship Request form styles ── */
+
+.ship_request-new-page {
+    max-width: 1060px;
+    margin: auto;
+    align-self: center;
+    margin-top: 0;
+    padding-top: 0.5rem;
+
+    background-color: var(--paper);
+    border: 1px solid var(--line);
+    padding: 2rem;
+    gap: 1rem;
+}
+
+.ship-request-form .nb-form-group {
+    margin-bottom: 1rem;
+}
+
+.ship-request-form .nb-form-group .nb-btn-primary {
+    margin-top: 0.5rem;
+}
+
+.ship-request-form .nb-label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink, #241D16);
+}
+
+.ship-request-form .nb-input,
+.ship-request-form .nb-textarea {
+    width: 100%;
+    padding: 0.7rem 0.85rem;
+    font-family: inherit;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    color: var(--ink, #241D16);
+    background: var(--surface, #F2EAD3);
+    border: 1px solid var(--line, #B7A878);
+    border-radius: 4px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    box-sizing: border-box;
+}
+
+.ship-request-form .nb-textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.ship-request-form .nb-input:focus,
+.ship-request-form .nb-textarea:focus {
+    outline: none;
+    border-color: var(--accent, #1F6F78);
+    box-shadow: 0 0 0 3px rgba(31, 111, 120, 0.15);
+}
+
+.ship-request-form .nb-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.7rem 1.4rem;
+    font-family: var(--brand-font);
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-radius: 4px;
+    border: 1.5px solid transparent;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.ship-request-form .nb-btn-primary {
+    background: var(--ink, #241D16);
+    color: var(--paper, #E4D9BC);
+    border-color: var(--ink, #241D16);
+}
+
+.ship-request-form .nb-btn-primary:hover {
+    background: var(--stamp-red, #D6402C);
+    border-color: var(--stamp-red, #D6402C);
+}
+
+.ship-request-form .nb-btn-primary:active {
+    transform: translateY(1px);
+}
+
+.ship-request-form .nb-errors {
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    border: 1.5px dashed var(--stamp-red, #D6402C);
+    border-left: 4px solid var(--stamp-red, #D6402C);
+    border-radius: 4px;
+    background: rgba(214, 64, 44, 0.06);
+}
+
+.ship-request-form .nb-errors h2 {
+    margin: 0 0 0.5rem;
+    font-size: 0.85rem;
+    color: var(--stamp-red, #D6402C);
+}
+
+.ship-request-form .nb-errors ul {
+    margin: 0;
+    padding-left: 1.1rem;
+    font-size: 0.85rem;
+    color: var(--stamp-red, #D6402C);
+}
+
+.ship-request-form .nb-errors li {
+    margin-bottom: 0.2rem;
+}
+
+/* ── Markdown preview pane ── */
+
+.ship-request-form #markdown-preview-content-div {
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--ink, #241D16);
+}
+
+.ship-request-form #markdown-preview-content-div:empty::before {
+    content: "Preview will appear here\u2026";
+    color: var(--ink-soft, #4B4133);
+    font-style: italic;
+}
+
+.ship-request-form .field {
+    display: grid;
+    gap: 0.65rem;
+    margin-bottom: 1.2rem;
+}
+
+.ship-request-form .field.file-field {
+    padding: 0.95rem;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: var(--surface);
+}
+
+.ship-request-form .field.file-field input[type="file"] {
+    min-height: auto;
+    padding: 0.45rem;
+    background: var(--surface);
+}
+
+.ship-request-form .field.file-field input[type="file"]::file-selector-button {
+    border: 0;
+    margin-right: 0.85rem;
+    border-radius: 4px;
+    padding: 0.58rem 0.92rem;
+    font-weight: 700;
+    background: var(--ink);
+    color: var(--paper);
+    cursor: pointer;
+}
+
+/* ── Dark mode ── */
+
+@media (prefers-color-scheme: dark) {
+    .ship-request-form .nb-input,
+    .ship-request-form .nb-textarea {
+        background: var(--surface, #1a1510);
+        border-color: var(--line, #5a4f3e);
+        color: var(--ink, #E4D9BC);
+    }
+
+    .ship-request-form .nb-input:focus,
+    .ship-request-form .nb-textarea:focus {
+        border-color: var(--accent, #2a8a96);
+        box-shadow: 0 0 0 3px rgba(42, 138, 150, 0.2);
+    }
+
+    .ship-request-form .nb-errors {
+        background: rgba(214, 64, 44, 0.1);
+    }
+}

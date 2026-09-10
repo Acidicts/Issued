@@ -5,7 +5,9 @@ require "test_helper"
 # Table name: ship_requests
 #
 #  id         :bigint           not null, primary key
+#  body       :text
 #  status     :integer
+#  title      :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  design_id  :bigint           not null

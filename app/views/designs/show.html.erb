@@ -4,7 +4,8 @@
   <div class="design-image-preview">
     <% if @design.image_exists? %>
       <div class="design-preview">
-        <%= image_tag @design.image?.variant(:display), alt: "Additional image for #{@design.name}" %>
+        <% image_record = @design.images.order(created_at: :desc).first %>
+        <%= image_tag image_record.image_for(:display), alt: "Additional image for #{@design.name}" %>
       </div>
     <% else %>
       <div class="design-preview">
@@ -31,6 +32,7 @@
   <% if @design.user == current_user %>
     <div class="design-actions">
       <%= link_to "Edit design", edit_design_path(@design), class: "button-primary" %>
+      <%= link_to "Ship Design", new_ship_request_path(design_id: @design.id), class: "button-primary", disabled: @design.can_ship? %>
     </div>
   <% end %>
 </div>

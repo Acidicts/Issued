@@ -53,6 +53,21 @@
   text-decoration: none;
 }
 
+.pill--heading {
+  font-size: 16px;
+  border-radius: 12px;
+}
+
+.pill--heading .pill__name,
+.pill--heading .user-pill__name,
+.pill--heading .design-pill__name,
+.pill--heading .devlog-pill__name,
+.pill--heading .ship-pill__name,
+.pill--heading .ship-request-pill__name {
+  font-size: 1rem;
+  padding: 6px 8px;
+}
+
 .pill__name {
   padding: 4px;
   text-decoration: none;

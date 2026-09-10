@@ -33,6 +33,37 @@
     transform: none;
 }
 
+/* ── Disabled states ── */
+
+.btn-primary:disabled {
+    background: var(--brand-text);
+    border-color: var(--brand-text);
+    color: var(--brand-surface);
+}
+
+.btn-outline:disabled {
+    border-color: var(--brand-border);
+    color: var(--brand-text-secondary);
+    background: transparent;
+}
+
+.btn-tertiary:disabled {
+    color: var(--brand-text-secondary);
+    background: transparent;
+    border-color: transparent;
+}
+
+.btn-danger:disabled {
+    background: var(--brand-danger);
+    border-color: var(--brand-danger);
+    color: var(--brand-surface);
+}
+
+.btn-link:disabled {
+    color: var(--brand-text-secondary);
+    text-decoration: none;
+}
+
 /* ── Button variants ── */
 
 .btn-primary {
@@ -140,6 +171,25 @@
     background: var(--line);
 }
 
+.design-form .button:disabled,
+.design-form .button-primary:disabled,
+.design-form .button-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.design-form .button-primary:disabled {
+    background: var(--ink);
+    color: var(--paper);
+}
+
+.design-form .button-secondary:disabled {
+    background: var(--surface);
+    color: var(--ink);
+    border-color: var(--ink);
+}
+
 /* ── Standalone primary button ── */
 
 .button-primary,
@@ -166,6 +216,15 @@
     background: var(--stamp-red);
     border-color: var(--stamp-red);
     transform: translateY(-1px);
+}
+
+.button-primary:disabled,
+.btn-primary:disabled {
+    background: var(--ink);
+    border-color: var(--ink);
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
 }
 
 /* ── Design actions button ── */
@@ -195,6 +254,16 @@
     border-color: var(--stamp-red);
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(214, 64, 44, 0.25);
+}
+
+.design-actions .button-primary:disabled,
+.design-actions .btn-primary:disabled {
+    background: var(--ink);
+    border-color: var(--ink);
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
 }
 
 @media (max-width: 480px) {

@@ -30,6 +30,8 @@ class Design < ApplicationRecord
   has_many :images, dependent: :destroy
 
   has_many :ship_requests, dependent: :destroy
+  has_many :ships, through: :ship_requests
+
   has_many :devlogs, dependent: :destroy
   has_many :hackatime_projects, dependent: :destroy
 
@@ -67,6 +69,10 @@ class Design < ApplicationRecord
     unlogged_time >= 15 * 60
   end
 
+  def can_ship?
+    self.devlogs.any?
+  end
+
   def elapsed_time_formatted
     formatted_time(total_time_seconds)
   end
@@ -86,7 +92,7 @@ class Design < ApplicationRecord
   end
 
   def image_exists?
-    images.order(created_at: :desc).first&.image_file.present?
+    images.order(created_at: :desc).first&.image_file&.attached?
   end
 
   def image?

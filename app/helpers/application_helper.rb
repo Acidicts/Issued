@@ -62,72 +62,76 @@ module ApplicationHelper
   DEVLOG_TOKEN_PATTERN = /\{\{devlog:(\d+)\}\}/
   DESIGN_TOKEN_PATTERN = /\{\{design:(\d+)\}\}/
 
-  def render_encoded(body)
+  def render_encoded(body, context: :body)
     safe_body = ERB::Util.html_escape(body.to_s)
 
     safe_body
       .gsub(USER_TOKEN_PATTERN) do
         user = User.find_by(id: $1)
-        user ? user_pill(user) : "unknown user"
+        user ? user_pill(user, context: context) : "unknown user"
       end
       .gsub(ADMIN_USER_TOKEN_PATTERN) do
         user = User.find_by(id: $1)
-        user ? admin_user_pill(user) : "unknown user"
+        user ? admin_user_pill(user, context: context) : "unknown user"
       end
       .gsub(SHIP_TOKEN_PATTERN) do
         ship = Ship.find_by(id: $1)
-        ship ? ship_pill(ship) : "unknown ship"
+        ship ? ship_pill(ship, context: context) : "unknown ship"
       end
       .gsub(SHIP_REQUEST_TOKEN_PATTERN) do
         ship_request = ShipRequest.find_by(id: $1)
-        ship_request ? ship_request_pill(ship_request) : "unknown ship request"
+        ship_request ? ship_request_pill(ship_request, context: context) : "unknown ship request"
       end
       .gsub(DEVLOG_TOKEN_PATTERN) do
         devlog = Devlog.find_by(id: $1)
-        devlog ? devlog_pill(devlog) : "unknown devlog"
+        devlog ? devlog_pill(devlog, context: context) : "unknown devlog"
       end
       .gsub(DESIGN_TOKEN_PATTERN) do
         design = Design.find_by(id: $1)
-        design ? design_pill(design) : "unknown design"
+        design ? design_pill(design, context: context) : "unknown design"
       end
       .html_safe
   end
 
   private
 
-  def user_pill(user)
-    content_tag(:a, class: "pill user-pill", href: user_path(user)) do
+  def pill_context_class(context)
+    context == :heading ? "pill--heading" : "pill--body"
+  end
+
+  def user_pill(user, context: :body)
+    content_tag(:a, class: "pill user-pill #{pill_context_class(context)}", href: user_path(user)) do
       concat content_tag(:span, user.name, class: "user-pill__name")
     end
   end
 
-  def admin_user_pill(user)
-    content_tag(:a, class: "pill user-pill", href: admin_user_path(user)) do
+  def admin_user_pill(user, context: :body)
+    content_tag(:a, class: "pill user-pill #{pill_context_class(context)}", href: admin_user_path(user)) do
       concat content_tag(:span, user.name, class: "user-pill__name pill__name")
       concat content_tag(:span, admin_badge_svg(width: "1.55rem", height: "1.55rem", color: "#ec3750"), class: "user-pill__badge") if user.admin?
     end
   end
 
-  def design_pill(design)
-    content_tag(:a, class: "pill design-pill", href: design_path(design)) do
+  def design_pill(design, context: :body)
+    content_tag(:a, class: "pill design-pill #{pill_context_class(context)}", href: design_path(design)) do
       concat content_tag(:span, design.name, class: "design-pill__name pill__name")
     end
   end
 
-  def devlog_pill(devlog)
-    content_tag(:span, class: "pill user-pill") do
+  def devlog_pill(devlog, context: :body)
+    content_tag(:span, class: "pill user-pill #{pill_context_class(context)}") do
       concat content_tag(:span, devlog.title, class: "devlog-pill__name pill__name")
     end
   end
 
-  def ship_pill(ship)
-    content_tag(:span, class: "pill user-pill") do
+  def ship_pill(ship, context: :body)
+    content_tag(:span, class: "pill user-pill #{pill_context_class(context)}") do
       concat content_tag(:span, ship.title, class: "ship-pill__name pill__name")
     end
   end
 
-  def ship_request_pill(ship_request)
-    content_tag(:span, class: "pill user-pill") do
+  def ship_request_pill(ship_request, context: :body)
+    content_tag(:span, class: "pill user-pill #{pill_context_class(context)}") do
       concat content_tag(:span, ship_request.title, class: "ship-request-pill__name pill__name")
     end
   end

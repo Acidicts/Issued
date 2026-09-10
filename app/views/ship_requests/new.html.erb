@@ -1,0 +1,8 @@
+<%= stylesheet_link_tag 'pages/ship_requests.css', "data-turbo-track": "reload" %>
+
+<div class="ship_request-new-page">
+    <h1><%= render_encoded("New Ship Request for {{design:#{@design.id}}}", context: :heading) %></h1>
+    <section class="ship_request-new-card">
+        <%= render "ship_requests/form", heading: "New Ship Request", ship_request: @ship_request %>
+    </section>
+</div>

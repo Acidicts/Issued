@@ -101,6 +101,12 @@
     transform: translateY(1px);
 }
 
+.dd-toggle:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
 .dd-toggle[aria-expanded="true"] {
     background: var(--stamp-red, #D6402C);
     border-color: var(--stamp-red, #D6402C);

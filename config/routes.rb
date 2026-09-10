@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  get "ship_request/new"
   get "ship/show"
   root "home#index"
 
@@ -37,6 +36,12 @@ Rails.application.routes.draw do
   post "rsvp/submit", to: "rsvp#submit", as: :rsvp_submit
   get "rsvp/submit_after_login", to: "rsvp#submit_after_login", as: :rsvp_submit_after_login
   get "rsvp/thanks", to: "rsvp#thanks", as: :rsvp_thanks
+
+  # Ship
+
+  # Ship Request
+  resources :ship_requests, only: %i[new create] do
+  end
 
   # Designs
   resources :designs, only: %i[index show new create edit update] do

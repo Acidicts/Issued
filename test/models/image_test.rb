@@ -4,12 +4,13 @@ require "test_helper"
 #
 # Table name: images
 #
-#  id         :bigint           not null, primary key
-#  from_time  :datetime
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  design_id  :bigint           not null
-#  devlog_id  :bigint
+#  id          :bigint           not null, primary key
+#  devlog_type :string
+#  from_time   :datetime
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  design_id   :bigint           not null
+#  devlog_id   :bigint
 #
 # Indexes
 #
