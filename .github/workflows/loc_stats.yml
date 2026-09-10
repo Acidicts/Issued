@@ -58,6 +58,91 @@ jobs:
         run: |
           mkdir -p /tmp/loc-stats-scripts
 
+          cat > /tmp/loc-stats-scripts/run_rails_stats.rb << 'SCRIPT_EOF'
+          #!/usr/bin/env ruby
+          # run_rails_stats.rb <repo_dir>
+          #
+          # Reimplements the same counting logic as Rails' built-in
+          # `rails stats` (Rails::CodeStatistics / CodeStatisticsCalculator)
+          # directly against the files on disk — no `bundle install`, no
+          # booting config/application.rb, no dependency on the project's
+          # gems, Ruby version, or native libraries (libvips etc). This is
+          # what makes backfilling old commits reliable: every commit is
+          # measured the same simple way regardless of what state its
+          # Gemfile/Rakefile/gems were in at the time.
+          #
+          # Prints "<total_lines> <total_loc> <total_files>" to stdout, or
+          # nothing (with a message on stderr) if this doesn't look like a
+          # Rails app at this commit.
+
+          require 'find'
+
+          repo_dir = ARGV[0] || Dir.pwd
+          Dir.chdir(repo_dir)
+
+          # Directories rails stats scans by default (Rails 6/7/8 STATS_DIRECTORIES).
+          candidate_dirs = [
+            "app/channels", "app/controllers", "app/helpers", "app/jobs",
+            "app/models", "app/mailers", "app/mailboxes", "app/views",
+            "app/javascript", "app/serializers", "app/policies",
+            "app/services", "app/presenters", "app/queries", "app/forms",
+            "lib", "lib/tasks",
+            "spec/controllers", "spec/helpers", "spec/models", "spec/views",
+            "spec/features", "spec/requests", "spec/jobs", "spec/mailers",
+            "spec/support", "spec",
+            "test/controllers", "test/helpers", "test/models", "test/mailers",
+            "test/integration", "test",
+          ].uniq
+
+          existing_dirs = candidate_dirs.select { |d| Dir.exist?(d) }
+
+          if existing_dirs.empty? || (!File.exist?("Gemfile") && !File.exist?("Rakefile") && !Dir.exist?("app"))
+            warn "Not a recognizable Rails app structure at this commit — skipping."
+            exit 0
+          end
+
+          exts = %w[.rb .rake .erb .haml .slim .builder .jbuilder]
+
+          total_lines = 0
+          total_code_lines = 0
+          total_files = 0
+
+          existing_dirs.each do |dir|
+            Find.find(dir) do |path|
+              next unless File.file?(path)
+              next unless exts.include?(File.extname(path))
+
+              begin
+                lines = File.readlines(path, encoding: "UTF-8", invalid: :replace, undef: :replace)
+              rescue StandardError
+                next
+              end
+
+              total_files += 1
+              total_lines += lines.size
+
+              in_block_comment = false
+              lines.each do |line|
+                stripped = line.strip
+                if in_block_comment
+                  total_code_lines += 1 unless stripped =~ /^=end/
+                  in_block_comment = false if stripped =~ /^=end/
+                  next
+                end
+                if stripped =~ /^=begin/
+                  in_block_comment = true
+                  next
+                end
+                next if stripped.empty?
+                next if stripped.start_with?("#")
+                total_code_lines += 1
+              end
+            end
+          end
+
+          puts "#{total_lines} #{total_code_lines} #{total_files}"
+          SCRIPT_EOF
+
           cat > /tmp/loc-stats-scripts/run_rails_stats.sh << 'SCRIPT_EOF'
           #!/usr/bin/env bash
           # run_rails_stats.sh <commit_sha> <data_csv_path>
@@ -72,53 +157,19 @@ jobs:
             exit 0
           fi
 
-          if [ ! -f "$REPO_DIR/bin/rails" ] && [ ! -f "$REPO_DIR/Rakefile" ]; then
-            echo "No bin/rails or Rakefile found at $COMMIT_SHA — skipping."
-            exit 0
-          fi
-
           cd "$REPO_DIR"
 
-          INSTALL_OK=1
-          if [ -f "Gemfile" ]; then
-            bundle config set --local path 'vendor/bundle' > /dev/null 2>&1
-            if ! bundle install --jobs 4 --retry 2 --quiet > /tmp/bundle_install.log 2>&1; then
-              echo "bundle install failed for $COMMIT_SHA, skipping. See log:"
-              tail -n 30 /tmp/bundle_install.log
-              INSTALL_OK=0
-            fi
-          else
-            INSTALL_OK=0
-          fi
+          RESULT="$(ruby /tmp/loc-stats-scripts/run_rails_stats.rb "$REPO_DIR" 2>/tmp/stats_err.txt)"
 
-          if [ "$INSTALL_OK" -ne 1 ]; then
-            exit 0
-          fi
-
-          STATS_OUTPUT=""
-          if bundle exec rails stats > /tmp/stats_output.txt 2>/tmp/stats_err.txt; then
-            STATS_OUTPUT="$(cat /tmp/stats_output.txt)"
-          elif bundle exec rake stats > /tmp/stats_output.txt 2>/tmp/stats_err.txt; then
-            STATS_OUTPUT="$(cat /tmp/stats_output.txt)"
-          else
-            echo "rails stats / rake stats failed for $COMMIT_SHA, skipping. stderr:"
+          if [ -z "$RESULT" ]; then
+            echo "Could not compute stats for $COMMIT_SHA, skipping. stderr:"
             cat /tmp/stats_err.txt
             exit 0
           fi
 
-          echo "$STATS_OUTPUT"
-
-          TOTAL_LINE="$(echo "$STATS_OUTPUT" | grep -E '^\| *Total' || true)"
-
-          if [ -z "$TOTAL_LINE" ]; then
-            echo "Could not find a Total line for $COMMIT_SHA, skipping."
-            exit 0
-          fi
-
-          TOTAL_LINES=$(echo "$TOTAL_LINE" | awk -F'|' '{gsub(/ /,"",$3); print $3}')
-          TOTAL_LOC=$(echo "$TOTAL_LINE" | awk -F'|' '{gsub(/ /,"",$4); print $4}')
-
-          TOTAL_FILES=$(find app lib spec test config db 2>/dev/null -type f \( -name '*.rb' -o -name '*.rake' -o -name '*.erb' -o -name '*.haml' -o -name '*.slim' \) | wc -l | tr -d ' ')
+          TOTAL_LINES=$(echo "$RESULT" | awk '{print $1}')
+          TOTAL_LOC=$(echo "$RESULT" | awk '{print $2}')
+          TOTAL_FILES=$(echo "$RESULT" | awk '{print $3}')
 
           COMMIT_DATE="$(git show -s --format=%cI "$COMMIT_SHA")"
 
@@ -129,7 +180,7 @@ jobs:
             tail -n +2 "$DATA_CSV" | sort -t',' -k2,2
           } > "${DATA_CSV}.sorted" && mv "${DATA_CSV}.sorted" "$DATA_CSV"
 
-          echo "Recorded $COMMIT_SHA: $TOTAL_LOC LOC ($TOTAL_LINES total lines)"
+          echo "Recorded $COMMIT_SHA: $TOTAL_LOC LOC ($TOTAL_LINES total lines, $TOTAL_FILES files)"
           SCRIPT_EOF
 
           cat > /tmp/loc-stats-scripts/backfill.sh << 'SCRIPT_EOF'
@@ -270,7 +321,7 @@ jobs:
               main()
           SCRIPT_EOF
 
-          chmod +x /tmp/loc-stats-scripts/*.sh
+          chmod +x /tmp/loc-stats-scripts/*.sh /tmp/loc-stats-scripts/*.rb
 
       - name: Prepare data branch worktree
         run: |
