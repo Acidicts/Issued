@@ -49,5 +49,3 @@ command.txt
 
 # Ignore node_modules
 node_modules
-
-/bin/act
