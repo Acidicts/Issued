@@ -1,0 +1,341 @@
+name: LOC Stats Graph
+
+# Runs `rails stats` (the built-in Rails Rake task) on every push to main,
+# and backfills historical data points for past commits that haven't been
+# measured yet. This is the ONLY file needed — no other project changes
+# required. All generated data and the graph itself are stored on a
+# dedicated orphan branch ("loc-stats") so nothing lands in your normal
+# branch history.
+
+on:
+  push:
+    branches:
+      - main   # change to "master" or your default branch if different
+  workflow_dispatch:
+    inputs:
+      backfill_limit:
+        description: "Max number of historical commits to backfill in this run"
+        required: false
+        default: "50"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loc-stats
+  cancel-in-progress: false
+
+jobs:
+  loc-stats:
+    runs-on: ubuntu-latest
+    env:
+      DATA_BRANCH: loc-stats
+      DATA_FILE: loc_stats.csv
+      BACKFILL_SAMPLE_ONE_PER_DAY: "1"
+      BACKFILL_LIMIT: ${{ github.event.inputs.backfill_limit || '50' }}
+
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: false
+
+      - name: Set up Python (for graph rendering)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install matplotlib
+        run: pip install --quiet matplotlib
+
+      - name: Write helper scripts
+        run: |
+          mkdir -p /tmp/loc-stats-scripts
+
+          cat > /tmp/loc-stats-scripts/run_rails_stats.sh << 'SCRIPT_EOF'
+          #!/usr/bin/env bash
+          # run_rails_stats.sh <commit_sha> <data_csv_path>
+          set -uo pipefail
+
+          COMMIT_SHA="$1"
+          DATA_CSV="$2"
+          REPO_DIR="${GITHUB_WORKSPACE:-$(pwd)}"
+
+          if [ -f "$DATA_CSV" ] && grep -q "^${COMMIT_SHA}," "$DATA_CSV"; then
+            echo "Commit $COMMIT_SHA already recorded, skipping."
+            exit 0
+          fi
+
+          if [ ! -f "$REPO_DIR/bin/rails" ] && [ ! -f "$REPO_DIR/Rakefile" ]; then
+            echo "No bin/rails or Rakefile found at $COMMIT_SHA — skipping."
+            exit 0
+          fi
+
+          cd "$REPO_DIR"
+
+          INSTALL_OK=1
+          if [ -f "Gemfile" ]; then
+            bundle config set --local path 'vendor/bundle' > /dev/null 2>&1
+            if ! bundle install --jobs 4 --retry 2 --quiet > /tmp/bundle_install.log 2>&1; then
+              echo "bundle install failed for $COMMIT_SHA, skipping. See log:"
+              tail -n 30 /tmp/bundle_install.log
+              INSTALL_OK=0
+            fi
+          else
+            INSTALL_OK=0
+          fi
+
+          if [ "$INSTALL_OK" -ne 1 ]; then
+            exit 0
+          fi
+
+          STATS_OUTPUT=""
+          if bundle exec rails stats > /tmp/stats_output.txt 2>/tmp/stats_err.txt; then
+            STATS_OUTPUT="$(cat /tmp/stats_output.txt)"
+          elif bundle exec rake stats > /tmp/stats_output.txt 2>/tmp/stats_err.txt; then
+            STATS_OUTPUT="$(cat /tmp/stats_output.txt)"
+          else
+            echo "rails stats / rake stats failed for $COMMIT_SHA, skipping. stderr:"
+            cat /tmp/stats_err.txt
+            exit 0
+          fi
+
+          echo "$STATS_OUTPUT"
+
+          TOTAL_LINE="$(echo "$STATS_OUTPUT" | grep -E '^\| *Total' || true)"
+
+          if [ -z "$TOTAL_LINE" ]; then
+            echo "Could not find a Total line for $COMMIT_SHA, skipping."
+            exit 0
+          fi
+
+          TOTAL_LINES=$(echo "$TOTAL_LINE" | awk -F'|' '{gsub(/ /,"",$3); print $3}')
+          TOTAL_LOC=$(echo "$TOTAL_LINE" | awk -F'|' '{gsub(/ /,"",$4); print $4}')
+
+          TOTAL_FILES=$(find app lib spec test config db 2>/dev/null -type f \( -name '*.rb' -o -name '*.rake' -o -name '*.erb' -o -name '*.haml' -o -name '*.slim' \) | wc -l | tr -d ' ')
+
+          COMMIT_DATE="$(git show -s --format=%cI "$COMMIT_SHA")"
+
+          echo "${COMMIT_SHA},${COMMIT_DATE},${TOTAL_LINES},${TOTAL_LOC},${TOTAL_FILES}" >> "$DATA_CSV"
+
+          {
+            head -n 1 "$DATA_CSV"
+            tail -n +2 "$DATA_CSV" | sort -t',' -k2,2
+          } > "${DATA_CSV}.sorted" && mv "${DATA_CSV}.sorted" "$DATA_CSV"
+
+          echo "Recorded $COMMIT_SHA: $TOTAL_LOC LOC ($TOTAL_LINES total lines)"
+          SCRIPT_EOF
+
+          cat > /tmp/loc-stats-scripts/backfill.sh << 'SCRIPT_EOF'
+          #!/usr/bin/env bash
+          # backfill.sh <data_csv_path>
+          set -uo pipefail
+
+          DATA_CSV="$1"
+          REPO_DIR="${GITHUB_WORKSPACE:-$(pwd)}"
+          SAMPLE_ONE_PER_DAY="${BACKFILL_SAMPLE_ONE_PER_DAY:-1}"
+          LIMIT="${BACKFILL_LIMIT:-50}"
+
+          cd "$REPO_DIR"
+
+          ORIGINAL_REF="$(git rev-parse HEAD)"
+
+          mapfile -t ALL_COMMITS < <(git log --reverse --format='%H %cI' HEAD)
+
+          echo "Repository has ${#ALL_COMMITS[@]} total commits on this branch."
+
+          declare -A SEEN_DAYS
+          declare -A ALREADY_RECORDED
+
+          if [ -f "$DATA_CSV" ]; then
+            while IFS=',' read -r sha _rest; do
+              [ "$sha" = "commit_sha" ] && continue
+              ALREADY_RECORDED["$sha"]=1
+            done < "$DATA_CSV"
+          fi
+
+          PROCESSED=0
+
+          for entry in "${ALL_COMMITS[@]}"; do
+            sha="${entry%% *}"
+            date_iso="${entry#* }"
+            day="${date_iso:0:10}"
+
+            if [ -n "${ALREADY_RECORDED[$sha]:-}" ]; then
+              continue
+            fi
+
+            if [ "$SAMPLE_ONE_PER_DAY" = "1" ]; then
+              if [ -n "${SEEN_DAYS[$day]:-}" ]; then
+                continue
+              fi
+            fi
+
+            if [ "$PROCESSED" -ge "$LIMIT" ]; then
+              echo "Reached backfill limit of $LIMIT commits for this run."
+              break
+            fi
+
+            echo "=== Backfilling $sha ($date_iso) ==="
+            git checkout --quiet --force "$sha" -- . 2>/dev/null || git checkout --quiet --force "$sha"
+
+            bash /tmp/loc-stats-scripts/run_rails_stats.sh "$sha" "$DATA_CSV"
+
+            SEEN_DAYS["$day"]=1
+            PROCESSED=$((PROCESSED + 1))
+          done
+
+          echo "Backfilled $PROCESSED commit(s) this run."
+
+          git checkout --quiet --force "$ORIGINAL_REF"
+          SCRIPT_EOF
+
+          cat > /tmp/loc-stats-scripts/render_graph.py << 'SCRIPT_EOF'
+          #!/usr/bin/env python3
+          import csv
+          import sys
+          from datetime import datetime
+
+          import matplotlib
+          matplotlib.use("Agg")
+          import matplotlib.pyplot as plt
+          import matplotlib.dates as mdates
+
+
+          def main():
+              csv_path, png_path, svg_path = sys.argv[1], sys.argv[2], sys.argv[3]
+
+              dates = []
+              total_lines = []
+              total_loc = []
+
+              with open(csv_path, newline="") as f:
+                  reader = csv.DictReader(f)
+                  rows = list(reader)
+
+              rows.sort(key=lambda r: r["commit_date"])
+
+              for row in rows:
+                  try:
+                      dt = datetime.fromisoformat(row["commit_date"])
+                  except ValueError:
+                      continue
+                  dates.append(dt)
+                  total_lines.append(int(row["total_lines"]))
+                  total_loc.append(int(row["total_lines_of_code"]))
+
+              fig, ax = plt.subplots(figsize=(12, 6), dpi=150)
+
+              if dates:
+                  ax.plot(dates, total_loc, label="Lines of Code", linewidth=2, color="#c0392b")
+                  ax.plot(dates, total_lines, label="Total Lines (incl. comments/whitespace)",
+                           linewidth=1.5, linestyle="--", color="#7f8c8d", alpha=0.8)
+                  ax.fill_between(dates, total_loc, alpha=0.08, color="#c0392b")
+                  ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+                  fig.autofmt_xdate()
+
+                  latest_loc = total_loc[-1]
+                  ax.annotate(
+                      f"{latest_loc:,} LOC",
+                      xy=(dates[-1], total_loc[-1]),
+                      xytext=(10, 0),
+                      textcoords="offset points",
+                      va="center",
+                      fontsize=10,
+                      fontweight="bold",
+                      color="#c0392b",
+                  )
+              else:
+                  ax.text(0.5, 0.5, "No data yet", ha="center", va="center", transform=ax.transAxes)
+
+              ax.set_title("Lines of Code Over Time (via `rails stats`)", fontsize=14, fontweight="bold")
+              ax.set_xlabel("Commit date")
+              ax.set_ylabel("Lines")
+              ax.grid(True, alpha=0.3)
+              ax.legend(loc="upper left")
+
+              fig.tight_layout()
+              fig.savefig(png_path)
+              fig.savefig(svg_path)
+              print(f"Wrote {png_path} and {svg_path} ({len(dates)} data points)")
+
+
+          if __name__ == "__main__":
+              main()
+          SCRIPT_EOF
+
+          chmod +x /tmp/loc-stats-scripts/*.sh
+
+      - name: Prepare data branch worktree
+        run: |
+          set -e
+          git config user.name "loc-stats-bot"
+          git config user.email "loc-stats-bot@users.noreply.github.com"
+
+          if git ls-remote --exit-code --heads origin "$DATA_BRANCH" > /dev/null 2>&1; then
+            git fetch origin "$DATA_BRANCH":"$DATA_BRANCH"
+          else
+            echo "Data branch does not exist yet; will be created."
+          fi
+
+          mkdir -p /tmp/loc-stats-data
+          git worktree add /tmp/loc-stats-data "$DATA_BRANCH" 2>/dev/null || {
+            git worktree add --detach /tmp/loc-stats-data
+            pushd /tmp/loc-stats-data > /dev/null
+            git checkout --orphan "$DATA_BRANCH"
+            git rm -rf . > /dev/null 2>&1 || true
+            popd > /dev/null
+          }
+
+          if [ ! -f "/tmp/loc-stats-data/$DATA_FILE" ]; then
+            echo "commit_sha,commit_date,total_lines,total_lines_of_code,total_files" > "/tmp/loc-stats-data/$DATA_FILE"
+          fi
+
+      - name: Record stats for current commit (HEAD)
+        run: bash /tmp/loc-stats-scripts/run_rails_stats.sh "$(git rev-parse HEAD)" "/tmp/loc-stats-data/$DATA_FILE"
+
+      - name: Backfill missing historical commits
+        run: bash /tmp/loc-stats-scripts/backfill.sh "/tmp/loc-stats-data/$DATA_FILE"
+
+      - name: Render graph
+        run: |
+          python /tmp/loc-stats-scripts/render_graph.py \
+            "/tmp/loc-stats-data/$DATA_FILE" \
+            "/tmp/loc-stats-data/loc_stats.png" \
+            "/tmp/loc-stats-data/loc_stats.svg"
+
+      - name: Write README for data branch
+        run: |
+          cat > /tmp/loc-stats-data/README.md << 'EOF'
+          # LOC Stats
+
+          Auto-generated by the `loc-stats` GitHub Action. Do not edit by hand —
+          this branch is rewritten by CI.
+
+          - `loc_stats.csv` — raw data (one row per sampled commit)
+          - `loc_stats.png` / `loc_stats.svg` — rendered graph of lines of code over time
+
+          ![LOC over time](./loc_stats.svg)
+          EOF
+
+      - name: Commit and push data branch
+        run: |
+          set -e
+          cd /tmp/loc-stats-data
+          git add loc_stats.csv loc_stats.png loc_stats.svg README.md
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Update LOC stats [skip ci]"
+            git push origin HEAD:"$DATA_BRANCH"
+          fi
+
+      - name: Clean up worktree
+        if: always()
+        run: git worktree remove /tmp/loc-stats-data --force || true
