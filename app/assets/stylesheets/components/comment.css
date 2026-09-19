@@ -1,0 +1,164 @@
+:root {
+    --ink: #241D16;
+    --line: #B7A878;
+    --paper: #E4D9BC;
+    --card: #F2EAD3;
+    --muted: #B7A878;
+    --accent: #1F6F78;
+    --ok: #1F6F78;
+    --warn: #B97F19;
+    --ink-soft: #4B4133;
+    --surface: #F2EAD3;
+    --thread-teal: #1F6F78;
+    --stamp-red: #D6402C;
+
+    --text-generic: #000;
+    --text-generic-inverted: #fff;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --ink: #E4D9BC;
+        --line: #5a4f3e;
+        --ink-soft: #B7A878;
+        --surface: #241D16;
+        --thread-teal: #1F6F78;
+        --stamp-red: #D6402C;
+
+        --paper: #241D16;
+        --card: #241D16;
+        --muted: #B7A878;
+        --accent: #1F6F78;
+        --ok: #1F6F78;
+        --warn: #B97F19;
+
+        --text-generic: #fff;
+        --text-generic-inverted: #000;
+    }
+}
+
+.comment-form {
+    position: relative;
+    background: var(--brand-surface);
+    border: 1.5px solid var(--brand-border);
+    border-radius: 0;
+    padding: 20px;
+    font-family: var(--brand-font);
+    color: var(--brand-text);
+    box-shadow: 4px 4px 0 var(--brand-border);
+    transition: box-shadow .15s ease;
+}
+
+.comment-form:hover {
+    box-shadow: 2px 2px 0 var(--brand-primary);
+}
+
+.comment-form::before {
+    content: "";
+    position: absolute;
+    top: -1.5px;
+    left: -1.5px;
+    width: 16px;
+    height: 16px;
+    border-top: 2px solid var(--brand-primary);
+    border-left: 2px solid var(--brand-primary);
+    pointer-events: none;
+}
+
+.comment-form::after {
+    content: "";
+    position: absolute;
+    bottom: -1.5px;
+    right: -1.5px;
+    width: 16px;
+    height: 16px;
+    border-bottom: 2px solid var(--brand-secondary);
+    border-right: 2px solid var(--brand-secondary);
+    pointer-events: none;
+}
+
+#comment_content_input,
+.comment-form textarea.nb-textarea {
+    width: 100%;
+    min-height: 120px;
+    font-family: var(--brand-font);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--ink-soft) !important;
+    background: var(--surface) !important;
+    border: 1px solid var(--brand-text);
+    border-radius: 0;
+    padding: 14px 16px;
+    resize: vertical;
+    transition: border-color .15s ease, background .15s ease;
+}
+
+#comment_content_input:hover,
+.comment-form textarea.nb-textarea:hover {
+    border-color: var(--brand-text-secondary);
+}
+
+#comment_content_input:focus,
+.comment-form textarea.nb-textarea:focus {
+    outline: none;
+    border-color: var(--brand-primary);
+    background: var(--brand-text);
+    box-shadow: 3px 3px 0 var(--brand-primary-light);
+}
+
+#comment_content_input::placeholder,
+.comment-form textarea.nb-textarea::placeholder {
+    color: var(--brand-surface);
+}
+
+.comment-form .markdown-preview-content {
+    font-family: var(--brand-font);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--brand-text);
+    background: var(--brand-surface);
+    border: 1px dashed var(--brand-border);
+    border-radius: 0;
+    padding: 14px 16px;
+    margin-top: 10px;
+    min-height: 80px;
+}
+
+.comment-form .markdown-preview-content-div {
+    font-family: var(--brand-font);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--brand-text);
+    background: var(--brand-surface);
+    border-left: 3px solid var(--brand-primary);
+    border-radius: 0;
+    padding: 14px 16px;
+    margin-top: 10px;
+}
+
+.comment-form input[type="text"] {
+    width: 100%;
+    font-family: var(--brand-font);
+    font-size: 13px;
+    color: var(--brand-text);
+    background: var(--brand-surface-alt);
+    border: 1px solid var(--brand-border);
+    border-radius: 0;
+    padding: 10px 12px;
+    transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
+}
+
+.comment-form input[type="text"]:hover {
+    border-color: var(--brand-text-secondary);
+}
+
+.comment-form input[type="text"]:focus {
+    outline: none;
+    border-color: var(--brand-primary);
+    background: var(--brand-surface);
+    box-shadow: 3px 3px 0 var(--brand-primary-light);
+}
+
+.comment-form input[type="text"]::placeholder {
+    color: var(--brand-text-muted);
+}

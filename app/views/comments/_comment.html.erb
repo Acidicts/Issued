@@ -1,0 +1,27 @@
+<%= turbo_frame_tag "comment_#{comment.id}" do %>
+  <div class="comment-card">
+    <div class="comment-card-contents">
+      <div class="comment-card-header">
+        <div>
+          <% if comment.created_at %>
+            <time class="comment-card-date" datetime="<%= comment.created_at.iso8601 %>">
+              <%= comment.created_at.strftime("%b %d, %Y") %>
+            </time>
+          <% end %>
+        </div>
+
+        <div class="comment-card-header__time_edit">
+          <time>⏱ Time: <%= format_duration(total_seconds: comment.time, seconds_enabled: false) %></time>
+          <% if comment.id && comment.user == current_user %>
+            <%= link_to edit_comment_path(comment.id) do %>
+              <span class="comment-card-header__edit_btn"><%= edit_svg(width: "1.55rem", height: "1.55rem", color: "var(--line)")%></span>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+      <div class="comment-card-body markdown-content">
+        <%= raw MarkdownService.convert(content: comment.body) %>
+      </div>
+    </div>
+  </div>
+<% end %>

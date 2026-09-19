@@ -24,6 +24,10 @@ class ShipRequest < ApplicationRecord
   has_many :devlogs, dependent: :nullify
 
   has_one :image, as: :devlog
+  has_many :comments, as: :commentable
+
+  enum :status, { pending: 0, approved: 1, rejected: 2, elevated: 3 }
+  attribute :status, default: :pending
 
   def total_time_seconds
     Rails.cache.fetch("#{cache_key_with_version}/devlogs_sum", expires_in: 4.days) do

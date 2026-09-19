@@ -41,46 +41,59 @@
 .pill {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   padding: 0;
   background: var(--card);
   border: 1.5px solid var(--line);
-  border-radius: 10px;
+  border-radius: 9999px;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   vertical-align: middle;
-  transition: background 0.15s ease, border-color 0.15s ease, scale 0.15s ease, transform 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   text-decoration: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .pill--heading {
-  font-size: 16px;
-  border-radius: 12px;
+  font-size: 15px;
+  padding: 1px 2px;
 }
 
 .pill--heading .pill__name,
 .pill--heading .user-pill__name,
+.pill--heading .slack-pill__name,
 .pill--heading .design-pill__name,
 .pill--heading .devlog-pill__name,
 .pill--heading .ship-pill__name,
 .pill--heading .ship-request-pill__name {
-  font-size: 1rem;
-  padding: 6px 8px;
+  font-size: 0.875rem;
+  padding: 6px 12px;
 }
 
 .pill__name {
-  padding: 4px;
+  padding: 4px 6px;
   text-decoration: none;
   color: var(--ink-soft);
-  font-weight: 400;
+  font-weight: 500;
   font-size: 0.7rem;
+  line-height: 1.4;
 }
 
 .pill:hover {
-  scale: 1.05;
+  scale: 1.03;
   transform: translateY(-1px);
-  background: var(--paper);
+  background: var(--accent);
   border-color: var(--accent);
+  box-shadow: 0 4px 8px rgba(31, 111, 120, 0.25);
+}
+
+.pill:hover .pill__name,
+.pill:hover .user-pill__name,
+.pill:hover .design-pill__name,
+.pill:hover .devlog-pill__name,
+.pill:hover .ship-pill__name,
+.pill:hover .ship-request-pill__name {
+  color: var(--text-generic-inverted);
 }
 
 .user-pill__badge {
@@ -93,7 +106,26 @@
 }
 
 .design-pill__name {
-  padding: 4px;
+  padding: 4px 6px;
+}
+
+.user-pill {
+  background: linear-gradient(135deg, var(--card) 0%, var(--paper) 100%);
+}
+
+.slack-pill {
+  padding-left: 2px;
+  padding-right: 2px;
+  background: linear-gradient(135deg, var(--card) 0%, var(--paper) 100%);
+}
+
+.design-pill {
+  background: linear-gradient(135deg, var(--card) 0%, var(--paper) 100%);
+}
+
+.admin-user-pill {
+  background: linear-gradient(135deg, var(--card) 0%, #fff5f5 100%);
+  border-color: var(--stamp-red);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,0 +1,11 @@
+<%= turbo_frame_tag "ship_request_steps" do %>
+
+    <div class="ship-request__checklist">
+        <%= raw markdown_to_html(@design.can_make_ship_request_checks_md) %>
+    </div>
+
+    <div style="display: inline-flex; align-items: center; gap: 0.5rem;">
+        <%= link_to "Continue", next_step_ship_requests_path(design_id: @design.id, step: "checks"), class: "btn-primary#{" disabled" unless @design.can_make_ship_request?}" %>
+        <%= render "shared/info_icon", aria_label: "Ensure all checkbox requirements are met" %>
+    </div>
+<% end %>

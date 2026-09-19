@@ -47,7 +47,7 @@
     <link rel="apple-touch-icon" href="/icon.png">
 
     <%# Includes all stylesheet files in app/assets/stylesheets/components %>
-    <%= stylesheet_link_tag 'components/application', 'components/brand', 'components/buttons', 'components/forms', 'components/misc', 'components/dropdown', 'components/info_icon', 'components/encoded', 'pages/notifications', "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag 'components/application', 'components/brand', 'components/buttons', 'components/comment', 'components/forms', 'components/misc', 'components/dropdown', 'components/info_icon', 'components/encoded', 'pages/notifications', "data-turbo-track": "reload" %>
     
     <%= javascript_importmap_tags %>
 
@@ -88,6 +88,7 @@
              data-navigation-tabs-current-path-value="<%= request.path %>"
              data-navigation-tabs-unread-count-value="<%= @unread_notification_count || 0 %>"
              data-navigation-tabs-is-admin-value="<%= current_user.admin? %>"
+             data-navigation-tabs-is-reviewer-value="<%= current_user.reviewer? %>"
              data-navigation-tabs-target="list">
         </nav>
       </header>

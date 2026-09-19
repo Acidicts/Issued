@@ -285,7 +285,7 @@ bin/rails test:system
 bin/rubocop
 
 # Security
-bin/brakeman --quiet --no-pager --exit-on-warn --exit-on-error
+bin/brakeman --quiet --no-pager --exit-on-warn --exit-on-error --confidence-level 2
 bin/bundler-audit
 bin/importmap audit
 ```

@@ -17,13 +17,20 @@
   outline: none;
 }
 
+.button-primary.disabled .brand-info-icon,
+.btn-primary.disabled .brand-info-icon,
+.button-primary:disabled .brand-info-icon,
+.btn-primary:disabled .brand-info-icon {
+  pointer-events: auto;
+}
+
 .brand-info-icon__svg {
   flex-shrink: 0;
 }
 
 .brand-info-icon__tooltip {
   display: none;
-  position: fixed;
+  position: absolute;
   width: max-content;
   max-width: 240px;
   padding: 0.5rem 0.75rem;
@@ -40,6 +47,8 @@
   text-align: center;
   pointer-events: none;
   z-index: 9999;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 /* Arrow - top pointing (tooltip above trigger) */

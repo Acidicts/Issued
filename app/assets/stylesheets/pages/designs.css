@@ -458,6 +458,13 @@
     flex-shrink: 0;
     grid-column: 1 / -1;
     padding: 1rem 1rem 0 1rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.design-actions .button-primary {
+    font-family: inherit;
+    line-height: 1;
 }
 
 /* ── Image gallery ── */

@@ -64,7 +64,7 @@
 
   <script>
     (function() {
-      // lightweight client-side preview: uses `marked` + `DOMPurify` if available, falls back to simple escapep/linebreaks
+      // lightweight client-side preview: uses `marked` + `DOMPurify` if available, falls back to simple escape/linebreaks
       function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
       function markdownToHtml(markdown) {
@@ -87,8 +87,9 @@
 
       function debounce(fn, wait) { var t; return function() { clearTimeout(t); var args = arguments; t = setTimeout(function(){ fn.apply(null, args); }, wait); }; }
 
-      var textarea = document.getElementById('devlog_content_input');
-      var preview = document.getElementById('markdown-preview-content');
+      var form = document.currentScript.closest('form');
+      var textarea = form.querySelector('#devlog_content_input');
+      var preview = form.querySelector('#markdown-preview-content');
       if (!textarea || !preview) return;
 
       var update = debounce(function() {
@@ -101,13 +102,15 @@
       textarea.addEventListener('input', update);
 
       // load optional libraries (if not already present) and re-render when ready
-      function ensureScript(src, cb) {
+      function ensureScript(src, integrity, cb) {
         if (document.querySelector('script[src="' + src + '"]')) { cb && cb(); return; }
-        var s = document.createElement('script'); s.src = src; s.defer = true; s.onload = cb; document.head.appendChild(s);
+        var s = document.createElement('script'); s.src = src; s.defer = true; s.onload = cb;
+        if (integrity) { s.integrity = integrity; s.crossOrigin = 'anonymous'; }
+        document.head.appendChild(s);
       }
 
-      ensureScript('https://cdn.jsdelivr.net/npm/marked/marked.min.js', update);
-      ensureScript('https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js', update);
+      ensureScript('https://cdn.jsdelivr.net/npm/marked/marked.min.js', 'sha384-948ahk4ZmxYVYOc+rxN1H2gM1EJ2Duhp7uHtZ4WSLkV4Vtx5MUqnV+l7u9B+jFv+', update);
+      ensureScript('https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js', 'sha384-Tsl3d5pUAO7a13enIvSsL3O0/95nsthPJiPto5NtLuY8w3+LbZOpr3Fl2MNmrh1E', update);
     })();
   </script>
 

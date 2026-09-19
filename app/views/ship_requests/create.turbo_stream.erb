@@ -1,0 +1,13 @@
+<%= turbo_stream.replace "devlogs_stream" do %>
+  <%= render "designs/devlogs/devlogs", design: @design %>
+<% end %>
+
+<%= turbo_stream.replace "design_actions_stream" do %>
+  <%= render "designs/actions", design: @design %>
+<% end %>
+
+<%= turbo_stream.replace "ship_request_steps" do %>
+  <%= turbo_frame_tag "ship_request_steps" do %>
+    <p>Ship request created successfully.</p>
+  <% end %>
+<% end %>

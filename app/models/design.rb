@@ -1,3 +1,5 @@
+require "net/http"
+
 # == Schema Information
 #
 # Table name: designs
@@ -7,6 +9,8 @@
 #  devlogged_time    :integer
 #  hackatime_seconds :integer
 #  name              :string           default("Untitled Design"), not null
+#  readme            :text
+#  repo              :text
 #  status            :integer
 #  time              :integer
 #  created_at        :datetime         not null
@@ -63,14 +67,15 @@ class Design < ApplicationRecord
     self.hackatime_seconds.to_i - self.devlogged_time.to_i
   end
 
-  def can_make_devlog
+  def can_make_devlog?
+    return @can_make_devlog_result if defined?(@can_make_devlog_result)
     self.sync_hackatime_projects
     self.update_logged_time
-    unlogged_time >= 15 * 60
+    @can_make_devlog_result = unlogged_time >= 15 * 60
   end
 
   def can_ship?
-    self.devlogs.any?
+    self.devlogs.where(ship_request: nil).any?
   end
 
   def elapsed_time_formatted
@@ -91,15 +96,81 @@ class Design < ApplicationRecord
     "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 480'><rect x='10' y='10' width='620' height='460' fill='none' stroke='#dce7f3' stroke-width='2' /></svg>"
   end
 
+  def latest_image
+    return @latest_image if defined?(@latest_image)
+    @latest_image = images.order(created_at: :desc).first
+  end
+
   def image_exists?
-    images.order(created_at: :desc).first&.image_file&.attached?
+    return @image_exists_result if defined?(@image_exists_result)
+    @image_exists_result = latest_image&.image_file&.attached?
+  end
+
+  def can_make_ship_request?
+    can_make_ship_request_checks[:success]
+  end
+
+  def check_link(link)
+    uri = URI.parse(link)
+    response = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https", open_timeout: 5, read_timeout: 5) do |http|
+      http.head(uri.request_uri)
+    end
+    response.is_a?(Net::HTTPSuccess)
+  rescue URI::InvalidURIError, Net::OpenTimeout, Net::ReadTimeout, SocketError, Errno::ECONNREFUSED
+    false
+  end
+
+  def can_make_ship_request_checks
+    checks = {
+      "valid_repo": repo.present? && check_link(repo),
+      "valid_readme": readme.present? && check_link(readme),
+      "image_exists": image?,
+      "description_exists": description.present?,
+      "not_ship_request_exist": !ship_requests.where(status: :pending).any?
+    }
+
+    {
+      "success": all_passed = checks.values.all?,
+      "checks": checks
+    }
+  end
+
+  def missing_checks
+    checks = can_make_ship_request_checks[:checks]
+
+    messages = {
+      valid_repo: "Repo link doesn't exist",
+      valid_readme: "README link doesn't exist",
+      image_exists: "Design needs an image",
+      description_exists: "Description is required",
+      not_ship_request_exist: "A pending ship already exists"
+    }
+
+    checks.each do |key, passed|
+      return messages[key] unless passed
+    end
+
+    nil
+  end
+
+  def can_make_ship_request_checks_md
+    checks = can_make_ship_request_checks()[:checks]
+    "
+      ## Ship Checklist
+      [#{checks[:valid_repo] ? "x" : " "}] Valid Repo
+      [#{checks[:valid_readme] ? "x" : " "}] Valid README
+      [#{checks[:image_exists] ? "x" : " "}] Image Exists
+      [#{checks[:description_exists] ? "x" : " "}] Description Exists
+      [#{checks[:not_ship_request_exist] ? "x" : " "}] Ship Request doesn't already exist
+    "
   end
 
   def image?
-    if !self.images.order(created_at: :desc).first&.image_file.nil?
-      self.images.order(created_at: :desc).first&.image_file
+    return @image_result if defined?(@image_result)
+    if latest_image&.image_file.present?
+      @image_result = images.where(devlog_type: "Devlog").order(created_at: :desc).first&.image_file
     else
-      nil
+      @image_result = nil
     end
   end
 

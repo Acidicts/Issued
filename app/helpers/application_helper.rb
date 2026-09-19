@@ -61,6 +61,10 @@ module ApplicationHelper
   SHIP_REQUEST_TOKEN_PATTERN = /\{\{ship_request:(\d+)\}\}/
   DEVLOG_TOKEN_PATTERN = /\{\{devlog:(\d+)\}\}/
   DESIGN_TOKEN_PATTERN = /\{\{design:(\d+)\}\}/
+  SLACK_TOKEN_PATTERN = /\{\{slack:\s*([A-Z0-9]+)\s*\}\}/
+
+  # render_encoded("{{slack:U078KKF3R1Q}}", context: :header)
+  # {{slack:U078KKF3R1Q}}
 
   def render_encoded(body, context: :body)
     safe_body = ERB::Util.html_escape(body.to_s)
@@ -90,6 +94,9 @@ module ApplicationHelper
         design = Design.find_by(id: $1)
         design ? design_pill(design, context: context) : "unknown design"
       end
+      .gsub(SLACK_TOKEN_PATTERN) do
+        slack_pill($1, context: context)
+      end
       .html_safe
   end
 
@@ -102,6 +109,12 @@ module ApplicationHelper
   def user_pill(user, context: :body)
     content_tag(:a, class: "pill user-pill #{pill_context_class(context)}", href: user_path(user)) do
       concat content_tag(:span, user.name, class: "user-pill__name")
+    end
+  end
+
+  def slack_pill(slack_id, context: :body)
+    content_tag(:a, class: "pill slack-pill #{pill_context_class(context)}", href: "https://hackclub.slack.com/team/#{slack_id}") do
+      concat content_tag(:span, slack_id, class: "user-pill__name")
     end
   end
 

@@ -64,6 +64,38 @@
     text-decoration: none;
 }
 
+/* ── Close / cross button ── */
+
+.btn-cross {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--brand-text-secondary);
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    transition: fill .15s ease, color .15s ease;
+}
+
+.btn-cross svg {
+    transition: fill .15s ease, color .15s ease;
+}
+
+.btn-cross:hover:not(:disabled) svg {
+    fill: var(--brand-text);
+}
+
+.btn-cross:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
 /* ── Button variants ── */
 
 .btn-primary {
@@ -219,12 +251,15 @@
 }
 
 .button-primary:disabled,
-.btn-primary:disabled {
+.btn-primary:disabled,
+.button-primary.disabled,
+.btn-primary.disabled {
     background: var(--ink);
     border-color: var(--ink);
     opacity: 0.5;
     cursor: not-allowed;
     transform: none;
+    pointer-events: none;
 }
 
 /* ── Design actions button ── */
@@ -257,13 +292,16 @@
 }
 
 .design-actions .button-primary:disabled,
-.design-actions .btn-primary:disabled {
+.design-actions .btn-primary:disabled,
+.design-actions .button-primary.disabled,
+.design-actions .btn-primary.disabled {
     background: var(--ink);
     border-color: var(--ink);
     opacity: 0.5;
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
+    pointer-events: none;
 }
 
 @media (max-width: 480px) {

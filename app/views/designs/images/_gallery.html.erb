@@ -1,8 +1,16 @@
 <div class="project-image-gallery">
   <h2>Project Design Image</h2>
-    <% if design.images.any? %>
+    <% gallery_images = design.images
+        .where(
+          "devlog_type = 'Devlog' OR (devlog_type = 'ShipRequest' AND EXISTS (SELECT 1 FROM ship_requests WHERE ship_requests.id = images.devlog_id AND ship_requests.status = ?))",
+          ShipRequest.statuses[:approved]
+        )
+        .order(created_at: :desc).limit(10).to_a %>
+    <% if gallery_images.present? %>
         <div class="image-gallery-grid">
-            <%= render partial: "designs/images/image_gallery_preview", collection: design.images.order(created_at: :desc).limit(10), as: :image %>
+            <%= render partial: "designs/images/image_gallery_preview",
+                collection: gallery_images,
+                as: :image %>
         </div>
     <% else %>
         <div class="image-gallery-grid">

@@ -37,10 +37,14 @@ Rails.application.routes.draw do
   get "rsvp/submit_after_login", to: "rsvp#submit_after_login", as: :rsvp_submit_after_login
   get "rsvp/thanks", to: "rsvp#thanks", as: :rsvp_thanks
 
-  # Ship
+  # Ships
 
-  # Ship Request
-  resources :ship_requests, only: %i[new create] do
+  # Ship Requests
+  resources :ship_requests, only: %i[create] do
+    collection do
+      get :can_make_ship_request
+      get :next_step
+    end
   end
 
   # Designs
@@ -52,8 +56,15 @@ Rails.application.routes.draw do
     end
   end
 
-  # Devlog
+  # Devlogs
   resources :devlogs, only: %i[create update edit] do
+  end
+
+  # Comments
+  resources :comments, only: %i[create update edit] do
+    collection do
+      get :comment_box
+    end
   end
 
   # Notifications

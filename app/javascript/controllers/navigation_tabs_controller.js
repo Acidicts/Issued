@@ -5,6 +5,7 @@ export default class extends Controller {
   static values = {
     currentPath: String,
     unreadCount: Number,
+    isReviewer: Boolean,
     isAdmin: Boolean
   }
 
@@ -13,7 +14,7 @@ export default class extends Controller {
   }
 
   get tabs() {
-    return this.TABS.filter(tab => !tab.adminOnly || this.isAdminValue)
+    return this.TABS.filter(tab => (!tab.reviewerOnly || this.isReviewerValue) && (!tab.adminOnly || this.isAdminValue))
   }
 
   // ── Tab configuration ──────────────────────────────────────────
@@ -26,6 +27,7 @@ export default class extends Controller {
     { label: "My Designs",    url: "/designs",       nav: "designs" },
     { label: "The Loom",      url: ["/shop", "/orders"], nav: "shop" },
     { label: "Notifications", url: "/notifications", nav: "notifications", badge: true },
+    { label: "Reviewer",      url: "/reviewer",      reviewerOnly: true },
     { label: "Admin",         url: "/admin",         adminOnly: true }
   ]
 

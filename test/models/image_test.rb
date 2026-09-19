@@ -20,7 +20,6 @@ require "test_helper"
 # Foreign Keys
 #
 #  fk_rails_...  (design_id => designs.id)
-#  fk_rails_...  (devlog_id => devlogs.id)
 #
 class ImageTest < ActiveSupport::TestCase
   test "valid image" do

@@ -18,6 +18,9 @@
 #  slack_id               :string
 #
 class User < ApplicationRecord
+  encrypts :hackclub_access_token
+  encrypts :hackclub_refresh_token
+
   has_many :designs, dependent: :destroy
   has_many :orders, dependent: :destroy
   has_many :rsvps, dependent: :destroy

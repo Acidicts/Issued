@@ -1,0 +1,9 @@
+<div class="design-actions">
+    <%= link_to "Edit design", edit_design_path(@design), class: "button-primary" %>
+    <%= link_to next_step_ship_requests_path(design_id: @design.id, step: "overview"), class: "btn-primary#{" disabled" unless @design.can_make_ship_request?}", data: { turbo_frame: "ship_request_steps" }, onclick: "document.getElementById('ship-request-new-page').classList.remove('hidden');" do %>
+        Ship 
+        <% if !@design.can_make_ship_request? %>
+            <%= render "shared/info_icon", aria_label: @design.missing_checks() %>
+        <% end %>
+    <% end %>
+</div>

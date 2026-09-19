@@ -37,26 +37,17 @@ class ApplicationController < ActionController::Base
   end
 
   def user_exists
-    return unless !@current_user.nil?
-    if User.find(@current_user.id).nil?
-      redirect_to logout_path, flash[:alert] = "User does not exist!"
+    return if signed_in?
+    if session[:user_id]
+      reset_session
+      redirect_to root_path, alert: "Session expired."
     end
   end
 
   def set_unread_notifications
     return unless current_user
     @unread_notification_count = current_user.notifications.where(read: false).count
-    notifications = current_user.notifications.limit(30)
-
-    @notifications = notifications.each_with_index.map do |d, i|
-      {
-        body: d.body,
-        priority: d.priority,
-        time: d.time,
-        read: d.read,
-        id: d.id
-      }
-    end
+    @notifications = current_user.notifications.limit(30).select(:id, :body, :priority, :time, :read)
   end
 
   def current_url

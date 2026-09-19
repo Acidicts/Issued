@@ -41,9 +41,10 @@ module CurrencyConvertible
     api_key = ENV["EXCHANGE_RATE_API_KEY"].to_s.strip
     return {} if api_key.blank?
 
-    uri = URI.parse("https://v6.exchangerate-api.com/v6/#{api_key}/latest/USD")
+    uri = URI.parse("https://v6.exchangerate-api.com/v6/latest/USD")
     request = Net::HTTP::Get.new(uri)
     request["Accept"] = "application/json"
+    request["Authorization"] = "Bearer #{api_key}"
 
     response = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https", read_timeout: 10) do |http|
       http.request(request)

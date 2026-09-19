@@ -1,10 +1,10 @@
 <% image = devlog.image %>
 <div class="devlog-card">
-    <div class="devlog-card-image">
-        <% if image&.image_file&.attached? %>
+    <% if image&.image_file&.attached? %>
+        <div class="devlog-card-image">
             <%= image_tag image.image_for(:display) %>
-        <% end %>
-    </div>
+        </div>
+    <% end %>
     <div class="devlog-card-contents">
         <div class="devlog-card-header">
             <div>

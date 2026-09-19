@@ -1,0 +1,63 @@
+<%= form_with model: comment, html: {class: "comment-form"} do |form| %>
+    <h2 style="margin-top:0;"><%= header %></h2>
+    <div style="display: flex; flex-direction: row; gap: 6px;">
+        <%= form.text_area :body, id: "comment_content_input", rows: 7, style: "width:50%", class: "nb-textarea" %>
+        <div id="markdown-preview-content-div" style="box-shadow: 0 0 3px rgba(255, 255, 255, 0.1); margin-left: 6px; width:45%; padding: 12px; background: var(--nb-bg); border: 1px solid var(--nb-border); border-radius: 6px; overflow-y: auto; max-height: 300px;">
+            <div id="markdown-preview-content"><%= raw(markdown_to_html(comment.body)) %></div>
+        </div>
+    </div>
+
+    <%= form.submit class:"button-primary" %>
+
+    <script>
+        (function() {
+        // lightweight client-side preview: uses `marked` + `DOMPurify` if available, falls back to simple escape/linebreaks
+        function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+        function markdownToHtml(markdown) {
+            var md = String(markdown || '');
+            if (window.marked) {
+                try {
+                    var rendered = window.marked.parse(md);
+                    return window.DOMPurify ? DOMPurify.sanitize(rendered) : rendered;
+                } catch (e) {
+                    return '<pre>' + escapeHtml(md) + '</pre>';
+                }
+            }
+
+            // fallback: minimal formatting (escape + preserve line breaks)
+            return escapeHtml(md).replace(/\n/g, '<br>');
+        }
+
+        // expose for other scripts
+        window.markdownToHtml = markdownToHtml;
+
+        function debounce(fn, wait) { var t; return function() { clearTimeout(t); var args = arguments; t = setTimeout(function(){ fn.apply(null, args); }, wait); }; }
+
+        var form = document.currentScript.closest('form');
+        var textarea = form.querySelector('#comment_content_input');
+        var preview = form.querySelector('#markdown-preview-content');
+        if (!textarea || !preview) return;
+
+        var update = debounce(function() {
+            preview.innerHTML = markdownToHtml(textarea.value);
+        }, 150);
+
+        // initial render to keep server-side & client-side in sync
+        update();
+
+        textarea.addEventListener('input', update);
+
+        // load optional libraries (if not already present) and re-render when ready
+        function ensureScript(src, integrity, cb) {
+            if (document.querySelector('script[src="' + src + '"]')) { cb && cb(); return; }
+            var s = document.createElement('script'); s.src = src; s.defer = true; s.onload = cb;
+            if (integrity) { s.integrity = integrity; s.crossOrigin = 'anonymous'; }
+            document.head.appendChild(s);
+        }
+
+        ensureScript('https://cdn.jsdelivr.net/npm/marked/marked.min.js', 'sha384-948ahk4ZmxYVYOc+rxN1H2gM1EJ2Duhp7uHtZ4WSLkV4Vtx5MUqnV+l7u9B+jFv+', update);
+        ensureScript('https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js', 'sha384-Tsl3d5pUAO7a13enIvSsL3O0/95nsthPJiPto5NtLuY8w3+LbZOpr3Fl2MNmrh1E', update);
+        })();
+    </script>
+<% end %>

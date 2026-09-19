@@ -10,9 +10,9 @@ class DesignsController < ApplicationController
   end
 
   def show
-    @design =  Design.find(params[:id])
     @design.sync_hackatime_projects
     @design.update_logged_time
+    @ship_request = ShipRequest.new()
   end
 
   def image
@@ -113,11 +113,19 @@ class DesignsController < ApplicationController
   end
 
   def find_design
-    @design = Design.find(params[:id])
+    @design = Design
+      .includes(
+        :user,
+        :hackatime_projects,
+        images: { image_file_attachment: :blob },
+        ship_requests: [ :ships, { image: { image_file_attachment: :blob } } ],
+        devlogs: [ { image: { image_file_attachment: :blob } }, :comments ]
+      )
+      .find(params[:id])
   end
 
   def design_params
-    params.fetch(:design, {}).permit(:name, :description, :image, :remove_background, :hackatime_project)
+    params.fetch(:design, {}).permit(:name, :description, :image, :remove_background, :hackatime_project, :repo, :readme)
   end
 
   def add_hackatime_project_to_design(project_name)

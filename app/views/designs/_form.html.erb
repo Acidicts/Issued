@@ -45,6 +45,16 @@
     <% end %>
   </div>
 
+  <div class="field">
+    <%= form.label :repo %>
+    <%= form.text_field :repo, placeholder: "https://github.com/Acidicts/Issued" %>
+  </div>
+
+  <div class="field">
+    <%= form.label :readme %>
+    <%= form.text_field :readme, placeholder: "https://github.com/Acidicts/Issued/blob/main/README.md" %>
+  </div>
+
   <div class="field file-field">
     <%= form.label :image, "Image" %>
     <%= form.file_field :image %>

@@ -1,0 +1,27 @@
+<%= stylesheet_link_tag 'pages/ship_requests.css', "data-turbo-track": "reload" %>
+
+<div class="ship_request-page hidden" id="ship-request-new-page">
+    <div class="ship_request__page" data-controller="popup-max-size">
+        <div class="ship_request__page_heading">
+            <h1><%= render_encoded("New Ship Request for {{design:#{@design.id}}}", context: :heading) %></h1>
+            <button class="btn-cross" type="button" onclick="document.getElementById('ship-request-new-page').classList.toggle('hidden');"><%= cross_svg(width: 32, height: 32, color: "#B7A878")%></button>
+        </div>
+
+        <%= turbo_frame_tag "ship_request_steps" do %>
+            <div class="ship_request-page__message">
+                <p>Before you ship, check you project.</p>
+                <ul>
+                    <li>If you follow your README or guide can you reproduce your art</li>
+                    <li>Is your art original, references are allowed.</li>
+                    <li>Did you make it with code (eg html + css, python turtle) or other text based code libraries</li>
+                </ul>
+                <p>If not ensure it does.</p>
+                <p><%= render_encoded("Any questions DM {{slack: U078KKF3R1Q }}")%></p>
+            </div>
+            
+            <%= link_to "Start", next_step_ship_requests_path(design_id: @design.id, step: "start"), class: "btn-primary" %>
+        <% end %>
+    </div>
+
+    <div class="ship_request-page__overlay"></div>
+</div>

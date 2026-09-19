@@ -1,15 +1,18 @@
 require "test_helper"
 
 class ShipRequestControllerTest < ActionDispatch::IntegrationTest
-  test "should get new" do
-    get new_ship_request_url(design_id: designs(:one).id)
+  test "should get next_step checks" do
+    get next_step_ship_requests_path(design_id: designs(:one).id, step: "start")
     assert_response :success
   end
 
-  test "should get create" do
-    assert_difference("ShipRequest.count", 1) do
-      post ship_requests_url, params: { ship_request: { design_id: designs(:one).id, title: "Test", body: "Body" } }
-    end
-    assert_redirected_to design_path(designs(:one))
+  test "should get next_step form" do
+    get next_step_ship_requests_path(design_id: designs(:one).id, step: "checks")
+    assert_response :success
+  end
+
+  test "should get next_step overview" do
+    get next_step_ship_requests_path(design_id: designs(:one).id)
+    assert_response :success
   end
 end

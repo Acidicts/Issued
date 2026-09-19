@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_10_211951) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_18_214108) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -75,6 +75,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_10_211951) do
     t.integer "devlogged_time"
     t.integer "hackatime_seconds"
     t.string "name", default: "Untitled Design", null: false
+    t.text "readme"
+    t.text "repo"
     t.integer "status"
     t.integer "time"
     t.datetime "updated_at", null: false

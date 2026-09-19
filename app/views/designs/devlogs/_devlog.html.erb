@@ -1,34 +1,46 @@
 <%= turbo_frame_tag "devlog_#{devlog.id}" do %>
   <% image = devlog.image %>
   <div class="devlog-card">
-    <div class="devlog-card-image">
-      <% if image&.image_file&.attached? %>
-        <%= image_tag image.image_for(:display) %>
-      <% end %>
-    </div>
-    <div class="devlog-card-contents">
-      <div class="devlog-card-header">
-        <div>
-          <p style="margin-bottom:0; font-size:1.25rem; font-weight:700;"><%= devlog.title%></p>
-          <% if devlog.created_at %>
-            <time class="devlog-card-date" datetime="<%= devlog.created_at.iso8601 %>">
-              <%= devlog.created_at.strftime("%b %d, %Y") %>
-            </time>
-          <% end %>
-        </div>
-
-        <div class="devlog-card-header__time_edit">
-          <time>⏱ Time: <%= format_duration(total_seconds: devlog.time, seconds_enabled: false) %></time>
-          <% if devlog.id && devlog.design.user == current_user %>
-            <%= link_to edit_devlog_path(devlog.id) do %>
-              <span class="devlog-card-header__edit_btn"><%= edit_svg(width: "1.55rem", height: "1.55rem", color: "var(--line)")%></span>
+    <div class="devlog-card-image-contents">
+      <div class="devlog-card-image">
+        <% if image&.image_file&.attached? %>
+          <%= image_tag image.image_for(:display) %>
+        <% end %>
+      </div>
+      <div class="devlog-card-contents">
+        <div class="devlog-card-header">
+          <div>
+            <p style="margin-bottom:0; font-size:1.25rem; font-weight:700;"><%= devlog.title%></p>
+            <% if devlog.created_at %>
+              <time class="devlog-card-date" datetime="<%= devlog.created_at.iso8601 %>">
+                <%= devlog.created_at.strftime("%b %d, %Y") %>
+              </time>
             <% end %>
-          <% end %>
+          </div>
+
+          <div class="devlog-card-header__time_edit">
+            <time>⏱ Time: <%= format_duration(total_seconds: devlog.time, seconds_enabled: false) %></time>
+            <% if devlog.id && devlog.design.user == current_user %>
+              <%= link_to edit_devlog_path(devlog.id) do %>
+                <span class="devlog-card-header__edit_btn"><%= edit_svg(width: "1.55rem", height: "1.55rem", color: "var(--line)")%></span>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+        <div class="devlog-card-body markdown-content">
+          <%= raw MarkdownService.convert(content: devlog.body) %>
         </div>
       </div>
-      <div class="devlog-card-body markdown-content">
-        <%= raw MarkdownService.convert(content: devlog.body) %>
-      </div>
+    </div>
+
+    <div class="devlog_comments" data-controller="comment-box">
+        <div class="comment_box_dropdown_link hover-underline" data-action="click->comment-box#toggle">
+          <p>Comments</p>
+          <p>(<%= devlog.comments.count %>)</p>
+        </div>
+        <div data-comment-box-target="content">
+          <%= render partial: "comments/comment_box", locals: { commentable_class: devlog.class.to_s, commentable_id: devlog.id, commentable: devlog } %>
+        </div>
     </div>
   </div>
 <% end %>

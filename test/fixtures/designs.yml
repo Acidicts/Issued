@@ -9,6 +9,8 @@
 #  devlogged_time    :integer
 #  hackatime_seconds :integer
 #  name              :string           default("Untitled Design"), not null
+#  readme            :text
+#  repo              :text
 #  status            :integer
 #  time              :integer
 #  created_at        :datetime         not null

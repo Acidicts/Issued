@@ -26,5 +26,7 @@ class Devlog < ApplicationRecord
   belongs_to :design
   has_one :image
 
+  has_many :comments, as: :commentable
+
   attribute :time, :integer, default: 0
 end

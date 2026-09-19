@@ -18,11 +18,10 @@
 # Foreign Keys
 #
 #  fk_rails_...  (design_id => designs.id)
-#  fk_rails_...  (devlog_id => devlogs.id)
 #
 class Image < ApplicationRecord
   belongs_to :design
-  belongs_to :devlog, polymorphic: true, optional: true
+  belongs_to :devlog, polymorphic: true, optional: true, dependent: :destroy
 
   has_one_attached :image_file do |attachable|
     attachable.variant :thumb, resize_to_limit: [ 400, 400 ], format: :webp, saver: { quality: 75, strip: true }
