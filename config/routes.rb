@@ -61,7 +61,7 @@ Rails.application.routes.draw do
   end
 
   # Comments
-  resources :comments, only: %i[create update edit] do
+  resources :comments, only: %i[create update edit destroy] do
     collection do
       get :comment_box
     end

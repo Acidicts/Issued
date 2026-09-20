@@ -1,5 +1,7 @@
 <%= form_with model: comment, html: {class: "comment-form"} do |form| %>
     <h2 style="margin-top:0;"><%= header %></h2>
+    <%= form.hidden_field :commentable_id, value: commentable.id %>
+    <%= form.hidden_field :commentable_type, value: commentable.class.name %>
     <div style="display: flex; flex-direction: row; gap: 6px;">
         <%= form.text_area :body, id: "comment_content_input", rows: 7, style: "width:50%", class: "nb-textarea" %>
         <div id="markdown-preview-content-div" style="box-shadow: 0 0 3px rgba(255, 255, 255, 0.1); margin-left: 6px; width:45%; padding: 12px; background: var(--nb-bg); border: 1px solid var(--nb-border); border-radius: 6px; overflow-y: auto; max-height: 300px;">
@@ -7,7 +9,7 @@
         </div>
     </div>
 
-    <%= form.submit class:"button-primary" %>
+    <%= form.submit class:"button-primary comment-box-btn__submit" %>
 
     <script>
         (function() {

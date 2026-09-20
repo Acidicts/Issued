@@ -126,7 +126,7 @@ class Design < ApplicationRecord
       "valid_readme": readme.present? && check_link(readme),
       "image_exists": image?,
       "description_exists": description.present?,
-      "not_ship_request_exist": !ship_requests.where(status: :pending).any?
+      "not_ship_request_exist": ship_requests.where(status: [ :pending, :elevated ]).none?
     }
 
     {

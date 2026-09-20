@@ -162,3 +162,137 @@
 .comment-form input[type="text"]::placeholder {
     color: var(--brand-text-muted);
 }
+
+/* ── Comment list ── */
+
+.comment_box {
+    margin-top: 0.75rem;
+}
+
+.comment-box-btn__submit {
+    margin-top: 0.5rem;
+}
+
+.comments-contents {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.comments {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.comments:empty {
+    display: none;
+}
+
+.new-comment {
+    margin-top: 0.25rem;
+}
+
+/* ── Comment card ── */
+
+.comment-card {
+    position: relative;
+    padding: 0.85rem 1rem;
+    background: var(--brand-surface);
+    border: 1px solid var(--brand-border);
+    border-left: 3px solid var(--brand-primary);
+    border-radius: 0;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.comment-card:hover {
+    border-left-color: var(--brand-secondary);
+    box-shadow: 3px 3px 0 var(--brand-primary-light);
+}
+
+.comment-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding-bottom: 0.45rem;
+    margin-bottom: 0.55rem;
+    border-bottom: 1px dashed var(--brand-border);
+}
+
+.comment-card-date {
+    font-family: var(--brand-font);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--brand-text-muted);
+}
+
+.comment-card-header__time_edit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.comment-card-header__time_edit form {
+    display: inline-flex;
+    margin: 0;
+}
+
+.comment-card-header__time_edit button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    line-height: 0;
+}
+
+.comment-card-header__edit_btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+    transition: transform 0.2s ease;
+}
+
+.comment-card-header__edit_btn svg {
+    transition: fill 0.2s ease, transform 0.2s ease;
+}
+
+.comment-card-header__time_edit a:hover .comment-card-header__edit_btn,
+.comment-card-header__time_edit button:hover .comment-card-header__edit_btn {
+    transform: scale(1.08);
+}
+
+.comment-card-header__time_edit a:hover svg,
+.comment-card-header__time_edit button:hover svg {
+    fill: var(--brand-secondary);
+}
+
+.comment-card-body {
+    font-family: var(--brand-font);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--brand-text);
+    overflow-wrap: anywhere;
+}
+
+.comment-card-body > :first-child {
+    margin-top: 0;
+}
+
+.comment-card-body > :last-child {
+    margin-bottom: 0;
+}
+
+@media (max-width: 640px) {
+    .comment-card {
+        padding: 0.75rem 0.85rem;
+    }
+}

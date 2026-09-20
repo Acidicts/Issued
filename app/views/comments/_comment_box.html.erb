@@ -1,10 +1,12 @@
 <div class="comment_box">
     <div class="comments-contents">
-        <div class="comments">
-            <%= render partial: "comments/comment", collection: commentable.comments, as: :comment %>
-        </div>
-        <div class="new-comment">
-            <%= render partial: "comments/new" %>
+        <%= turbo_frame_tag "comments_box#{commentable.class}_#{commentable.id}" do %>
+            <div class="comments">
+                <%= render partial: "comments/comment", collection: commentable.comments, as: :comment %>
+            </div>
+        <% end %>
+        <div class="new-comment" id="new_comment_<%= commentable.class %>_<%= commentable.id %>">
+            <%= render partial: "comments/new", locals: { commentable: commentable } %>
         </div>
     </div>
 </div>

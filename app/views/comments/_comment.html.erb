@@ -11,10 +11,12 @@
         </div>
 
         <div class="comment-card-header__time_edit">
-          <time>⏱ Time: <%= format_duration(total_seconds: comment.time, seconds_enabled: false) %></time>
           <% if comment.id && comment.user == current_user %>
             <%= link_to edit_comment_path(comment.id) do %>
               <span class="comment-card-header__edit_btn"><%= edit_svg(width: "1.55rem", height: "1.55rem", color: "var(--line)")%></span>
+            <% end %>
+            <%= button_to comment_path(comment.id), method: :delete do %>
+              <span class="comment-card-header__edit_btn"><%= delete_svg(width: "1.55rem", height: "1.55rem", color: "var(--line)")%></span>
             <% end %>
           <% end %>
         </div>

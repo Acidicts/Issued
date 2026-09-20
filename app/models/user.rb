@@ -25,6 +25,7 @@ class User < ApplicationRecord
   has_many :orders, dependent: :destroy
   has_many :rsvps, dependent: :destroy
   has_many :notifications, dependent: :destroy
+  has_many :comments, dependent: :destroy
 
   has_many :balance_events, dependent: :destroy
 

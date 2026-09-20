@@ -1,5 +1,11 @@
 /* ── Ship Request form styles ── */
 
+.ship_request-page {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+}
+
 .ship_request__page {
     position: fixed;
     width: max-content;
@@ -7,7 +13,7 @@
     top: 50%;
     left: 50%;
     transform: translateX(-50%) translateY(-50%);
-    z-index: 100;
+    z-index: 1;
 
     background-color: var(--paper);
     border: 1px solid var(--line);
@@ -23,7 +29,7 @@
 
     background-color: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(4px);
-    z-index: 99;
+    z-index: 0;
 }
 
 .ship_request__page_heading {
@@ -199,6 +205,7 @@
 /* ── Dark mode ── */
 
 @media (prefers-color-scheme: dark) {
+
     .ship-request-form .nb-input,
     .ship-request-form .nb-textarea {
         background: var(--surface, #1a1510);
@@ -214,5 +221,41 @@
 
     .ship-request-form .nb-errors {
         background: rgba(214, 64, 44, 0.1);
+    }
+}
+
+.fadeToHide {
+    animation: fadeToHide 0.3s ease forwards;
+}
+
+.fadeToShow {
+    animation: fadeToShow 0.3s ease forwards;
+}
+
+@keyframes fadeToHide {
+    0% {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+    }
+
+    100% {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+    }
+}
+
+@keyframes fadeToShow {
+    0% {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+    }
+
+    100% {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
     }
 }

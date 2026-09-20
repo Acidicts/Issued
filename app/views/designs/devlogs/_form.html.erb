@@ -1,4 +1,4 @@
-<%= form_with model: devlog, html: {class:"devlog-form"} do |form| %>
+<%= form_with model: devlog, html: {class:"devlog-form"}, data: { turbo_frame: "_top" } do |form| %>
   <%= form.hidden_field :design_id %>
   <% if devlog.errors.any? %>
     <div class="nb-errors">

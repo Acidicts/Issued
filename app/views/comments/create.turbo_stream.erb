@@ -1,0 +1,9 @@
+<%= turbo_stream.update "comments_box#{@commentable.class}_#{@commentable.id}" do %>
+    <div class="comments">
+        <%= render partial: "comments/comment", collection: @commentable.comments, as: :comment %>
+    </div>
+<% end %>
+
+<%= turbo_stream.replace "new_comment_#{@commentable.class}_#{@commentable.id}" do %>
+    <%= render partial: "comments/new", locals: { commentable: @commentable } %>
+<% end %>

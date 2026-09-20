@@ -4,7 +4,7 @@
     <div class="ship_request__page" data-controller="popup-max-size">
         <div class="ship_request__page_heading">
             <h1><%= render_encoded("New Ship Request for {{design:#{@design.id}}}", context: :heading) %></h1>
-            <button class="btn-cross" type="button" onclick="document.getElementById('ship-request-new-page').classList.toggle('hidden');"><%= cross_svg(width: 32, height: 32, color: "#B7A878")%></button>
+            <button class="btn-cross" type="button" onclick="var el=document.getElementById('ship-request-new-page');el.classList.remove('fadeToShow');el.classList.add('fadeToHide');el.addEventListener('animationend',function handler(){el.classList.add('hidden');el.removeEventListener('animationend',handler);});"><%= cross_svg(width: 32, height: 32, color: "#B7A878")%></button>
         </div>
 
         <%= turbo_frame_tag "ship_request_steps" do %>
@@ -23,5 +23,5 @@
         <% end %>
     </div>
 
-    <div class="ship_request-page__overlay"></div>
+    <div class="ship_request-page__overlay" onclick="var el=document.getElementById('ship-request-new-page');el.classList.remove('fadeToShow');el.classList.add('fadeToHide');el.addEventListener('animationend',function handler(){el.classList.add('hidden');el.removeEventListener('animationend',handler);});"></div>
 </div>
