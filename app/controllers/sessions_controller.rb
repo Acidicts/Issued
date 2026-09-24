@@ -56,13 +56,7 @@ class SessionsController < ApplicationController
       session[:hackclub_refresh_token] = auth.credentials.refresh_token if auth.credentials.refresh_token.present?
       Current.hackclub_access_token = session[:hackclub_access_token]
       Current.hackclub_refresh_token = session[:hackclub_refresh_token]
-      # Guard DB column assignment: the migration may not yet have been applied
-      # in all environments, so only write to these columns when they exist.
-      if user.respond_to?(:hackclub_access_token=)
-        user.hackclub_access_token = session[:hackclub_access_token] if session[:hackclub_access_token].present?
-        user.hackclub_refresh_token = session[:hackclub_refresh_token] if session[:hackclub_refresh_token].present?
-        user.save!(validate: false) if user.changed?
-      end
+      persist_hackclub_tokens(user)
       begin
         user.refresh_ysws_eligibility!
       rescue StandardError => e
@@ -97,6 +91,25 @@ class SessionsController < ApplicationController
   end
 
   private
+
+  def persist_hackclub_tokens(user)
+    return unless user.respond_to?(:hackclub_access_token=)
+    return unless encryption_configured?
+
+    user.hackclub_access_token = session[:hackclub_access_token] if session[:hackclub_access_token].present?
+    user.hackclub_refresh_token = session[:hackclub_refresh_token] if session[:hackclub_refresh_token].present?
+    user.save!(validate: false) if user.changed?
+  rescue ActiveRecord::Encryption::Errors::Base => e
+    user.reload if user.persisted?
+    logger.warn("Skipping encrypted Hack Club token persistence: #{e.class} #{e.message}")
+  end
+
+  def encryption_configured?
+    config = ActiveRecord::Encryption.config
+    config.primary_key.present? && config.key_derivation_salt.present?
+  rescue ActiveRecord::Encryption::Errors::Base
+    false
+  end
 
   def safe_redirect_path(path)
     return nil unless path.present?

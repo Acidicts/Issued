@@ -70,6 +70,28 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     OmniAuth.config.mock_auth.delete(:hackclub)
   end
 
+  test "callback redirects to requested path when encryption keys are missing" do
+    OmniAuth.config.test_mode = true
+    OmniAuth.config.mock_auth[:hackclub] = auth_hash_for(uid: "U123")
+
+    config = ActiveRecord::Encryption.config
+    original_primary_key = config.instance_variable_get(:@primary_key)
+    original_key_derivation_salt = config.instance_variable_get(:@key_derivation_salt)
+    config.primary_key = nil
+    config.key_derivation_salt = nil
+
+    get "/auth/hackclub/callback", env: { "omniauth.origin" => dashboard_path }
+
+    assert_redirected_to dashboard_path
+    assert_not_nil session[:user_id]
+
+  ensure
+    config&.primary_key = original_primary_key
+    config&.key_derivation_salt = original_key_derivation_salt
+    OmniAuth.config.test_mode = false
+    OmniAuth.config.mock_auth.delete(:hackclub)
+  end
+
   test "callback handles missing auth hash" do
     OmniAuth.config.test_mode = true
     OmniAuth.config.mock_auth[:hackclub] = nil
