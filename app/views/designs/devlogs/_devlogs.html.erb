@@ -36,7 +36,7 @@
     <% end %>
 
     <div class="devlogs-grid">
-      <% ship_requests = design.ship_requests.includes(:ship).to_a %>
+      <% ship_requests = design.ship_requests.includes(:ship).to_a.select { |sr| sr.publicly_visible? || design.user == current_user || current_user&.reviewer? } %>
       <% items = design.devlogs.to_a + ship_requests.reject { |sr| sr.ship } + ship_requests.filter_map(&:ship) %>
       <% if items.any? %>
           <% items.sort_by { |i| i.created_at || Time.at(0) }.reverse.each do |devlog| %>
