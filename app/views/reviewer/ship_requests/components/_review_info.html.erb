@@ -1,0 +1,10 @@
+<div class="ship-request-project__info_container">
+    <h2 class="ship-request-project__info_title">Info on <%= ship_request.title %>  <span class="review-pill review-pill-<%= ship_request.status %>"><%= ship_request.status.humanize %></span></h2>
+    <p class="ship-request-project__info_description"><%= ship_request.body %></p>
+
+    <% if ship_request.review.present?%>
+        <h4>Review Message</h4>
+        <%= stylesheet_link_tag "components/comment", "data-turbo-track": "reload"%>
+        <%= render "reviews/review", review: ship_request.review %>
+    <% end %>
+</div>

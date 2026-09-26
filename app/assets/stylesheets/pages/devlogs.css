@@ -47,7 +47,7 @@
     gap: 1rem;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow: visible;
     width: 100%;
 }
 
@@ -349,6 +349,12 @@
     justify-content: space-between;
 }
 
+.ship-request-card-header__time_edit {
+    display: flex;
+    flex-direction: column;
+    justify-content: baseline;
+}
+
 .devlog-card-header__time_edit {
     justify-content: baseline;
 }
@@ -364,6 +370,34 @@
     scale: 1.05;
 }
 
+.devlog-card-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    align-self: flex-start;
+    margin-top: 0.4rem;
+    padding: 0.2rem 0.7rem;
+    border: 1px dashed var(--line, #B7A878);
+    border-radius: 1rem;
+    background: color-mix(in srgb, var(--line, #B7A878) 12%, transparent);
+    color: var(--ink-soft, #4B4133);
+    width: fit-content;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.devlog-card-status:hover {
+    background: color-mix(in srgb, var(--line, #B7A878) 22%, transparent);
+    border-color: var(--accent, #1F6F78);
+}
+
+.devlog-card-status__label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    line-height: 1.4;
+}
+
 .devlog-card-date {
     margin: 0;
     font-size: 0.75rem;
@@ -371,6 +405,17 @@
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--ink-soft, #4B4133);
+}
+
+.devlog-card-image__controls {
+    display: inline-flex;
+
+    justify-content: space-between;
+}
+
+.comment-card-header__actions {
+    align-items: top;
+    justify-content: baseline;
 }
 
 .devlog-card-image {

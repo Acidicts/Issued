@@ -118,7 +118,7 @@ class DesignsController < ApplicationController
         :user,
         :hackatime_projects,
         images: { image_file_attachment: :blob },
-        ship_requests: [ :ships, { image: { image_file_attachment: :blob } } ],
+        ship_requests: [ :ship, { image: { image_file_attachment: :blob } }, review: [ :user, { proof_file_attachment: :blob } ] ],
         devlogs: [ { image: { image_file_attachment: :blob } }, :comments ]
       )
       .find(params[:id])

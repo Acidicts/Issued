@@ -1,0 +1,10 @@
+<%= stylesheet_link_tag "pages/reviewer/ship_requests", "data-turbo-track": "reload"%>
+
+<div class="ship-request-card">
+    <div class="ship-request-card__info">
+        <%= render "reviewer/ship_requests/components/project_info", design: @ship_request.design %>
+        <div class="ship-request__divider"></div>
+        <%= render "reviewer/ship_requests/components/review_info", ship_request: @ship_request %>
+    </div>
+    <%= render "reviewer/ship_requests/components/review_panel", ship_request: @ship_request %>
+</div>

@@ -1,0 +1,207 @@
+:root {
+    --ink: #241D16;
+    --line: #B7A878;
+    --paper: #E4D9BC;
+    --card: #F2EAD3;
+    --muted: #B7A878;
+    --accent: #1F6F78;
+    --ok: #1F6F78;
+    --warn: #B97F19;
+    --ink-soft: #4B4133;
+    --surface: #F2EAD3;
+    --thread-teal: #1F6F78;
+    --stamp-red: #D6402C;
+
+    --text-generic: #000;
+    --text-generic-inverted: #fff;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --ink: #E4D9BC;
+        --line: #5a4f3e;
+        --ink-soft: #B7A878;
+        --surface: #241D16;
+        --thread-teal: #1F6F78;
+        --stamp-red: #D6402C;
+
+        --paper: #241D16;
+        --card: #241D16;
+        --muted: #B7A878;
+        --accent: #1F6F78;
+        --ok: #1F6F78;
+        --warn: #B97F19;
+
+        --text-generic: #fff;
+        --text-generic-inverted: #000;
+    }
+}
+
+/* ---------- Panel ---------- */
+.reviewer-panel {
+    max-width: 760px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    color: var(--ink);
+}
+
+.reviewer-panel__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    margin-bottom: 1.25rem;
+    border-bottom: 2px solid var(--line);
+}
+
+.reviewer-panel__title {
+    margin: 0;
+    font-size: 1.75rem;
+    letter-spacing: -0.01em;
+}
+
+.reviewer-panel__subtitle {
+    margin: 0.25rem 0 0;
+    color: var(--ink-soft);
+    font-size: 0.95rem;
+}
+
+.reviewer-panel__count {
+    min-width: 2.75rem;
+    height: 2.75rem;
+    padding: 0 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: var(--warn);
+    color: var(--text-generic-inverted);
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+/* ---------- List ---------- */
+.ship-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.875rem;
+}
+
+.ship-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-left: 5px solid var(--warn);
+    border-radius: 6px;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.ship-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.ship-card__body {
+    min-width: 0;
+}
+
+.ship-card__stamp {
+    display: inline-block;
+    margin-bottom: 0.4rem;
+    padding: 0.1rem 0.5rem;
+    border: 1.5px solid var(--stamp-red);
+    border-radius: 3px;
+    color: var(--stamp-red);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transform: rotate(-2deg);
+}
+
+.ship-card__project {
+    margin: 0;
+    font-size: 1.15rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ship-card__meta {
+    margin: 0.25rem 0 0;
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+}
+
+.ship-card__meta strong {
+    color: var(--ink);
+}
+
+.ship-card__id {
+    margin-left: 0.5rem;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+    display: inline-block;
+    padding: 0.5rem 1.1rem;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn--primary {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--thread-teal);
+}
+
+.btn--primary:hover {
+    filter: brightness(1.12);
+}
+
+.btn:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+}
+
+/* ---------- Empty state ---------- */
+.reviewer-panel__empty {
+    padding: 2.5rem 1rem;
+    text-align: center;
+    background: var(--card);
+    border: 1px dashed var(--line);
+    border-radius: 6px;
+    color: var(--ink-soft);
+}
+
+.reviewer-panel__empty-title {
+    margin: 0 0 0.25rem;
+    color: var(--ok);
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+/* ---------- Small screens ---------- */
+@media (max-width: 520px) {
+    .ship-card {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .ship-card__actions .btn {
+        display: block;
+        text-align: center;
+    }
+}

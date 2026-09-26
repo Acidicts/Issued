@@ -37,8 +37,9 @@ Rails.application.configure do
     config.cache_store = :memory_store
   end
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
+  # Store uploads in Cloudflare R2 (see config/storage.yml). Set this to :local to
+  # work against the disk instead, which is faster but only survives a restart.
+  config.active_storage.service = :r2
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false

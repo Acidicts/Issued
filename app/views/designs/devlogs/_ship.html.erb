@@ -1,1 +1,43 @@
-I am a ship
+<% image = devlog.ship_request.image %>
+<div class="devlog-card">
+    <div class="devlog-card-image__controls">
+        <% if image&.image_file&.attached? %>
+            <div class="devlog-card-image">
+                <%= image_tag image.image_for(:display) %>
+            </div>
+        <% end %>
+
+        <% if current_user.reviewer? %>
+            <div class="comment-card-header__actions">
+                <%= link_to reviewer_ship_request_path(devlog.ship_request), data: { turbo_frame: "_top" } do %>
+                    <%= view_svg(width: 32, height: 32, color: "#B7A878")%>
+                <% end %>
+            </div>
+        <% end %>
+    </div>
+    <div class="devlog-card-contents">
+        <div class="devlog-card-header">
+            <div>
+                <p style="margin-bottom:0; font-size:1.25rem; font-weight:700;">Ship : <%= devlog.ship_request.title %></p>
+                <% if devlog.created_at %>
+                    <time class="devlog-card-date" datetime="<%= devlog.created_at.iso8601 %>">
+                        <%= devlog.created_at.strftime("%b %d, %Y") %>
+                    </time>
+                <% end %>
+            </div>
+
+            <div class="devlog-card-header__time_edit">
+                <div class="devlog-card-header__time_edit">
+                    <time>⏱ Time: <%= format_duration(total_seconds: devlog.ship_request.total_time_seconds, seconds_enabled: false) %></time>
+                </div>
+            </div>
+        </div>
+        <div class="devlog-card-body markdown-content">
+            <%= raw MarkdownService.convert(content: devlog.ship_request.body) %>
+        </div>
+    </div>
+    <div class="comments">
+        <%= render partial: "reviews/review", collection: [devlog.ship_request.review].compact, as: :review %>
+        <%= render partial: "comments/comment", collection: devlog.ship_request.comments, as: :comment %>
+    </div>
+</div>

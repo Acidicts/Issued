@@ -45,7 +45,7 @@
 
       <div class="field file-field">
         <%= form.label :image, "Image (Should be the latest version of your design, either png or svg)" %>
-        <%= form.file_field :image %>
+        <%= form.file_field :image, accept: "image/*" %>
       </div>
 
       <div class="field">

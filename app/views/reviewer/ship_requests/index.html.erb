@@ -1,0 +1,28 @@
+<%= stylesheet_link_tag "pages/reviewer/ship_requests", "data-turbo-track": "reload"%>
+
+<div class="ship-request__page">
+    <table>
+        <thead>
+            <th>Project Name</th>
+            <th>Status</th>
+            <th>User</th>
+            <th>ID</th>
+            <th>Actions</th>
+        </thead>
+        <tbody>
+            <% @ship_requests.each do |project_id, project_status, project_name, ship_request_id, user_name, user_id| %>
+                <tr class="ship-card">
+                    <td><%= render_encoded("{{design:#{project_id}}}", context: :body) %></td>
+                    <td><%= project_status %></td>
+                    <td><%= render_encoded("{{reviewer_user:#{user_id}}}", context: :body) %></td>
+                    <td><%= render_encoded("{{ship_request:#{ship_request_id}}}", context: :body) %></td>
+                    <td class="ship-request__actions">
+                        <%= link_to reviewer_ship_request_path(ship_request_id) do %>
+                            <%= view_svg(width: 32, height: 32, color: "#B7A878")%>
+                        <% end %>
+                    </td>
+                </tr>
+            <% end %>
+        </tbody>
+    </table>
+</div>

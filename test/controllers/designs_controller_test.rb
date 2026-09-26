@@ -78,4 +78,34 @@ class DesignsControllerTest < ActionDispatch::IntegrationTest
     get designs_path
     assert_redirected_to root_path
   end
+
+  test "owner sees their pending ship request in the devlogs stream" do
+    ship_request = @design.ship_requests.create!(title: "Owner Pending Request", body: "Body")
+
+    get design_path(@design)
+
+    assert_response :success
+    assert_includes response.body, ship_request.title
+  end
+
+  test "owner sees a ship request that already has a review" do
+    ship_request = @design.ship_requests.create!(title: "Reviewed Request", body: "Body")
+    Review.create!(user: users(:admin_user), reviewed: ship_request, comment: "Looks good to me")
+
+    get design_path(@design)
+
+    assert_response :success
+    assert_includes response.body, ship_request.title
+    assert_includes response.body, "Looks good to me"
+  end
+
+  test "pending ship requests are hidden from signed in non owners" do
+    ship_request = @design.ship_requests.create!(title: "Hidden Request", body: "Body")
+
+    sign_in_as(users(:two))
+    get design_path(@design)
+
+    assert_response :success
+    refute_includes response.body, ship_request.title
+  end
 end

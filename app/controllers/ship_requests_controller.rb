@@ -12,12 +12,27 @@ class ShipRequestsController < ApplicationController
     end
   end
 
+  def resubmit
+    @design = Design.find(params[:design_id])
+    return unless current_user == @design.user
+
+    if @design.ship_requests.where(status: :rejected).any?
+      if @design.ship_requests.where(status: :rejected).last.update(status: :pending)
+        redirect_to design_path(@design), info: "Successfully Re-Submitted"
+      else
+        redirect_to design_path(@design), info: "Failed to Re-Submit"
+      end
+    end
+  end
+
   def create
     permitted = ship_request_params
     image_file = permitted.delete(:image)
     should_remove_bg = ActiveModel::Type::Boolean.new.cast(permitted.delete(:remove_background))
 
     @design = Design.find(params[:ship_request][:design_id])
+
+    return unless current_user == @design.user
 
     if !@design.can_make_ship_request?
       redirect_to design_path(@design), alert: "You don't have all the requirements to ship"

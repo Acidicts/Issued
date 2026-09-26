@@ -1,10 +1,20 @@
 <% image = devlog.image %>
 <div class="devlog-card">
-    <% if image&.image_file&.attached? %>
-        <div class="devlog-card-image">
-            <%= image_tag image.image_for(:display) %>
-        </div>
-    <% end %>
+    <div class="devlog-card-image__controls">
+        <% if image&.image_file&.attached? %>
+            <div class="devlog-card-image">
+                <%= image_tag image.image_for(:display) %>
+            </div>
+        <% end %>
+
+        <% if current_user.reviewer? %>
+            <div class="comment-card-header__actions">
+                <%= link_to reviewer_ship_request_path(devlog), data: { turbo_frame: "_top" } do %>
+                    <%= view_svg(width: 32, height: 32, color: "#B7A878")%>
+                <% end %>
+            </div>
+        <% end %>
+</div>
     <div class="devlog-card-contents">
         <div class="devlog-card-header">
             <div>
@@ -16,14 +26,23 @@
                 <% end %>
             </div>
 
-            <div class="devlog-card-header__time_edit">
-                <div class="devlog-card-header__time_edit">
-                    <time>⏱ Time: <%= format_duration(total_seconds: devlog.total_time_seconds, seconds_enabled: false) %></time>
-                </div>
+            <div class="ship-request-card-header__time_edit">
+                <time>⏱ Time: <%= format_duration(total_seconds: devlog.total_time_seconds, seconds_enabled: false) %></time>
+                <% if devlog.elevated? %>
+                    <span class="devlog-card-status devlog-card-status--elevated">
+                        <span class="devlog-card-status__label">Delays Expected</span>
+                        <%= render "shared/info_icon", aria_label: "Your ship has been pushed forward for more reviewing" %>
+                    </span>
+                <% end %>
             </div>
         </div>
         <div class="devlog-card-body markdown-content">
             <%= raw MarkdownService.convert(content: devlog.body) %>
         </div>
+    </div>
+
+    <div class="comments">
+        <%= render partial: "reviews/review", collection: [ devlog.review ].compact, as: :review %>
+        <%= render partial: "comments/comment", collection: devlog.comments, as: :comment %>
     </div>
 </div>

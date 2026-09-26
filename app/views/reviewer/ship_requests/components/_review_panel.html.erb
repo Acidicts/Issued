@@ -1,0 +1,33 @@
+<div class="ship-request-project__input">
+    <%# Proof videos are tens of megabytes. The browser PUTs them straight at R2
+        via Active Storage direct upload, and proof_upload_controller reports the
+        progress in the status line under the field so the form does not look dead
+        while the file is in flight. %>
+    <%= form_with model: ship_request, url: reviewer_ship_request_path(ship_request),
+        data: {
+            controller: "proof-upload",
+            action: "submit->proof-upload#submitted direct-uploads:start->proof-upload#start direct-upload:progress->proof-upload#progress direct-uploads:end->proof-upload#finish direct-upload:error->proof-upload#failed turbo:submit-end->proof-upload#finish turbo:submit-failed->proof-upload#finish"
+        } do |f| %>
+        <div class="ship-card-reviewer-input__comments">
+            <%= f.label "Review Message" %>
+            <%= f.textarea :comment %>
+        </div>
+
+        <div class="ship-card-reviewer-input__comments">
+            <%= f.checkbox :make_comment %>
+            <%= f.label :make_comment %>
+        </div>
+
+        <div class="ship-card-reviewer-input__proof">
+            <%= f.label :proof, "Video (Should be a video recorded of testing the project. NOT SETUP)" %>
+            <%= f.file_field :proof, accept: "video/*", direct_upload: true %>
+            <p class="ship-card-reviewer-input__status" data-proof-upload-target="status" role="status" aria-live="polite"></p>
+        </div>
+
+        <div class="ship-card-reviewer-input__actions">
+            <%= f.submit "Approve", name: "status_set", value: "Approve", class: "btn-primary", disabled: !%w[rejected pending].include?(ship_request.status) %>
+            <%= f.submit "Reject",  name: "status_set", value: "Reject", class: "btn-primary", disabled: !%w[approved pending].include?(ship_request.status) %>
+            <%= f.submit "Elevate", name: "status_set", value: "Elevate", class: "btn-primary", disabled: !%w[approved rejected pending].include?(ship_request.status) %>
+        </div>
+    <% end %>
+</div>

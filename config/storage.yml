@@ -6,13 +6,26 @@ local:
   service: Disk
   root: <%= Rails.root.join("storage") %>
 
-# Use bin/rails credentials:edit to set the AWS secrets (as aws:access_key_id|secret_access_key)
-# amazon:
-#   service: S3
-#   access_key_id: <%= Rails.application.credentials.dig(:aws, :access_key_id) %>
-#   secret_access_key: <%= Rails.application.credentials.dig(:aws, :secret_access_key) %>
-#   region: us-east-1
-#   bucket: your_own_bucket-<%= Rails.env %>
+# Cloudflare R2, over its S3-compatible API. R2 is a remote service, so this is
+# also what makes Active Storage direct uploads worth turning on: the browser
+# sends the file straight to R2 instead of proxying it through Rails.
+#
+# Set R2_ACCOUNT_ID, R2_BUCKET, R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY. The
+# account id is the id from the R2 overview page, not a secret.
+r2:
+  service: S3
+  access_key_id: <%= ENV["R2_ACCESS_KEY_ID"] %>
+  secret_access_key: <%= ENV["R2_SECRET_ACCESS_KEY"] %>
+  bucket: <%= ENV["R2_BUCKET"] %>
+  endpoint: <%= ENV["R2_ACCOUNT_ID"] && "https://#{ENV['R2_ACCOUNT_ID']}.r2.cloudflarestorage.com" %>
+  # R2 rejects the virtual-hosted-style bucket.<account>.r2.cloudflarestorage.com
+  # form, so addressing has to stay path style.
+  force_path_style: true
+  # R2 implements MD5 but not the CRC32 checksums newer SDKs volunteer by
+  # default, which would fail every multipart upload with NotImplemented.
+  request_checksum_calculation: when_required
+  response_checksum_validation: when_required
+  region: auto
 
 # Remember not to checkin your GCS keyfile to a repository
 # google:

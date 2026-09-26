@@ -262,6 +262,38 @@
     pointer-events: none;
 }
 
+/* ── Standalone secondary button ── */
+
+.button-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.85rem 1.6rem;
+    border-radius: 4px;
+    background: var(--surface);
+    color: var(--ink);
+    border: 1.5px solid var(--ink);
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    transition: background-color 0.16s ease, transform 0.12s ease;
+}
+
+.button-secondary:hover,
+.button-secondary:focus {
+    background: var(--line);
+    transform: translateY(-1px);
+}
+
+.button-secondary:disabled,
+.button-secondary.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    pointer-events: none;
+}
+
 /* ── Design actions button ── */
 
 .design-actions .button-primary,

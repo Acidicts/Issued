@@ -1,3 +1,24 @@
+/*
+  encoded pills
+
+  {{token}} references in body copy are swapped for inline stamp tags by
+  ApplicationHelper#render_encoded. Every variant renders the same two-level
+  shape:
+
+    <a|span class="pill <variant>-pill pill--<context>">
+      <span class="<variant>-pill__name pill__name">label</span>
+      <span class="user-pill__badge">…</span>   <!-- admin only -->
+    </a|span>
+
+  The look is a letterpress stamp on paper: hairline rule, a pressed-in panel
+  (lit top edge, shadowed bottom edge), paper tooth, and an ink label. Hover
+  wipes the tag in its accent and sweeps a rule under the label instead of
+  scaling the pill.
+
+  devlog and ship tags are plain <span>s, not links, so hover and focus states
+  are scoped to a.pill.
+*/
+
 :root {
     --ink: #241D16;
     --line: #B7A878;
@@ -7,10 +28,19 @@
     --accent: #1F6F78;
     --ok: #1F6F78;
     --warn: #B97F19;
+    --green: #3D7A4D;
     --ink-soft: #4B4133;
     --surface: #F2EAD3;
     --thread-teal: #1F6F78;
     --stamp-red: #D6402C;
+
+    --pill-sheen: rgba(255, 255, 255, 0.55);
+    --pill-press: rgba(36, 29, 22, 0.07);
+    --pill-grain: rgba(36, 29, 22, 0.05);
+    --pill-emboss: 0 1px 0 rgba(255, 255, 255, 0.5);
+    --pill-wash: rgba(31, 111, 120, 0.10);
+    --pill-wash-quiet: rgba(90, 79, 62, 0.10);
+    --pill-wash-flag: rgba(214, 64, 44, 0.10);
 
     --text-generic: #000;
     --text-generic-inverted: #fff;
@@ -31,6 +61,15 @@
         --accent: #1F6F78;
         --ok: #1F6F78;
         --warn: #B97F19;
+        --green: #5a9e6a;
+
+        --pill-sheen: rgba(255, 255, 255, 0.07);
+        --pill-press: rgba(0, 0, 0, 0.35);
+        --pill-grain: rgba(228, 217, 188, 0.045);
+        --pill-emboss: 0 -1px 0 rgba(0, 0, 0, 0.3);
+        --pill-wash: rgba(42, 138, 150, 0.18);
+        --pill-wash-quiet: rgba(228, 217, 188, 0.08);
+        --pill-wash-flag: rgba(224, 90, 69, 0.16);
 
         --text-generic: #fff;
         --text-generic-inverted: #000;
@@ -39,97 +78,166 @@
 
 /* ---- user pill ---- */
 .pill {
+  /* per-variant overrides, see below */
+  --pill-ink: var(--ink-soft);
+  --pill-accent: var(--accent);
+  --pill-plate: var(--pill-wash);
+
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 0;
-  background: var(--card);
-  border: 1.5px solid var(--line);
-  border-radius: 9999px;
-  font-size: 12px;
-  font-weight: 600;
   vertical-align: middle;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  text-decoration: none;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-.pill--heading {
-  font-size: 15px;
-  padding: 1px 2px;
-}
-
-.pill--heading .pill__name,
-.pill--heading .user-pill__name,
-.pill--heading .slack-pill__name,
-.pill--heading .design-pill__name,
-.pill--heading .devlog-pill__name,
-.pill--heading .ship-pill__name,
-.pill--heading .ship-request-pill__name {
-  font-size: 0.875rem;
-  padding: 6px 12px;
-}
-
-.pill__name {
-  padding: 4px 6px;
-  text-decoration: none;
-  color: var(--ink-soft);
-  font-weight: 500;
-  font-size: 0.7rem;
-  line-height: 1.4;
-}
-
-.pill:hover {
-  scale: 1.03;
-  transform: translateY(-1px);
-  background: var(--accent);
-  border-color: var(--accent);
-  box-shadow: 0 4px 8px rgba(31, 111, 120, 0.25);
-}
-
-.pill:hover .pill__name,
-.pill:hover .user-pill__name,
-.pill:hover .design-pill__name,
-.pill:hover .devlog-pill__name,
-.pill:hover .ship-pill__name,
-.pill:hover .ship-request-pill__name {
-  color: var(--text-generic-inverted);
-}
-
-.user-pill__badge {
-  font-size: 0;
+  padding: 0;
+  color: var(--pill-ink);
+  font-size: 12px;
   line-height: 1;
-  vertical-align: sub;
-  display: inline-flex;
-  align-items: center;
-  margin: -2px;
+  text-decoration: none;
+  background-color: var(--card);
+  background-image: repeating-linear-gradient(
+    62deg,
+    var(--pill-grain) 0 1px,
+    transparent 1px 3px
+  );
+  border: 1px solid var(--line);
+  border-radius: 9999px;
+  box-shadow:
+    inset 0 1px 0 var(--pill-sheen),
+    inset 0 -1px 0 var(--pill-press),
+    0 1px 1px rgba(0, 0, 0, 0.04);
+  transition: background-color 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
 }
 
-.design-pill__name {
-  padding: 4px 6px;
+/* the label sits above the paper tooth and the sweep rule */
+.pill__name {
+  position: relative;
+  z-index: 1;
+  color: inherit;
+  font-weight: 600;
+  font-size: 0.7rem;
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+  text-decoration: none;
+  text-shadow: var(--pill-emboss);
+  white-space: nowrap;
 }
 
+/* both context modifiers land on every pill: --body embeds the tag in running
+   copy, --heading embeds it in a title */
+.pill--body > .pill__name {
+  padding: 4px 10px;
+}
+
+.pill--heading > .pill__name {
+  padding: 6px 14px;
+  font-size: 0.875rem;
+}
+
+/* rule sweeps in under the label */
+.pill::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 3px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.55;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+a.pill:hover,
+a.pill:focus-visible {
+  color: var(--pill-accent);
+  background-color: var(--pill-plate);
+  border-color: var(--pill-accent);
+  box-shadow:
+    inset 0 1px 0 var(--pill-sheen),
+    0 2px 6px var(--pill-plate);
+}
+
+a.pill:hover::after,
+a.pill:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.pill:focus-visible {
+  outline: 2px solid var(--pill-accent);
+  outline-offset: 2px;
+}
+
+/* ---- variants: each tag inks and washes in its own accent ---- */
 .user-pill {
-  background: linear-gradient(135deg, var(--card) 0%, var(--paper) 100%);
+  --pill-ink: var(--ink-soft);
+  --pill-accent: var(--thread-teal);
+  --pill-plate: var(--pill-wash);
 }
 
 .slack-pill {
-  padding-left: 2px;
-  padding-right: 2px;
-  background: linear-gradient(135deg, var(--card) 0%, var(--paper) 100%);
+  --pill-ink: var(--muted);
+  --pill-accent: var(--ink-soft);
+  --pill-plate: var(--pill-wash-quiet);
 }
 
-.design-pill {
-  background: linear-gradient(135deg, var(--card) 0%, var(--paper) 100%);
+.design-pill,
+.ship-request-pill {
+  --pill-ink: var(--ink);
+  --pill-accent: var(--warn);
+  --pill-plate: var(--pill-wash-quiet);
+}
+
+.ship-pill {
+  --pill-ink: var(--green);
+  --pill-accent: var(--green);
+  --pill-plate: var(--pill-wash-quiet);
+}
+
+.devlog-pill {
+  --pill-ink: var(--ink-soft);
+  --pill-accent: var(--muted);
+  --pill-plate: var(--pill-wash-quiet);
 }
 
 .admin-user-pill {
-  background: linear-gradient(135deg, var(--card) 0%, #fff5f5 100%);
-  border-color: var(--stamp-red);
+  --pill-ink: var(--stamp-red);
+  --pill-accent: var(--stamp-red);
+  --pill-plate: var(--pill-wash-flag);
+}
+
+/* a slack id is a raw handle, so give it room to breathe */
+.slack-pill > .slack-pill__name {
+  letter-spacing: 0.04em;
+}
+
+.user-pill__badge {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  margin-right: 6px;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+/* the helper hardcodes 1.55rem, which pokes past the rule — bring it in */
+.user-pill__badge > svg {
+  display: block;
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+/* the admin badge tucks against the rule */
+.admin-user-pill > .pill__name {
+  padding-right: 4px;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pill {
+  .pill,
+  .pill::after {
     transition: none;
   }
 }

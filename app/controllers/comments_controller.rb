@@ -11,6 +11,7 @@ class CommentsController < ApplicationController
   end
 
   def destroy
+    return if @comment.admin_only
     @comment.destroy
     redirect_back fallback_location: root_path, notice: "Comment deleted."
   end

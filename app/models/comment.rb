@@ -3,6 +3,7 @@
 # Table name: comments
 #
 #  id               :bigint           not null, primary key
+#  admin_only       :boolean
 #  body             :text
 #  commentable_type :string           not null
 #  created_at       :datetime         not null
@@ -22,4 +23,6 @@
 class Comment < ApplicationRecord
   belongs_to :commentable, polymorphic: true
   belongs_to :user
+
+  attribute :admin_only, default: false
 end

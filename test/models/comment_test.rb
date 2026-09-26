@@ -5,6 +5,7 @@ require "test_helper"
 # Table name: comments
 #
 #  id               :bigint           not null, primary key
+#  admin_only       :boolean
 #  body             :text
 #  commentable_type :string           not null
 #  created_at       :datetime         not null

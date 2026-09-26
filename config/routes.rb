@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  get "reviews/show"
+  get "reviews/update"
+  get "reviews/create"
   get "ship/show"
   root "home#index"
 
@@ -28,6 +31,7 @@ Rails.application.routes.draw do
   resources :user, only: %i[show] do
     member do
       get "admin"
+      get "reviewer"
     end
   end
 
@@ -44,6 +48,7 @@ Rails.application.routes.draw do
     collection do
       get :can_make_ship_request
       get :next_step
+      get :resubmit
     end
   end
 
@@ -105,5 +110,13 @@ Rails.application.routes.draw do
     get    "rsvp/index",      to: "rsvp#index",  as: :rsvp
     post   "rsvp/import",     to: "rsvp#import", as: :rsvp_import
     delete "rsvp/delete/:id", to: "rsvp#delete", as: :rsvp_delete
+  end
+
+  # Reviewer
+  namespace :reviewer do
+    get "/", to: "dashboard#index", as: :dashboard
+
+    resources :ship_requests, only: %i[index show new edit update]
+    resources :user, only: %i[show]
   end
 end

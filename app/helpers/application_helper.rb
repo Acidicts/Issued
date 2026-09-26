@@ -55,8 +55,11 @@ module ApplicationHelper
     end
   end
 
-  USER_TOKEN_PATTERN = /\{\{user:(\d+)\}\}/
-  ADMIN_USER_TOKEN_PATTERN = /\{\{admin-user:(\d+)\}\}/
+  USER_TOKEN_PATTERN = /\{\{user:(\d+)\}\}/ # User Profile
+  REVIEWER_ENHANCED_USER_TOKEN_PATTERN = /\{\{reviewer_user:(\d+)\}\}/ # Enhanced User Profile
+  REVIEWER_USER_TOKEN_PATTERN = /\{\{reviewer-user:(\d+)\}\}/ # Reviewer Profile
+  ADMIN_USER_TOKEN_PATTERN = /\{\{admin-user:(\d+)\}\}/ # Admin Profile
+
   SHIP_TOKEN_PATTERN = /\{\{ship:(\d+)\}\}/
   SHIP_REQUEST_TOKEN_PATTERN = /\{\{ship_request:(\d+)\}\}/
   DEVLOG_TOKEN_PATTERN = /\{\{devlog:(\d+)\}\}/
@@ -66,36 +69,44 @@ module ApplicationHelper
   # render_encoded("{{slack:U078KKF3R1Q}}", context: :header)
   # {{slack:U078KKF3R1Q}}
 
-  def render_encoded(body, context: :body)
+  def render_encoded(body, context: :body, classes: "")
     safe_body = ERB::Util.html_escape(body.to_s)
 
     safe_body
       .gsub(USER_TOKEN_PATTERN) do
         user = User.find_by(id: $1)
-        user ? user_pill(user, context: context) : "unknown user"
+        user ? user_pill(user, context: context, classes: classes) : "unknown user"
+      end
+      .gsub(REVIEWER_ENHANCED_USER_TOKEN_PATTERN) do
+        user = User.find_by(id: $1)
+        user ? reviewer_user_pill(user, context: context, classes: classes) : "unknown user"
+      end
+      .gsub(REVIEWER_USER_TOKEN_PATTERN) do
+        user = User.find_by(id: $1)
+        user ? reviewer_profile_user_pill(user, context: context, classes: classes) : "unknown user"
       end
       .gsub(ADMIN_USER_TOKEN_PATTERN) do
         user = User.find_by(id: $1)
-        user ? admin_user_pill(user, context: context) : "unknown user"
+        user ? admin_user_pill(user, context: context, classes: classes) : "unknown user"
       end
       .gsub(SHIP_TOKEN_PATTERN) do
         ship = Ship.find_by(id: $1)
-        ship ? ship_pill(ship, context: context) : "unknown ship"
+        ship ? ship_pill(ship, context: context, classes: classes) : "unknown ship"
       end
       .gsub(SHIP_REQUEST_TOKEN_PATTERN) do
         ship_request = ShipRequest.find_by(id: $1)
-        ship_request ? ship_request_pill(ship_request, context: context) : "unknown ship request"
+        ship_request ? ship_request_pill(ship_request, context: context, classes: classes) : "unknown ship request"
       end
       .gsub(DEVLOG_TOKEN_PATTERN) do
         devlog = Devlog.find_by(id: $1)
-        devlog ? devlog_pill(devlog, context: context) : "unknown devlog"
+        devlog ? devlog_pill(devlog, context: context, classes: classes) : "unknown devlog"
       end
       .gsub(DESIGN_TOKEN_PATTERN) do
         design = Design.find_by(id: $1)
-        design ? design_pill(design, context: context) : "unknown design"
+        design ? design_pill(design, context: context, classes: classes) : "unknown design"
       end
       .gsub(SLACK_TOKEN_PATTERN) do
-        slack_pill($1, context: context)
+        slack_pill($1, context: context, classes: classes)
       end
       .html_safe
   end
@@ -106,45 +117,57 @@ module ApplicationHelper
     context == :heading ? "pill--heading" : "pill--body"
   end
 
-  def user_pill(user, context: :body)
-    content_tag(:a, class: "pill user-pill #{pill_context_class(context)}", href: user_path(user)) do
-      concat content_tag(:span, user.name, class: "user-pill__name")
+  def user_pill(user, context: :body, classes: "")
+    content_tag(:a, class: "pill user-pill #{pill_context_class(context)} #{classes}".strip, href: user_path(user), data: { turbo_frame: "_top" }) do
+      concat content_tag(:span, user.name, class: "user-pill__name pill__name")
     end
   end
 
-  def slack_pill(slack_id, context: :body)
-    content_tag(:a, class: "pill slack-pill #{pill_context_class(context)}", href: "https://hackclub.slack.com/team/#{slack_id}") do
-      concat content_tag(:span, slack_id, class: "user-pill__name")
+  def reviewer_profile_user_pill(user, context: :body, classes: "")
+    content_tag(:a, class: "pill user-pill #{pill_context_class(context)} #{classes}".strip, href: reviewer_user_path(user), data: { turbo_frame: "_top" }) do
+      concat content_tag(:span, user.name, class: "user-pill__name pill__name")
     end
   end
 
-  def admin_user_pill(user, context: :body)
-    content_tag(:a, class: "pill user-pill #{pill_context_class(context)}", href: admin_user_path(user)) do
+  def reviewer_user_pill(user, context: :body, classes: "")
+    content_tag(:a, class: "pill user-pill #{pill_context_class(context)} #{classes}".strip, href: reviewer_user_path(user), data: { turbo_frame: "_top" }) do
+      concat content_tag(:span, user.name, class: "user-pill__name pill__name")
+    end
+  end
+
+  def slack_pill(slack_id, context: :body, classes: "")
+    content_tag(:a, class: "pill slack-pill #{pill_context_class(context)} #{classes}".strip, href: "https://hackclub.slack.com/team/#{slack_id}") do
+      concat content_tag(:span, slack_id, class: "slack-pill__name pill__name")
+    end
+  end
+
+  def admin_user_pill(user, context: :body, classes: "")
+    content_tag(:a, class: "pill admin-user-pill #{pill_context_class(context)} #{classes}".strip, href: admin_user_path(user), data: { turbo_frame: "_top" }) do
       concat content_tag(:span, user.name, class: "user-pill__name pill__name")
       concat content_tag(:span, admin_badge_svg(width: "1.55rem", height: "1.55rem", color: "#ec3750"), class: "user-pill__badge") if user.admin?
     end
   end
 
-  def design_pill(design, context: :body)
-    content_tag(:a, class: "pill design-pill #{pill_context_class(context)}", href: design_path(design)) do
+  def design_pill(design, context: :body, classes: "")
+    content_tag(:a, class: "pill design-pill #{pill_context_class(context)} #{classes}".strip, href: design_path(design), data: { turbo_frame: "_top" }) do
       concat content_tag(:span, design.name, class: "design-pill__name pill__name")
     end
   end
 
-  def devlog_pill(devlog, context: :body)
-    content_tag(:span, class: "pill user-pill #{pill_context_class(context)}") do
+  def devlog_pill(devlog, context: :body, classes: "")
+    content_tag(:span, class: "pill devlog-pill #{pill_context_class(context)} #{classes}".strip) do
       concat content_tag(:span, devlog.title, class: "devlog-pill__name pill__name")
     end
   end
 
-  def ship_pill(ship, context: :body)
-    content_tag(:span, class: "pill user-pill #{pill_context_class(context)}") do
+  def ship_pill(ship, context: :body, classes: "")
+    content_tag(:span, class: "pill ship-pill #{pill_context_class(context)} #{classes}".strip) do
       concat content_tag(:span, ship.title, class: "ship-pill__name pill__name")
     end
   end
 
-  def ship_request_pill(ship_request, context: :body)
-    content_tag(:span, class: "pill user-pill #{pill_context_class(context)}") do
+  def ship_request_pill(ship_request, context: :body, classes: "")
+    content_tag(:a, class: "pill ship-request-pill #{pill_context_class(context)} #{classes}".strip, href: design_path(ship_request.design), data: { turbo_frame: "_top" }) do
       concat content_tag(:span, ship_request.title, class: "ship-request-pill__name pill__name")
     end
   end

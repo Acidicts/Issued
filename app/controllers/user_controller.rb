@@ -8,6 +8,9 @@ class UserController < ApplicationController
   def admin
   end
 
+  def reviewer
+  end
+
   private
   def set_user
     @user = User.find(params[:id])

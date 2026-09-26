@@ -20,9 +20,10 @@
 #
 class ShipRequest < ApplicationRecord
   belongs_to :design
-  has_many :ships, dependent: :destroy
+  has_one :ship, dependent: :destroy
   has_many :devlogs, dependent: :nullify
 
+  has_one :review, as: :reviewed
   has_one :image, as: :devlog
   has_many :comments, as: :commentable
 

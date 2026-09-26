@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_18_214108) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_24_214643) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -59,6 +59,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_18_214108) do
   end
 
   create_table "comments", force: :cascade do |t|
+    t.boolean "admin_only"
     t.text "body"
     t.bigint "commentable_id", null: false
     t.string "commentable_type", null: false
@@ -189,6 +190,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_18_214108) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "reviews", force: :cascade do |t|
+    t.text "comment"
+    t.datetime "created_at", null: false
+    t.text "proof_url"
+    t.bigint "reviewed_id", null: false
+    t.string "reviewed_type", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["reviewed_type", "reviewed_id"], name: "index_reviews_on_reviewed"
+    t.index ["user_id"], name: "index_reviews_on_user_id"
+  end
+
   create_table "rsvps", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -260,6 +273,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_18_214108) do
   add_foreign_key "orders", "products"
   add_foreign_key "orders", "users"
   add_foreign_key "print_areas", "products"
+  add_foreign_key "reviews", "users"
   add_foreign_key "rsvps", "users"
   add_foreign_key "ship_requests", "designs"
   add_foreign_key "ships", "ship_requests"

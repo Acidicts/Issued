@@ -23,9 +23,9 @@
           <div class="field file-field">
               <%= form.label :image do %>
                 Image 
-                  <%= render "shared/info_icon", aria_label: "Should be the latest version of your design, either png or svg" %>
+                  <%= render "shared/info_icon", aria_label: "Should be the latest version of your design, either png or svg", accept: "image/*" %>
               <% end %>
-              <%= form.file_field :image %>
+              <%= form.file_field :image, accept: "image/*" %>
           </div>
 
           <div class="field">

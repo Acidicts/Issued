@@ -1,0 +1,226 @@
+:root {
+    --ink: #241D16;
+    --line: #B7A878;
+    --paper: #E4D9BC;
+    --card: #F2EAD3;
+    --muted: #B7A878;
+    --accent: #1F6F78;
+    --ok: #1F6F78;
+    --warn: #B97F19;
+    --ink-soft: #4B4133;
+    --surface: #F2EAD3;
+    --thread-teal: #1F6F78;
+    --stamp-red: #D6402C;
+
+    --text-generic: #000;
+    --text-generic-inverted: #fff;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --ink: #E4D9BC;
+        --line: #5a4f3e;
+        --ink-soft: #B7A878;
+        --surface: #241D16;
+        --thread-teal: #1F6F78;
+        --stamp-red: #D6402C;
+
+        --paper: #241D16;
+        --card: #241D16;
+        --muted: #B7A878;
+        --accent: #1F6F78;
+        --ok: #1F6F78;
+        --warn: #B97F19;
+
+        --text-generic: #fff;
+        --text-generic-inverted: #000;
+    }
+}
+
+.ship-request__page {
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+    box-shadow: 0 0 3px rgba(255,255,255,0.1);
+    max-width: 1060px;
+
+    margin: 1rem auto 2rem auto;
+    justify-content: space-between;
+    gap: 1rem;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    width: 100%;
+}
+
+.ship-card {
+    text-align: center;
+}
+
+.ship-card a {
+    text-decoration: none;
+}
+
+.ship-request-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+
+    width: fit-content;
+    margin: 0 auto;
+    align-self: center;
+    justify-content: space-between;
+    align-items: stretch;
+}
+
+.ship-request-card__info {
+    display: flex;
+    flex-direction: row;
+    gap: 4rem;
+
+    background-color: var(--card);
+    border: var(--line) 2px solid;
+    border-radius: 32px;
+    padding: 1rem 2rem;
+}
+
+.ship-request-project__input {
+    display: flex;
+    flex-direction: column;
+
+    border: var(--line) 2px solid;
+    padding: 0.75rem;
+}
+
+.ship-card-reviewer-input__comments {
+    display: flex;
+    background-color: var(--surface);
+
+    border: var(--line) dashed 2px;
+    border-radius: 5px;
+
+    padding: 0.5rem;
+    margin: 0.5rem 0; 
+}
+
+.ship-request-project__input .ship-card-reviewer-input__comments:first-of-type {
+    flex-direction: column;
+}
+
+.ship-request-project__input .ship-card-reviewer-input__comments:first-of-type textarea {
+    resize: vertical;
+}
+
+.ship-request-project__input .ship-card-reviewer-input__comments:last-of-type {
+    justify-content: space-evenly;
+    flex-direction: row;
+    gap: 1rem;
+}
+
+.ship-request-project__input .ship-card-reviewer-input__comments:last-of-type label {
+    margin-left: 1rem;
+}
+
+.ship-card-reviewer-input__proof {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    background-color: var(--surface);
+    border: var(--line) dashed 2px;
+    border-radius: 5px;
+
+    padding: 0.5rem;
+    margin: 0.5rem 0;
+}
+
+.ship-card-reviewer-input__proof label {
+    color: var(--ink-soft);
+    font-weight: 700;
+    font-size: 0.9rem;
+    line-height: 1.35;
+}
+
+.ship-card-reviewer-input__proof input[type="file"] {
+    width: 100%;
+    padding: 0.45rem;
+    border: var(--line) 1px solid;
+    border-radius: 4px;
+    background: var(--card);
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+.ship-card-reviewer-input__proof input[type="file"]:focus {
+    outline: none;
+    border-color: var(--ink);
+}
+
+.ship-card-reviewer-input__status {
+    margin: 0;
+    min-height: 1.2em;
+    color: var(--ink-soft);
+    font-size: 0.8rem;
+    line-height: 1.2;
+}
+
+.ship-card-reviewer-input__status:empty {
+    display: none;
+}
+
+.ship-card-reviewer-input__proof input[type="file"]::file-selector-button {
+    border: 0;
+    margin-right: 0.85rem;
+    border-radius: 4px;
+    padding: 0.5rem 0.9rem;
+    font-weight: 700;
+    font-family: inherit;
+    background: var(--ink);
+    color: var(--paper);
+    cursor: pointer;
+    transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.ship-card-reviewer-input__proof input[type="file"]::file-selector-button:hover {
+    background: var(--accent);
+    color: var(--text-generic-inverted);
+}
+
+.ship-card-reviewer-input__proof input[type="file"]::file-selector-button:disabled,
+.ship-card-reviewer-input__proof input[type="file"]:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.reviewer-info_video {
+    max-width: 300px;
+    height: auto;
+}
+
+.ship-request__divider {
+    width: 1px;
+    background-color: var(--line);
+    opacity: 0.3;
+}
+
+.review-pill {
+    border-radius: 1rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 1rem;
+}
+
+.review-pill-approved {
+    background-color: #1F6F78;
+}
+
+.review-pill-rejected {
+    background-color: var(--stamp-red);
+}
+
+.review-pill-pending {
+    background-color: var(--warn);
+}
+
+.review-pill-elevated {
+    background-color: var(--line);
+}

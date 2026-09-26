@@ -1,0 +1,39 @@
+<%= stylesheet_link_tag 'pages/reviewer/dashboard.css', "data-turbo-track": "reload" %>
+
+<section class="reviewer-panel">
+  <header class="reviewer-panel__header">
+    <div>
+      <h1 class="reviewer-panel__title">Reviewer Panel</h1>
+      <p class="reviewer-panel__subtitle">Pending ship requests awaiting review</p>
+    </div>
+    <span class="reviewer-panel__count" aria-label="<%= pluralize(@ship_requests.size, 'pending request') %>">
+      <%= @ship_requests.size %>
+    </span>
+  </header>
+
+  <% if @ship_requests.empty? %>
+    <div class="reviewer-panel__empty">
+      <p class="reviewer-panel__empty-title">All caught up</p>
+      <p>No pending ship requests right now.</p>
+    </div>
+  <% else %>
+    <ul class="ship-list">
+      <% @ship_requests.each do |project_id, project_name, ship_request_id, user_name, user_id| %>
+        <li class="ship-card">
+          <div class="ship-card__body">
+            <span class="ship-card__stamp">Pending</span>
+            <h2 class="ship-card__project"><%= project_name %></h2>
+            <p class="ship-card__meta">
+              Submitted by <strong><%= render_encoded("{{reviewer_user:#{user_id}}}") %></strong>
+              <span class="ship-card__id"><%= render_encoded("{{ship_request:#{ship_request_id}}}") %></span>
+            </p>
+          </div>
+
+          <div class="ship-card__actions">
+            <%= link_to "Review", reviewer_ship_request_path(ship_request_id), class: "btn btn--primary" %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</section>

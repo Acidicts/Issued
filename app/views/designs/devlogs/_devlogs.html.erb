@@ -36,7 +36,8 @@
     <% end %>
 
     <div class="devlogs-grid">
-      <% items = design.devlogs.to_a + design.ships.to_a + (current_user&.reviewer? || design.user == current_user ? design.ship_requests.to_a : []) %>
+      <% ship_requests = design.ship_requests.includes(:ship).to_a %>
+      <% items = design.devlogs.to_a + ship_requests.reject { |sr| sr.ship } + ship_requests.filter_map(&:ship) %>
       <% if items.any? %>
           <% items.sort_by { |i| i.created_at || Time.at(0) }.reverse.each do |devlog| %>
             <% if devlog.is_a?(Devlog) %>
