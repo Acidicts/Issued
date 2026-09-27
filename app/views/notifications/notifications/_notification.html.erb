@@ -1,0 +1,25 @@
+<%= turbo_frame_tag "notification_#{notification.id}" do %>
+  <div class="receipt-item receipt-item--full <%= "read" unless notification[:read] == false %>"
+    data-notifications-target="item"
+    data-notifications-read-url-value="<%= read_notification_path(notification[:id]) %>"
+    data-kind="<%= notification[:kind] %>"
+    id="notification_<%= notification[:id] %>">
+
+    <span class="notif-mark notif-mark--<%= notification_style_class(notification[:kind]) %>">
+      <%= notification_mark(notification[:kind]) %>
+    </span>
+
+    <div class="receipt-body">
+      <p><%= render_encoded(notification.body) %></p>
+      <time><%= notification[:time] %></time>
+    </div>
+
+    <% unless notification[:read] %>
+      <button class="mark-read mark-read--single"
+        data-notifications-target="readControl"
+        data-action="click->notifications#markOneRead">
+        mark read
+      </button>
+    <% end %>
+  </div>
+<% end %>

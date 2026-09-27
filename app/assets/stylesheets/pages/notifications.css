@@ -63,6 +63,7 @@
   position: relative;
   padding: 14px 12px 14px 16px;
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   gap: 12px;
   border-bottom: 1px dashed var(--line);
@@ -195,6 +196,55 @@
   background: var(--ink);
   border-color: var(--ink);
   color: var(--paper);
+}
+
+/* ---- notification reply (text notifications) ---- */
+.notif-reply {
+  display: flex;
+  flex: 0 0 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.notif-boolean-reply {
+  display: flex;
+  flex: 0 0 100%;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.notif-answer {
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.notif-reply .nb-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--card);
+  border: 1.5px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 10px;
+  resize: vertical;
+}
+
+.notif-reply .nb-textarea:focus {
+  outline: none;
+  border-color: var(--thread-teal);
+}
+
+.notif-boolean-reply {
+  display: flex;
+  flex-direction: row;
 }
 
 /* ---- empty state ---- */

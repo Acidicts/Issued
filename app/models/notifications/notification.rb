@@ -7,7 +7,10 @@
 #  kind       :string
 #  priority   :integer
 #  read       :boolean
+#  text       :text
 #  time       :string
+#  type       :string
+#  value      :boolean
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  user_id    :bigint           not null
@@ -20,21 +23,25 @@
 #
 #  fk_rails_...  (user_id => users.id)
 #
-class Notification < ApplicationRecord
-  belongs_to :user
+module Notifications
+  class Notification < ApplicationRecord
+    belongs_to :user
 
-  attribute :read, :boolean, default: false
-  attribute :priority, :integer
-  enum :priority, {
-    urgent: 0,
-    middling: 1,
-    info: 2,
-    review: 3,
-    system: 4,
-    standard: 5
-  }
+    attribute :read, :boolean, default: false
+    attribute :priority, :integer
+    enum :priority, {
+      approved: 0,
+      rejected: 1,
+      pending:  2,
+      urgent:   3,
+      review:   4,
+      shop:     5,
+      order:    6,
+      system:   7
+    }, prefix: :priority
 
-  def read
-    update!(read: true)
+    def read
+      update!(read: true)
+    end
   end
 end

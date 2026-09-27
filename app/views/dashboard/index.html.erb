@@ -93,19 +93,22 @@
         <div class="bell-row">
           <div class="notification-title-count">
             <h2>Notifications</h2>
-            <h2 class="notification-count-bubble"><%= unread_count %></h2>
+            <h2 class="notification-count-bubble" data-notifications-target="count"><%= unread_count %></h2>
           </div>
           <button class="mark-read" data-action="click->notifications#markAllRead">mark all read</button>
         </div>
         <div class="receipt">
           <% @notifications.each do |notification| %>
-            <div class="receipt-item <%= "read" if notification[:read] %>" data-notifications-target="item">
+            <div class="receipt-item <%= "read" if notification[:read] %>"
+              data-notifications-target="item"
+              data-notifications-read-url-value="<%= read_notification_path(notification[:id]) %>">
               <span class="receipt-dot"></span>
               <div class="receipt-body">
                 <p><%= render_encoded(notification[:body]) %></p>
                 <time><%= notification[:time] %></time>
                 <% if !notification[:read] %>
-                  <%= link_to "Mark as read", read_notification_path(notification[:id]) %>
+                  <%= link_to "Mark as read", read_notification_path(notification[:id]),
+                        data: { notifications_target: "readControl", turbo: false } %>
                 <% end %>
               </div>
             </div>

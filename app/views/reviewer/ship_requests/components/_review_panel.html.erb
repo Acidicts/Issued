@@ -1,8 +1,4 @@
 <div class="ship-request-project__input">
-    <%# Proof videos are tens of megabytes. The browser PUTs them straight at R2
-        via Active Storage direct upload, and proof_upload_controller reports the
-        progress in the status line under the field so the form does not look dead
-        while the file is in flight. %>
     <%= form_with model: ship_request, url: reviewer_ship_request_path(ship_request),
         data: {
             controller: "proof-upload",
@@ -13,7 +9,7 @@
             <%= f.textarea :comment %>
         </div>
 
-        <div class="ship-card-reviewer-input__comments">
+        <div class="ship-card-reviewer-input__comments ship-card-reviewer-input__comments--toggle">
             <%= f.checkbox :make_comment %>
             <%= f.label :make_comment %>
         </div>
@@ -22,6 +18,21 @@
             <%= f.label :proof, "Video (Should be a video recorded of testing the project. NOT SETUP)" %>
             <%= f.file_field :proof, accept: "video/*", direct_upload: true %>
             <p class="ship-card-reviewer-input__status" data-proof-upload-target="status" role="status" aria-live="polite"></p>
+        </div>
+
+        <div class="ship-card-reviewer-input__approved-time" data-controller="hms-duration" data-hms-duration-seconds-value="<%= ship_request.total_time_seconds %>">
+            <%= label_tag nil, "Approved Time" %>
+            <div class="ship-card-reviewer-input__approved-time-fields">
+                <label>
+                    Hours
+                    <%= number_field_tag "approved_hours", nil, min: 0, data: { hms_duration_target: "hours", action: "input->hms-duration#recompute" } %>
+                </label>
+                <label>
+                    Minutes
+                    <%= number_field_tag "approved_minutes", nil, min: 0, max: 59, data: { hms_duration_target: "minutes", action: "input->hms-duration#recompute" } %>
+                </label>
+            </div>
+            <%= f.hidden_field :approved_seconds, data: { hms_duration_target: "seconds" } %>
         </div>
 
         <div class="ship-card-reviewer-input__actions">

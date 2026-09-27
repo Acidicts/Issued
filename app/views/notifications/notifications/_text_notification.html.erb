@@ -1,0 +1,29 @@
+<%= turbo_frame_tag "notification_#{notification.id}" do %>
+  <div class="receipt-item receipt-item--full <%= "read" unless notification[:read] == false %>"
+    data-notifications-target="item"
+    data-notifications-read-url-value="<%= read_notification_path(notification[:id]) %>"
+    data-kind="<%= notification[:kind] %>"
+    id="notification_<%= notification[:id] %>">
+
+    <span class="notif-mark notif-mark--<%= notification_style_class(notification[:kind]) %>">
+      <%= notification_mark(notification[:kind]) %>
+    </span>
+
+    <div class="receipt-body">
+      <p><%= render_encoded(notification.body) %></p>
+      <time><%= notification[:time] %></time>
+      <% if notification.text.present? %>
+        <div class="notif-answer">
+          <span><strong>Your reply: </strong><%= notification.text %></span>
+        </div>
+      <% end %>
+    </div>
+
+    <% unless notification[:read] %>
+      <%= form_with url: read_notification_path(notification), method: :get, class: "notif-reply" do |f| %>
+        <%= f.text_area :text, value: notification.text, rows: 3, class: "nb-textarea", placeholder: "Reply to this notification" %>
+        <%= f.submit "mark read", class: "mark-read mark-read--single" %>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

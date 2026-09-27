@@ -22,6 +22,9 @@ class Reviewer::ShipRequestsController < Reviewer::ReviewerController
     ship_request = ShipRequest.find(params[:id])
     status_set = { "Approve" => "approved", "Reject" => "rejected", "Elevate" => "elevated" }[params[:status_set]]
 
+    submitted_seconds = params.dig(:ship_request, :approved_seconds).to_i
+    approved_seconds = [ submitted_seconds, ship_request.total_time_seconds.to_i ].min
+
     if status_set.nil?
       redirect_to reviewer_ship_request_path(ship_request), alert: "Failed to submit: no status selected"
       return
@@ -36,8 +39,14 @@ class Reviewer::ShipRequestsController < Reviewer::ReviewerController
           raise ActiveRecord::Rollback
         end
 
+        ship_request.review.proof_file.purge
         ship_request.review&.destroy
         ship_request.ship.destroy if ship_request.ship && "elevated".eql?(status_set)
+
+        ship_request.design.user.notifications.create(
+          kind: :pending,
+          body: "Your ship for #{ship_request.design.name} has been elevated."
+        )
 
         redirect_to design_path(ship_request.design), notice: "Successfully elevated ship request"
         return
@@ -60,10 +69,6 @@ class Reviewer::ShipRequestsController < Reviewer::ReviewerController
       return
     end
 
-    # A direct upload posts back the signed id of a blob the browser has already
-    # sent straight to the storage service, so the bytes never pass through this
-    # process. Without that JS the browser posts the file itself instead, and the
-    # upload happens further down inside the transaction.
     direct_upload = proof.is_a?(String)
     signed_blob = ActiveStorage::Blob.find_signed(proof) if direct_upload
 
@@ -88,6 +93,7 @@ class Reviewer::ShipRequestsController < Reviewer::ReviewerController
     begin
       ShipRequest.transaction do
         ship_request.status = status_set
+        ship_request.approved_seconds = approved_seconds
 
         unless ship_request.save
           error = "Failed to submit review"
@@ -113,6 +119,12 @@ class Reviewer::ShipRequestsController < Reviewer::ReviewerController
             content_type: proof.content_type
           )
         end
+
+        notification_priority = { "Approve" => "approved", "Reject" => "rejected", "Elevate" => "pending" }[params[:status_set]]
+        ship_request.design.user.notifications.create(
+          kind: notification_priority,
+          body: "Your ship for #{ship_request.design.name} has been #{status_set}."
+        )
 
         review = ship_request.create_review(user: current_user, reviewed: ship_request, comment: params.dig(:ship_request, :comment), proof_file: proof_blob)
         unless review&.persisted?

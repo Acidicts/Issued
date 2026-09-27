@@ -6,13 +6,16 @@
                 <%= image_tag image.image_for(:display) %>
             </div>
         <% end %>
-
+        
         <% if current_user.reviewer? %>
             <div class="comment-card-header__actions">
+                <span class="review-pill review-pill-<%= devlog.status %>"><%= devlog.status.humanize %></span>
                 <%= link_to reviewer_ship_request_path(devlog), data: { turbo_frame: "_top" } do %>
                     <%= view_svg(width: 32, height: 32, color: "#B7A878")%>
                 <% end %>
             </div>
+        <% else %>
+            <span class="review-pill review-pill-<%= devlog.status %>"><%= devlog.status.humanize %></span>
         <% end %>
 </div>
     <div class="devlog-card-contents">

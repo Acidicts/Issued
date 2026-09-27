@@ -28,7 +28,9 @@
 
             <div class="devlog-card-header__time_edit">
                 <div class="devlog-card-header__time_edit">
-                    <time>⏱ Time: <%= format_duration(total_seconds: devlog.ship_request.total_time_seconds, seconds_enabled: false) %></time>
+                    <%= render "shared/info_hover",
+                          aria_label: "#{format_duration(total_seconds: devlog.ship_request.approved_seconds, seconds_enabled: false)} approved",
+                          aria_body: content_tag(:time, "⏱ Time: #{format_duration(total_seconds: devlog.ship_request.total_time_seconds, seconds_enabled: false)}") %>
                 </div>
             </div>
         </div>

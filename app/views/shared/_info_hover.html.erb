@@ -1,0 +1,11 @@
+<% raise ArgumentError, "aria_label is required" unless local_assigns.key?(:aria_label) %>
+<% raise ArgumentError, "aria_body is required" unless local_assigns.key?(:aria_body) %>
+
+<span class="brand-info-icon"
+      data-controller="info-icon"
+      data-action="mouseenter->info-icon#show mouseleave->info-icon#hide focus->info-icon#show blur->info-icon#hide"
+      tabindex="0"
+      aria-label="<%= aria_label %>">
+  <%= raw aria_body %>
+  <span class="brand-info-icon__tooltip" data-info-icon-target="tooltip" role="tooltip"><%= aria_label %></span>
+</span>

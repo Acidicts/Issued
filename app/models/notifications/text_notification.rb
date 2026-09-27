@@ -23,34 +23,8 @@
 #
 #  fk_rails_...  (user_id => users.id)
 #
-one:
-  user: one
-  time: MyString
-  read: false
-  body: MyText
-  priority: 1
-
-two:
-  user: two
-  time: MyString
-  read: false
-  body: MyText
-  priority: 1
-
-boolean_one:
-  user: one
-  type: Notifications::BooleanNotification
-  time: MyString
-  read: false
-  body: MyText
-  priority: 1
-  value: true
-
-text_one:
-  user: one
-  type: Notifications::TextNotification
-  time: MyString
-  read: false
-  body: MyText
-  priority: 1
-  text: Your ship was approved
+module Notifications
+  class TextNotification < Notification
+    validates :body, presence: true
+  end
+end

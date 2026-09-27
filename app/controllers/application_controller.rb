@@ -47,7 +47,7 @@ class ApplicationController < ActionController::Base
   def set_unread_notifications
     return unless current_user
     @unread_notification_count = current_user.notifications.where(read: false).count
-    @notifications = current_user.notifications.limit(30).select(:id, :body, :priority, :time, :read)
+    @notifications = current_user.notifications.limit(30).select(:id, :body, :priority, :time, :read, :type)
   end
 
   def current_url

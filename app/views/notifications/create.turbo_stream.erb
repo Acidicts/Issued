@@ -1,0 +1,3 @@
+<%= turbo_stream.update "notification_#{@notification.id}" do %>
+    <%= render partial: "notifications/notification", notification: @notification %>
+<% end %>

@@ -10,6 +10,12 @@ module ActiveSupport
     # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
     fixtures :all
 
+    # The notification model is namespaced, so `notifications`.camelize resolves to the
+    # `Notifications` module instead of an ActiveRecord class and Rails cannot infer the
+    # fixture's model class. Without it the `user:` labels are never turned into
+    # foreign keys and the insert fails on an unknown `user` column.
+    set_fixture_class notifications: "Notifications::Notification"
+
     # Add more helper methods to be used by all tests here...
   end
 end

@@ -2,7 +2,9 @@ module NotificationsHelper
   NOTIFICATION_STYLES = {
     approved: [ "✓", "approved" ],
     rejected: [ "✕", "rejected" ],
-    review:   [ "…", "pending" ],
+    pending:  [ "-", "pending" ],
+    urgent:   [ "!", "urgent" ],
+    review:   [ "…", "review" ],
     shop:     [ "$", "shop" ],
     order:    [ "📦", "order" ],
     system:   [ "•", "system" ]

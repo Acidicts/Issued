@@ -409,13 +409,23 @@
 
 .devlog-card-image__controls {
     display: inline-flex;
-
+    align-items: flex-start;
     justify-content: space-between;
 }
 
 .comment-card-header__actions {
-    align-items: top;
-    justify-content: baseline;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.comment-card-header__actions > a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
 }
 
 .devlog-card-image {
@@ -692,4 +702,27 @@
     .dd-panel__inner .nb-errors {
         background: rgba(214, 64, 44, 0.1);
     }
+}
+
+
+.review-pill {
+    border-radius: 1rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 1rem;
+}
+
+.review-pill-approved {
+    background-color: #1F6F78;
+}
+
+.review-pill-rejected {
+    background-color: var(--stamp-red);
+}
+
+.review-pill-pending {
+    background-color: var(--warn);
+}
+
+.review-pill-elevated {
+    background-color: var(--line);
 }

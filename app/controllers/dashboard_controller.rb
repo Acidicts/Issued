@@ -44,7 +44,7 @@ class DashboardController < ApplicationController
         body: d.body,
         priority: d.priority,
         time: d.time,
-        read: d.read,
+        read: d[:read],
         id: d.id
       }
     end

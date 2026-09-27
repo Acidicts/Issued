@@ -24,7 +24,7 @@ class User < ApplicationRecord
   has_many :designs, dependent: :destroy
   has_many :orders, dependent: :destroy
   has_many :rsvps, dependent: :destroy
-  has_many :notifications, dependent: :destroy
+  has_many :notifications, class_name: "Notifications::Notification", dependent: :destroy
   has_many :comments, dependent: :destroy
 
   has_many :balance_events, dependent: :destroy
@@ -88,7 +88,7 @@ class User < ApplicationRecord
 
       if calculate_threads && notification
         notifications.build(
-          priority: :info,
+          priority: :system,
           body: "#{user_token(initiator)} added #{amount.abs} threads to your balance"
         )
       end
@@ -110,7 +110,7 @@ class User < ApplicationRecord
 
       if calculate_threads && notification
         notifications.build(
-          priority: :info,
+          priority: :system,
           body: "#{user_token(initiator)} removed #{amount.abs} threads from your balance"
         )
       end
