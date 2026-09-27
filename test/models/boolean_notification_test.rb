@@ -39,15 +39,23 @@ class BooleanNotificationTest < ActiveSupport::TestCase
     end
   end
 
-  test "requires a yes or no input" do
+  test "leaves the value nil while unread" do
     notification = Notifications::BooleanNotification.new(user: users(:one), body: "Ship shipped")
+
+    assert notification.valid?
+    assert_nil notification.value
+    assert_nil notification.yes_no
+  end
+
+  test "requires a yes or no input once read" do
+    notification = Notifications::BooleanNotification.new(user: users(:one), body: "Ship shipped", read: true)
 
     assert_not notification.valid?
     assert_includes notification.errors[:value], "must be a yes or no input"
   end
 
   test "rejects an unrecognised input" do
-    notification = Notifications::BooleanNotification.new(user: users(:one), body: "Ship shipped", yes_no: "maybe")
+    notification = Notifications::BooleanNotification.new(user: users(:one), body: "Ship shipped", read: true, yes_no: "maybe")
 
     assert_not notification.valid?
     assert_nil notification.value

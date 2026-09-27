@@ -29,6 +29,11 @@ module Notifications
     NO_INPUTS = [ false, 0, "0", "false", "f", "no", "n", "off", :false, :f, :no, :n, :off ].freeze
     YES_NO_LABELS = { true => "Yes", false => "No" }.freeze
 
+    # `value` stays nil until the notification is answered, so it is only required once read.
+    # `read?` cannot be used as the condition: `read` is overridden as a writer, so the
+    # generated query method calls the writer and recurses.
+    validates :value, inclusion: { in: [ true, false ], message: "must be a yes or no input" }, if: -> { self[:read] }
+
     def yes_no
       return if value.nil?
 

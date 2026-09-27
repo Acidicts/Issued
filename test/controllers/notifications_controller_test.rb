@@ -108,4 +108,15 @@ class NotificationsControllerTest < ActionDispatch::IntegrationTest
   test "an unanswered boolean notification displays no answer" do
     assert_nil notifications(:boolean_one).tap { |n| n.update_columns(value: nil) }.yes_no_label
   end
+
+  test "read without an answer leaves a boolean notification unread" do
+    notification = notifications(:boolean_one)
+    notification.update!(read: false, value: nil)
+
+    get read_notification_url(notification), headers: { "Referer" => notifications_url }
+
+    assert_redirected_to notifications_url
+    assert_nil notification.reload.value
+    assert_equal false, notification[:read]
+  end
 end
