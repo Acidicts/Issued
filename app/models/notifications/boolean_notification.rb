@@ -35,9 +35,16 @@ module Notifications
     validates :value, inclusion: { in: [ true, false ], message: "must be a yes or no input" }, if: -> { self[:read] }
     validate  :check_read
 
+    def answered?
+      !value.nil?
+    end
+
+    # Keeps an unanswered notification unread: `update!(read: true)` raises instead of
+    # silently marking it read. The attribute is read through the hash because `read` is
+    # overridden as a writer, and calling it here would recurse through the validation.
     def check_read
-      if self.read && value.nil?
-        self.update(value: nil)
+      if self[:read] && !answered?
+        errors.add(:value, "must be a yes or no input before the notification can be marked read")
       end
     end
 

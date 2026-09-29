@@ -58,16 +58,28 @@ class NotificationsControllerTest < ActionDispatch::IntegrationTest
     assert_equal true, notification[:read]
   end
 
-  test "read without a reply still marks the notification read" do
+  test "read without a reply leaves the text notification unread" do
     notification = notifications(:text_one)
     notification.update!(read: false, text: nil)
 
-    patch read_notification_url(notification, text: ""),
+    patch read_notification_url(notification),
       headers: { "Referer" => notifications_url }
 
     assert_redirected_to notifications_url
     assert_nil notification.reload.text
-    assert_equal true, notification[:read]
+    assert_equal false, notification[:read]
+  end
+
+  test "read with a blank reply leaves the text notification unread" do
+    notification = notifications(:text_one)
+    notification.update!(read: false, text: nil)
+
+    patch read_notification_url(notification, text: "   "),
+      headers: { "Referer" => notifications_url }
+
+    assert_redirected_to notifications_url
+    assert_nil notification.reload.text
+    assert_equal false, notification[:read]
   end
 
   test "index renders yes and no choices for an unread boolean notification" do

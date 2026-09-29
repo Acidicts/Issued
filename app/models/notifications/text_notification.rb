@@ -26,13 +26,18 @@
 module Notifications
   class TextNotification < Notification
     validates :body, presence: true
-    validate :check_read
+    validate  :check_read
 
-    attribute :text, default: "", null: false
+    def answered?
+      text.present?
+    end
 
+    # Keeps an unanswered notification unread: `update!(read: true)` raises instead of
+    # silently marking it read. The attribute is read through the hash because `read` is
+    # overridden as a writer, and calling it here would recurse through the validation.
     def check_read
-      if self.read && text == ""
-        self.update(value: nil)
+      if self[:read] && !answered?
+        errors.add(:text, "must be replied to before the notification can be marked read")
       end
     end
   end

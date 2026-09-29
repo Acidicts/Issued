@@ -31,6 +31,34 @@ class TextNotificationTest < ActiveSupport::TestCase
     notification = Notifications::TextNotification.new(user: users(:one), body: "Ship shipped", text: "   ")
 
     assert_predicate notification, :valid?
+    assert_not notification.answered?
+  end
+
+  test "requires a reply once read" do
+    notification = Notifications::TextNotification.new(user: users(:one), body: "Ship shipped", read: true)
+
+    assert_not notification.valid?
+    assert_includes notification.errors[:text], "must be replied to before the notification can be marked read"
+  end
+
+  test "refuses to be marked read without a reply" do
+    notification = Notifications::TextNotification.create!(user: users(:one), body: "Ship shipped", read: false)
+
+    assert_not notification.answered?
+    assert_raises ActiveRecord::RecordInvalid do
+      notification.read
+    end
+
+    assert_equal false, notification.reload[:read]
+  end
+
+  test "is marked read once it is replied to" do
+    notification = Notifications::TextNotification.create!(user: users(:one), body: "Ship shipped", read: false)
+
+    notification.text = "Your ship was approved"
+    notification.read
+
+    assert_equal true, notification.reload[:read]
   end
 
   test "persists the text input and reloads as a TextNotification" do

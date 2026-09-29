@@ -54,6 +54,25 @@ class BooleanNotificationTest < ActiveSupport::TestCase
     assert_includes notification.errors[:value], "must be a yes or no input"
   end
 
+  test "refuses to be marked read without an answer" do
+    notification = Notifications::BooleanNotification.create!(user: users(:one), body: "Ship shipped", read: false)
+
+    assert_not notification.answered?
+    assert_raises ActiveRecord::RecordInvalid do
+      notification.read
+    end
+
+    assert_equal false, notification.reload[:read]
+  end
+
+  test "is marked read once an answer is given" do
+    notification = Notifications::BooleanNotification.create!(user: users(:one), body: "Ship shipped", read: false, yes_no: "yes")
+
+    assert_predicate notification, :answered?
+    notification.read
+    assert_equal true, notification.reload[:read]
+  end
+
   test "rejects an unrecognised input" do
     notification = Notifications::BooleanNotification.new(user: users(:one), body: "Ship shipped", read: true, yes_no: "maybe")
 

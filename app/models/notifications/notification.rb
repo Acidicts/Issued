@@ -43,5 +43,11 @@ module Notifications
     def read
       update!(read: true)
     end
+
+    # A plain notification asks nothing, so it is always markable read. Branches that
+    # expect an answer override this and guard themselves with `check_read`.
+    def answered?
+      true
+    end
   end
 end
