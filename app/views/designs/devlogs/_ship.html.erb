@@ -7,7 +7,7 @@
             </div>
         <% end %>
 
-        <% if current_user.reviewer? %>
+        <% if reviewer? %>
             <div class="comment-card-header__actions">
                 <%= link_to reviewer_ship_request_path(devlog.ship_request), data: { turbo_frame: "_top" } do %>
                     <%= view_svg(width: 32, height: 32, color: "#B7A878")%>

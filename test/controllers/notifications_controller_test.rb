@@ -21,7 +21,7 @@ class NotificationsControllerTest < ActionDispatch::IntegrationTest
     notification = notifications(:one)
     notification.update!(read: false)
 
-    get read_notification_url(notification), headers: { "Referer" => notifications_url }
+    patch read_notification_url(notification), headers: { "Referer" => notifications_url }
 
     assert_redirected_to notifications_url
     # `Notifications::Notification#read` is a writer, so read the attribute through the hash.
@@ -31,7 +31,7 @@ class NotificationsControllerTest < ActionDispatch::IntegrationTest
   test "read cannot touch another user's notification" do
     notification = notifications(:two)
 
-    get read_notification_url(notification)
+    patch read_notification_url(notification)
 
     assert_response :not_found
     assert_equal false, notification.reload[:read]
@@ -42,7 +42,7 @@ class NotificationsControllerTest < ActionDispatch::IntegrationTest
 
     get notifications_url
 
-    assert_select "form.notif-reply[action=?][method=?]", read_notification_path(notifications(:text_one)), "get"
+    assert_select "form.notif-reply[action=?][method=?]", read_notification_path(notifications(:text_one)), "post"
     assert_select "form.notif-reply textarea[name=?]", "text"
   end
 
@@ -50,7 +50,7 @@ class NotificationsControllerTest < ActionDispatch::IntegrationTest
     notification = notifications(:text_one)
     notification.update!(read: false, text: nil)
 
-    get read_notification_url(notification, text: "looks good, shipping it"),
+    patch read_notification_url(notification, text: "looks good, shipping it"),
       headers: { "Referer" => notifications_url }
 
     assert_redirected_to notifications_url
@@ -62,7 +62,7 @@ class NotificationsControllerTest < ActionDispatch::IntegrationTest
     notification = notifications(:text_one)
     notification.update!(read: false, text: nil)
 
-    get read_notification_url(notification, text: ""),
+    patch read_notification_url(notification, text: ""),
       headers: { "Referer" => notifications_url }
 
     assert_redirected_to notifications_url
@@ -85,7 +85,7 @@ class NotificationsControllerTest < ActionDispatch::IntegrationTest
     notification = notifications(:boolean_one)
     notification.update!(read: false, value: nil)
 
-    get read_notification_url(notification, boolean: "true"),
+    patch read_notification_url(notification, boolean: "true"),
       headers: { "Referer" => notifications_url }
 
     assert_equal true, notification.reload.value
@@ -97,7 +97,7 @@ class NotificationsControllerTest < ActionDispatch::IntegrationTest
     notification = notifications(:boolean_one)
     notification.update!(read: false, value: nil)
 
-    get read_notification_url(notification, boolean: "false"),
+    patch read_notification_url(notification, boolean: "false"),
       headers: { "Referer" => notifications_url }
 
     assert_equal false, notification.reload.value
@@ -113,7 +113,7 @@ class NotificationsControllerTest < ActionDispatch::IntegrationTest
     notification = notifications(:boolean_one)
     notification.update!(read: false, value: nil)
 
-    get read_notification_url(notification), headers: { "Referer" => notifications_url }
+    patch read_notification_url(notification), headers: { "Referer" => notifications_url }
 
     assert_redirected_to notifications_url
     assert_nil notification.reload.value

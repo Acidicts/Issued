@@ -1,6 +1,7 @@
 class OrdersController < ApplicationController
   before_action :require_login
   before_action :set_nav
+  before_action :set_owned_order, only: %i[show edit update cancel]
   layout "application"
 
   def index
@@ -9,8 +10,6 @@ class OrdersController < ApplicationController
   end
 
   def show
-    @order = Order.find(params[:id])
-    redirect_to root_path unless current_user == @order.user || current_user.admin?
   end
 
   def new
@@ -91,6 +90,16 @@ class OrdersController < ApplicationController
 
     print_area_configs = params[:order][:print_area_configs] || {}
     print_area_configs = print_area_configs.to_unsafe_h if print_area_configs.respond_to?(:to_unsafe_h)
+
+    # design_id arrives from the client as free JSON, so it is not a substitute for
+    # an ownership check: without this, any order could carry another user's design
+    # (and its image) into a preview the submitter can download.
+    owned_design_ids = current_user.designs.ids.map(&:to_s)
+    if print_area_configs.values.any? { |config| config["design_id"].present? && !owned_design_ids.include?(config["design_id"].to_s) }
+      redirect_to shop_path, alert: "One of the designs on that order isn't yours."
+      return
+    end
+
     print_area_configs.each do |area_name, config|
       @order.order_print_areas.build(
         design_id: config["design_id"],
@@ -114,11 +123,9 @@ class OrdersController < ApplicationController
   end
 
   def edit
-    @order = Order.find(params[:id])
   end
 
   def update
-    @order = Order.find(params[:id])
     if @order.update(order_params)
       redirect_to orders_path, notice: "Order updated."
     else
@@ -127,16 +134,21 @@ class OrdersController < ApplicationController
   end
 
   def cancel
-    order = Order.find(params[:id])
-    return unless order.user == current_user || current_user.admin?
+    @order.update!(status: :user_cancelled)
 
-    order.status = :user_cancelled
-    order.save!
-
-    render partial: "orders/status_pill", locals: { order: order }
+    render partial: "orders/status_pill", locals: { order: @order }
   end
 
   private
+
+  # Order ids are sequential, so every action that loads by id has to establish
+  # ownership before the record reaches the view or a write.
+  def set_owned_order
+    @order = Order.find(params[:id])
+    return if @order.user == current_user || current_user.admin?
+
+    redirect_to orders_path, alert: "You are not authorized to view that order."
+  end
 
   def set_nav
     @nav = "dashboard"

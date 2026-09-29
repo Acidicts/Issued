@@ -109,7 +109,7 @@
     </div>
   </div>
 
-  <script>
+  <script nonce="<%= content_security_policy_nonce %>">
     (function() {
       var container = document.querySelector("[data-confirmation-preview]");
       if (!container) return;

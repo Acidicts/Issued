@@ -63,6 +63,12 @@ class Reviewer::ShipRequestsController < Reviewer::ReviewerController
       return
     end
 
+    # A reviewer must not be the one deciding their own ship request.
+    if ship_request.design.user_id == current_user.id
+      redirect_to reviewer_ship_request_path(ship_request), alert: "You cannot review your own ship request."
+      return
+    end
+
     proof = params.dig(:ship_request, :proof)
     if proof.blank?
       redirect_to reviewer_ship_request_path(ship_request), alert: "Requires Proof of Review"

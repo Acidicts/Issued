@@ -1,0 +1,21 @@
+/* Sign-in is a form button, not a link: the Hack Club OAuth request phase is POST-only and
+   CSRF-checked, so it has to be submitted from the page the user clicked on. These undo the
+   user-agent button chrome so the control still reads as the link it replaced. */
+.oauth-handoff-form {
+    display: inline;
+    margin: 0;
+}
+
+.oauth-handoff-form button {
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+}
+
+/* .nav-link sets no font-size or border, so a button would otherwise pick up the user-agent
+   default size and a visible border. */
+.oauth-handoff-form button.nav-link {
+    border: 0;
+    font-size: inherit;
+    line-height: inherit;
+}

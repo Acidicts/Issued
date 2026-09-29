@@ -10,8 +10,13 @@ class DesignsController < ApplicationController
   end
 
   def show
-    @design.sync_hackatime_projects
-    @design.update_logged_time
+    # Both of these write. designs#show is public, so an anonymous visitor must not be
+    # able to drive database writes (or burn the owner's Hackatime budget) by loading
+    # the page.
+    if current_user
+      @design.sync_hackatime_projects
+      @design.update_logged_time
+    end
     @ship_request = ShipRequest.new()
   end
 
@@ -42,8 +47,7 @@ class DesignsController < ApplicationController
     if @design.save
       add_hackatime_project_to_design(hackatime_project_name)
       if image_file.present?
-        img = @design.images.create!(image_file: image_file)
-        RemoveBackgroundJob.perform_later(img.id) if should_remove_bg
+        save_image(@design.images.new, image_file, remove_background: should_remove_bg)
       end
       redirect_to design_path(@design), notice: "Design created successfully."
     else
@@ -68,8 +72,7 @@ class DesignsController < ApplicationController
     if @design.save
       add_hackatime_project_to_design(hackatime_project_name)
       if image_file.present?
-        img = @design.images.create!(image_file: image_file)
-        RemoveBackgroundJob.perform_later(img.id) if should_remove_bg
+        save_image(@design.images.new, image_file, remove_background: should_remove_bg)
       end
       redirect_to design_path(@design), notice: "Design updated successfully."
     else

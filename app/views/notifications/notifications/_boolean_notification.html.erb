@@ -20,7 +20,7 @@
     </div>
 
     <% unless notification[:read] %>
-      <%= form_with url: read_notification_path(notification), method: :get, class: "notif-boolean-reply" do %>
+      <%= form_with url: read_notification_path(notification), method: :patch, class: "notif-boolean-reply" do %>
         <%= button_tag "Yes", name: "boolean", value: "true", class: "mark-read mark-read--single" %>
         <%= button_tag "No", name: "boolean", value: "false", class: "mark-read mark-read--single" %>
       <% end %>

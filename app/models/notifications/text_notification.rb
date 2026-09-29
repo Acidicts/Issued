@@ -26,5 +26,14 @@
 module Notifications
   class TextNotification < Notification
     validates :body, presence: true
+    validate :check_read
+
+    attribute :text, default: "", null: false
+
+    def check_read
+      if self.read && text == ""
+        self.update(value: nil)
+      end
+    end
   end
 end

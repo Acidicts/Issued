@@ -106,9 +106,10 @@
               <div class="receipt-body">
                 <p><%= render_encoded(notification[:body]) %></p>
                 <time><%= notification[:time] %></time>
-                <% if !notification[:read] %>
-                  <%= link_to "Mark as read", read_notification_path(notification[:id]),
-                        data: { notifications_target: "readControl", turbo: false } %>
+                <% if !notification[:read] && notification[:type] == Notifications::Notification.name %>
+                  <%= button_to "Mark as read", read_notification_path(notification[:id]),
+                        method: :patch, class: "mark-read mark-read--single",
+                        form: { data: { notifications_target: "readControl" } } %>
                 <% end %>
               </div>
             </div>

@@ -111,13 +111,7 @@ class Design < ApplicationRecord
   end
 
   def check_link(link)
-    uri = URI.parse(link)
-    response = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https", open_timeout: 5, read_timeout: 5) do |http|
-      http.head(uri.request_uri)
-    end
-    response.is_a?(Net::HTTPSuccess)
-  rescue URI::InvalidURIError, Net::OpenTimeout, Net::ReadTimeout, SocketError, Errno::ECONNREFUSED
-    false
+    LinkChecker.reachable?(link)
   end
 
   def can_make_ship_request_checks

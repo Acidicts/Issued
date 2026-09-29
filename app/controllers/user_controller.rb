@@ -1,5 +1,5 @@
 class UserController < ApplicationController
-  before_action :require_login, except: [ :show, :admin ]
+  before_action :require_login, except: [ :show ]
   before_action :set_user
 
   def show
@@ -13,6 +13,6 @@ class UserController < ApplicationController
 
   private
   def set_user
-    @user = User.find(params[:id])
+    @user = User.find_by(id: params[:id])
   end
 end

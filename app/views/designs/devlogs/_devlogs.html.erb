@@ -55,7 +55,7 @@
     </div>
   </div>
 
-  <script>
+  <script nonce="<%= content_security_policy_nonce %>">
   (function () {
     var root = document.querySelector('[data-dd]');
     var panel = document.getElementById('devlog-form-panel');

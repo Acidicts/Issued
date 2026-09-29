@@ -48,7 +48,7 @@
       </div>
     </div>
     <div class="inline-flex jc-space-evenly g-16p">
-      <% if @order.pending? && (current_user == @order.user || current_user.admin?) %>
+      <% if @order.pending? && (current_user == @order.user || admin?) %>
         <%= button_to "Cancel", cancel_orders_path(id: @order.id), method: :delete, class: "btn btn-secondary", data: { turbo_frame: "order_status_#{@order.id}" } %>
       <% end %>
       <%= link_to "Back to orders", orders_path, class: "btn btn-secondary" %>

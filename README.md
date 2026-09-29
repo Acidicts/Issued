@@ -186,10 +186,11 @@ Without these, `/login` redirects back with an OAuth-not-configured alert.
 
 ### Strongly recommended
 
-- `HACKCLUB_REDIRECT_URI`
-	- Explicit callback URL for OAuth provider config.
 - `APP_URL`
-	- Used to build absolute URLs/OG metadata in helpers/admin views.
+	- The origin this app is served from, e.g. `https://issued.hackclub.com`. Builds absolute
+	  URLs/OG metadata in helpers and admin views, and is the origin the Hack Club OAuth
+	  `redirect_uri` is built from (`APP_URL + /auth/hackclub/callback`). Set it to the origin
+	  registered on the Hack Club app; the OAuth callback cannot be pointed elsewhere.
 
 ### Hackatime integration
 

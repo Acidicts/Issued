@@ -40,8 +40,24 @@ export default class extends Controller {
     item.querySelector("[data-notifications-target='readControl']")?.remove()
 
     // The read endpoint redirects back, so the response body is of no interest.
+    // It is a PATCH (not a GET) because it also persists a reply, and a state
+    // change reachable by GET is triggerable from any other site.
     const url = item.dataset.notificationsReadUrlValue
-    if (url) fetch(url, { headers: { Accept: "text/html" }, credentials: "same-origin" })
+    if (url) {
+      fetch(url, {
+        method: "PATCH",
+        headers: {
+          Accept: "text/html",
+          "X-Requested-With": "XMLHttpRequest",
+          "X-CSRF-Token": this.csrfToken
+        },
+        credentials: "same-origin"
+      })
+    }
+  }
+
+  get csrfToken() {
+    return document.querySelector("meta[name='csrf-token']")?.content ?? ""
   }
 
   updateCount(value) {

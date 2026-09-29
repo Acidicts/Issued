@@ -13,7 +13,11 @@ class DevlogsController < ApplicationController
     image_file = params[:devlog][:image]
     should_remove_bg = ActiveModel::Type::Boolean.new.cast(permitted.delete(:remove_background))
 
-    @design = Design.find(params[:devlog][:design_id])
+    @design = Design.find_by(id: params[:devlog][:design_id])
+    if @design.nil?
+      redirect_to root_path, alert: "That design doesn't exist."
+      return
+    end
     @design.sync_hackatime_projects
     @design.save!
 
@@ -31,8 +35,7 @@ class DevlogsController < ApplicationController
 
     if @devlog.save
       if image_file.present?
-        img = @design.images.create!(image_file: image_file, devlog: @devlog)
-        RemoveBackgroundJob.perform_later(img.id) if should_remove_bg
+        save_image(@design.images.new(devlog: @devlog), image_file, remove_background: should_remove_bg)
       end
       redirect_to design_path(@design), notice: "Devlog created successfully."
     else
@@ -49,10 +52,26 @@ class DevlogsController < ApplicationController
     @devlog = Devlog.find(params[:id])
     @design = @devlog.design
 
+    # design_id is a substitute for ownership: re-pointing the devlog at somebody
+    # else's design after require_owner_for_edit has already run would move a log onto
+    # a page it was never authorised for. The log stays on the design it was created on.
+    permitted.delete(:design_id)
+
+    # #create caps time at the design's unlogged budget; #update has to as well, or a
+    # devlog can be edited up to an arbitrary value and that feeds approved_seconds.
+    if permitted.key?(:time)
+      time = permitted[:time].to_i
+      if time > @design.unlogged_time
+        redirect_to design_path(@design), alert: "You don't have that much unlogged time."
+        return
+      elsif time < 15 * 60
+        redirect_to design_path(@design), alert: "Log at least 15mins per devlog."
+        return
+      end
+    end
+
     if image_file.present?
-      image = @devlog.image || @design.images.new(devlog: @devlog)
-      image.update!(image_file: image_file)
-      RemoveBackgroundJob.perform_later(image.id) if should_remove_bg
+      save_image(@devlog.image || @design.images.new(devlog: @devlog), image_file, remove_background: should_remove_bg)
     end
 
     if @devlog.update(permitted)
@@ -78,7 +97,9 @@ class DevlogsController < ApplicationController
   end
 
   def require_owner_for_create
-    design = Design.find(params[:devlog][:design_id])
+    design = Design.find_by(id: params.dig(:devlog, :design_id))
+    return if design.nil? # #create reports the missing/unknown design itself
+
     require_owner(design)
   end
 end

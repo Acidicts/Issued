@@ -110,7 +110,7 @@
       </div>
     </div>
   </div>
-  <script>
+  <script nonce="<%= content_security_policy_nonce %>">
     document.addEventListener("DOMContentLoaded", () => {
         // Update this selector to target your specific form if needed
         const form = document.getElementById("config-order-form")

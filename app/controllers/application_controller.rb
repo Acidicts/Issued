@@ -7,7 +7,7 @@ class ApplicationController < ActionController::Base
   # Changes to the importmap will invalidate the etag for HTML responses
   stale_when_importmap_changes
 
-  helper_method :current_user, :signed_in?, :unread_notification_count, :current_maker
+  helper_method :current_user, :signed_in?, :unread_notification_count, :current_maker, :admin?, :reviewer?
 
   layout "application"
 
@@ -62,6 +62,16 @@ class ApplicationController < ActionController::Base
     current_user.present?
   end
 
+  # Nil-safe role checks for views. The design page is public, so its partials are
+  # rendered with no current_user and `current_user.reviewer?` was a 500 there.
+  def admin?
+    current_user&.admin? || false
+  end
+
+  def reviewer?
+    current_user&.reviewer? || false
+  end
+
   def current_maker
     return unless signed_in?
     {
@@ -82,6 +92,20 @@ class ApplicationController < ActionController::Base
   private
   def set_nav
     @nav = "home"
+  end
+
+  # Saves an uploaded image, reporting rather than raising when the file is not one we
+  # can process. SafeImageAttachment rejects unsupported content types and sanitises
+  # SVG, so a rejected upload is an expected outcome and must not become a 500.
+  def save_image(image, image_file, remove_background: false)
+    image.image_file = image_file
+    unless image.save
+      flash.now[:alert] = image.errors.full_messages.to_sentence.presence || "That image could not be used."
+      return nil
+    end
+
+    RemoveBackgroundJob.perform_later(image.id) if remove_background
+    image
   end
 
   def set_current_oauth_tokens

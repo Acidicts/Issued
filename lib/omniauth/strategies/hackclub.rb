@@ -28,10 +28,16 @@ module OmniAuth
         { "raw_info" => raw_info }
       end
 
-      # Keep authorize and token-exchange redirect_uri identical for the active host.
-      # This avoids invalid_grant errors caused by host/port drift in development.
+      # Keep authorize and token-exchange redirect_uri identical, and pin the origin to
+      # APP_URL rather than the current request. On a preview deploy, a tunnel or localhost
+      # the request host is not the origin registered on the Hack Club app, and the provider
+      # compares redirect_uri byte-for-byte and then sends the browser to whatever it is
+      # given: an origin-only value (or localhost) came back as a bare site root instead of
+      # the callback, so login silently never completed. APP_URL is the registered origin;
+      # the callback path is ours to append.
       def callback_url
-        options[:callback_url].presence || "#{request.base_url}#{script_name}#{callback_path}"
+        base = ENV["APP_URL"].to_s.strip.presence || request.base_url
+        "#{base.chomp("/")}#{script_name}#{callback_path}"
       end
 
       def raw_info

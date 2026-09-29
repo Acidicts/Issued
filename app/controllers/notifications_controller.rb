@@ -4,7 +4,7 @@ class NotificationsController < ApplicationController
 
   def index
     @nav = "notifications"
-    @notifications = current_user.notifications
+    @notifications = current_user.notifications.order(created_at: :desc)
     render "notifications/index"
   end
 

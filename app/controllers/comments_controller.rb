@@ -23,8 +23,8 @@ class CommentsController < ApplicationController
       return
     end
     commentable = commentable_class.constantize.find_by(id: params.dig(:comment, :commentable_id))
-    unless commentable
-      head :bad_request
+    unless commentable && commentable_permitted?(commentable)
+      head :forbidden
       return
     end
     @commentable = commentable
@@ -48,11 +48,27 @@ class CommentsController < ApplicationController
       head :bad_request
       return
     end
-    commentable = commentable_class.constantize.find(params[:commentable_id])
+    commentable = commentable_class.constantize.find_by(id: params[:commentable_id])
+    unless commentable && commentable_permitted?(commentable)
+      head :forbidden
+      return
+    end
     render partial: "comments/comment_box", formats: [ :html ], locals: { commentable_class: commentable_class, commentable_id: params[:commentable_id], commentable: commentable }
   end
 
   private
+
+  # Design and Devlog are shown on the public design showcase, so anyone signed in may
+  # comment on them. A ShipRequest is only public once it has been reviewed or shipped
+  # (ShipRequest#publicly_visible?), so before then it is the owner's alone — without
+  # this check, guessable ids let anyone read and post in a pending request's thread.
+  def commentable_permitted?(commentable)
+    return true unless commentable.is_a?(ShipRequest)
+    return true if current_user.admin? || current_user.reviewer?
+    return true if commentable.publicly_visible?
+
+    commentable.design&.user_id == current_user.id
+  end
 
   def comment_params(params)
     params.fetch(:comment, {}).permit(:body)

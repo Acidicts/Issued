@@ -54,8 +54,7 @@ class ShipRequestsController < ApplicationController
       @design.devlogs.where(ship_request: nil).update_all(ship_request_id: @ship_request.id)
 
       if image_file.present?
-        img = @design.images.create!(image_file: image_file, devlog: @ship_request)
-        RemoveBackgroundJob.perform_later(img.id) if should_remove_bg
+        save_image(@design.images.new(devlog: @ship_request), image_file, remove_background: should_remove_bg)
       end
       respond_to do |format|
         format.turbo_stream

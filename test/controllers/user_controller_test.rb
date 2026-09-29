@@ -9,10 +9,16 @@ class UserControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get admin" do
+    sign_in_as users(:one)
     stub_slack_service do
       get admin_user_url(users(:one))
     end
     assert_response :success
+  end
+
+  test "admin page is not reachable while signed out" do
+    get admin_user_url(users(:one))
+    assert_redirected_to root_path
   end
 
   private

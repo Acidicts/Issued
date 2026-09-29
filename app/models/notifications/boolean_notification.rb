@@ -33,6 +33,13 @@ module Notifications
     # `read?` cannot be used as the condition: `read` is overridden as a writer, so the
     # generated query method calls the writer and recurses.
     validates :value, inclusion: { in: [ true, false ], message: "must be a yes or no input" }, if: -> { self[:read] }
+    validate  :check_read
+
+    def check_read
+      if self.read && value.nil?
+        self.update(value: nil)
+      end
+    end
 
     def yes_no
       return if value.nil?

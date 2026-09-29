@@ -10,7 +10,7 @@
                 <% end %>
             </div>
         </div>
-        <% if current_user.reviewer? && review.proof_file.attached? %>
+        <% if reviewer? && review.proof_file.attached? %>
             <video style="max-width: 300px; height: auto;" src="<%= url_for(review.proof_file) %>" controls></video>
         <% end %>
         <div class="comment-card-body markdown-content">

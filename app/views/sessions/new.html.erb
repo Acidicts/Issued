@@ -1,17 +1,27 @@
-<h1>Login</h1>
+<%# Hands off to the Hack Club OAuth request phase.
 
-<%= form_with url: login_path, html: { data: { turbo: false } } do |form| %>
-  <div>
-    <%= form.label :email %><br>
-    <%= form.email_field :email, required: true, autofocus: true %>
-  </div>
+    That phase is POST-only and CSRF-checked, so this cannot be a plain redirect: a GET
+    could be triggered from another site and log a victim into an attacker's account.
+    The form posts itself on load, so the user still only clicks "Login" once. %>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="csrf-param" content="authenticity_token">
+    <meta name="csrf-token" content="<%= form_authenticity_token %>">
+    <title>Signing in…</title>
+  </head>
+  <body>
+    <%= form_with url: @auth_path, method: :post, id: "oauth-handoff", class: "oauth-handoff", data: { turbo: false } do %>
+      <%# The button is always rendered, not hidden behind <noscript>: the auto-submit below is
+          the fast path, and if it is blocked (a strict browser extension, a proxy that strips
+          the nonce) the page still has to offer a way forward instead of being blank. %>
+      <%= submit_tag "Continue to Hack Club" %>
+    <% end %>
 
-  <div>
-    <%= form.label :password %><br>
-    <%= form.password_field :password, required: true %>
-  </div>
-
-  <div>
-    <%= form.submit "Sign in" %>
-  </div>
-<% end %>
+    <script nonce="<%= content_security_policy_nonce %>">
+      document.getElementById("oauth-handoff").submit()
+    </script>
+  </body>
+</html>

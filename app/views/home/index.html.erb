@@ -131,17 +131,14 @@
         </div>
         <div id="btns">
             <% if !signed_in? && (ENV["RUNNING"] == "true" && ENV["RSVP_OPEN"] == "false") || params["demo"]=="true" %>
-              <%= link_to "Start", login_path(redirect: dashboard_path), class: "btn" %>
-              <% if params["demo"] == "true" %>
-                <%= link_to "RSVP", rsvp_path, class: "btn disabled", disabled: true %>
-              <% end %>
+              <%= oauth_login_form(origin: dashboard_path, label: "Start", class: "btn") %>
             <% elsif (ENV["RUNNING"] == "true" && ENV["RSVP_OPEN"]) == "false" || params["demo"]=="true" %>
               <%= link_to "Start", dashboard_path, class: "btn" %>
             <% else %>
-              <%= link_to "RSVP", rsvp_path, class: "btn disabled", disabled: true %>
+              <%= link_to "RSVP", rsvp_path, class: "btn disabled" %>
             <% end %>
-            <%= link_to "About", about_path, class: "btn" %>
-            <%= link_to "FAQ", faq_path, class: "btn" %>
+            <%= link_to "About", about_path, class: "btn btn-tertiary" %>
+            <%= link_to "FAQ", faq_path, class: "btn btn-tertiary" %>
         </div>
     </div>
 </div>

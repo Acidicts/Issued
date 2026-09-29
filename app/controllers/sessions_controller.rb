@@ -2,7 +2,17 @@ require "cgi"
 require "uri"
 
 class SessionsController < ApplicationController
-  skip_before_action :verify_authenticity_token, only: :create
+  # The handoff page is a complete standalone document, and it must not load the app layout:
+  # that layout pulls in Turbo via the importmap, and Turbo intercepts the fallback button's
+  # submission of the form below. Turbo follows the request phase's 302 to auth.hackclub.com
+  # with a fetch, that cross-origin response has no CORS headers, and instead of navigating
+  # to Hack Club the browser shows Turbo's content-type-mismatch error.
+  layout false, only: :new
+
+  # The OAuth callback carries the code instead of a form token, and the failure endpoint is
+  # reached *because* the request phase rejected the token, so requiring a valid one there
+  # would turn every rejected login into a 422 error page instead of the failure redirect.
+  skip_before_action :verify_authenticity_token, only: %i[create failure]
 
   def new
     unless ENV["HACKCLUB_CLIENT_ID"].present? && ENV["HACKCLUB_CLIENT_SECRET"].present?
@@ -17,10 +27,12 @@ class SessionsController < ApplicationController
       session[:return_to] = safe_redirect_path(params[:redirect]) if params[:redirect].present?
     end
 
-    auth_path = "/auth/hackclub"
+    # Rendered, not redirected to: the request phase is POST-only, so a GET redirect here
+    # would hit the router with no matching route and raise. The view posts a
+    # CSRF-token-carrying form to this path on load.
+    @auth_path = "/auth/hackclub"
     origin = safe_redirect_path(session[:return_to])
-    auth_path += "?origin=#{CGI.escape(origin)}" if origin.present?
-    redirect_to auth_path
+    @auth_path += "?origin=#{CGI.escape(origin)}" if origin.present?
   end
 
   def create

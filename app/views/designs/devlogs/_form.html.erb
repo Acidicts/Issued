@@ -62,17 +62,19 @@
   </div>
   
 
-  <script>
+  <script nonce="<%= content_security_policy_nonce %>">
     (function() {
       // lightweight client-side preview: uses `marked` + `DOMPurify` if available, falls back to simple escape/linebreaks
       function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
       function markdownToHtml(markdown) {
         var md = String(markdown || '');
-        if (window.marked) {
+        // marked does not sanitise, so both libraries are required before any
+        // of its output is safe to put in innerHTML. If either is missing (blocked
+        // CDN, offline) fall through to escaped text rather than trusting marked.
+        if (window.marked && window.DOMPurify) {
           try {
-            var rendered = window.marked.parse(md);
-            return window.DOMPurify ? DOMPurify.sanitize(rendered) : rendered;
+            return DOMPurify.sanitize(window.marked.parse(md));
           } catch (e) {
             return '<pre>' + escapeHtml(md) + '</pre>';
           }
@@ -114,7 +116,7 @@
     })();
   </script>
 
-  <script>
+  <script nonce="<%= content_security_policy_nonce %>">
     (function() {
       var form = document.currentScript.closest('form');
       var hoursEl = form.querySelector('#duration_hours');

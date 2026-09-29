@@ -35,8 +35,8 @@
         <%= link_to "Edit design", edit_design_path(@design), class: "button-primary" %>
 
         <% if @design.ship_requests.where(status: :rejected).any? %>
-          <%= link_to resubmit_ship_requests_path(design_id: @design.id), class: "btn-primary" do %>
-            Re-Submit Ship 
+          <%= button_to resubmit_ship_requests_path(design_id: @design.id), method: :post, class: "btn-primary" do %>
+            Re-Submit Ship
             <%= render "shared/info_icon", aria_label: "Click on this button to resubmit after making requested changes" %>
           <% end %>
         <% else %>

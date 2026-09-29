@@ -1,4 +1,5 @@
 require "net/http"
+require "cgi"
 
 module ApplicationHelper
   include CurrencyConvertible
@@ -170,5 +171,37 @@ module ApplicationHelper
     content_tag(:a, class: "pill ship-request-pill #{pill_context_class(context)} #{classes}".strip, href: design_path(ship_request.design), data: { turbo_frame: "_top" }) do
       concat content_tag(:span, ship_request.title, class: "ship-request-pill__name pill__name")
     end
+  end
+
+  # Sign-in control, posted straight at the OAuth request phase.
+  #
+  # The request phase is POST-only and CSRF-checked, so a link to it cannot start a login:
+  # GET would let another site start an OAuth flow in a victim's browser, and a GET carries no
+  # token to satisfy the CSRF check. Pointing a link at /login only moves the problem, because
+  # that page then has to render a form which POSTs onwards, which is the interstitial page
+  # this replaces. Submitting from the page the user is already on keeps one click and no
+  # intermediate page.
+  #
+  # Turbo is disabled on the form for the same reason the old handoff page dropped its layout:
+  # Turbo fetch-follows the resulting redirect to auth.hackclub.com, that cross-origin response
+  # carries no CORS headers, and the navigation becomes a content-type-mismatch error instead
+  # of the Hack Club login.
+  def oauth_login_form(origin: nil, label: "Login", **options)
+    unless hackclub_oauth_configured?
+      # Let /login render the "OAuth is not configured" alert.
+      return link_to(label, login_path(redirect: origin), **options)
+    end
+
+    # per_form_csrf_tokens binds the token to the action string, so the origin has to be part
+    # of the URL handed to button_to. Merging it in afterwards would mint the token for one
+    # action and submit to another, and the request phase would reject it.
+    action = hackclub_auth_path
+    action += "?origin=#{CGI.escape(origin)}" if origin.present?
+
+    button_to(label, action, form: { class: "oauth-handoff-form", data: { turbo: false } }, **options)
+  end
+
+  def hackclub_oauth_configured?
+    ENV["HACKCLUB_CLIENT_ID"].present? && ENV["HACKCLUB_CLIENT_SECRET"].present?
   end
 end

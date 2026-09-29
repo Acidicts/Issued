@@ -17,8 +17,9 @@ class ImagePreviewService
   end
 
   def call
-    base = Vips::Image.new_from_file(@base_image_path)
-    overlay = Vips::Image.new_from_file(@new_image_path)
+    base = load(@base_image_path)
+    overlay = load(@new_image_path)
+    return nil if base.nil? || overlay.nil?
 
     # Ensure overlay has an alpha channel so rotations preserve transparency
     unless overlay.has_alpha?
@@ -45,6 +46,20 @@ class ImagePreviewService
     output_path
   rescue Vips::Error => e
     Rails.logger.error("Vips Error in ImagePreviewService: #{e.message}")
+    nil
+  end
+
+  private
+
+  # The base image is a product template and the overlay is a design upload, so both
+  # are user-influenced. SafeImageAttachment already sanitises uploads on the way in;
+  # this is the backstop for anything that reaches here another way.
+  def load(path)
+    bytes = File.binread(path)
+    bytes = SvgSanitizer.call(bytes) if SvgSanitizer.svg_like?(bytes)
+    Vips::Image.new_from_buffer(bytes, "")
+  rescue SvgSanitizer::UnsafeSvg => e
+    Rails.logger.warn("Rejected unsafe SVG in preview: #{e.message}")
     nil
   end
 end

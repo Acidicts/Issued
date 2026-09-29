@@ -16,8 +16,15 @@ Rails.application.routes.draw do
   get "/rsvps/og-image.svg", to: "home#rsvps_og_image", as: :rsvps_og_image
 
   # Auth
-  get "/login",  to: "sessions#new",     as: :login
-  match "/logout", to: "sessions#destroy", via: %i[delete get], as: :logout
+  # /login is a fallback: the sign-in form posts straight at the request phase, so a page
+  # normally never lands here. See ApplicationHelper#oauth_login_form.
+  match "/login", to: "sessions#new", via: %i[get post], as: :login
+  match "/logout", to: "sessions#destroy", via: %i[get delete], as: :logout
+  # The request phase itself is handled by the OmniAuth middleware, so this route is never
+  # reached; it exists so the sign-in form has a named path to post to. The OmniAuth CSRF
+  # check is the real gate, and it only accepts POST.
+  post "/auth/hackclub", to: proc { [ 404, { "content-type" => "text/plain" }, [ "Not found" ] ] },
+                          as: :hackclub_auth
   get  "/auth/:provider/callback", to: "sessions#create"
   get  "/auth/failure",             to: "sessions#failure"
 
@@ -48,7 +55,7 @@ Rails.application.routes.draw do
     collection do
       get :can_make_ship_request
       get :next_step
-      get :resubmit
+      post :resubmit
     end
   end
 
@@ -75,7 +82,7 @@ Rails.application.routes.draw do
   # Notifications
   resources :notifications, only: %i[index] do
     member do
-      get :read
+      patch :read
     end
   end
 

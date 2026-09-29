@@ -21,6 +21,16 @@ module ActiveSupport
 end
 
 class ActionDispatch::IntegrationTest
+  # The test environment turns forgery protection off, which also stops forms from rendering
+  # an authenticity token. Anything that asserts on CSRF behaviour has to turn it back on.
+  def with_forgery_protection
+    original = ActionController::Base.allow_forgery_protection
+    ActionController::Base.allow_forgery_protection = true
+    yield
+  ensure
+    ActionController::Base.allow_forgery_protection = original
+  end
+
   def sign_in_as(user)
     OmniAuth.config.test_mode = true
     OmniAuth.config.mock_auth[:hackclub] = OmniAuth::AuthHash.new(

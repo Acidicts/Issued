@@ -47,7 +47,7 @@
     <link rel="apple-touch-icon" href="/icon.png">
 
     <%# Includes all stylesheet files in app/assets/stylesheets/components %>
-    <%= stylesheet_link_tag 'components/application', 'components/brand', 'components/buttons', 'components/comment', 'components/forms', 'components/misc', 'components/dropdown', 'components/info_icon', 'components/encoded', 'pages/notifications', "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag 'components/application', 'components/brand', 'components/buttons', 'components/comment', 'components/forms', 'components/misc', 'components/dropdown', 'components/info_icon', 'components/encoded', 'components/oauth_handoff', 'pages/notifications', "data-turbo-track": "reload" %>
     
     <%= javascript_importmap_tags %>
 
@@ -64,7 +64,7 @@
       <header class="tag-header">
         <div class="tag">
           <div class="tag-left">
-            <span class="wordmark">issued<span class="dot">.</span></span>
+            <span class="wordmark">issued<span class="dot"><%= raw hackclub_svg(width: 4, height: 4, color: "#ec3750") %></span></span>
             <span class="tagline">design it in code · wear it for real</span>
           </div>
           <div class="tag-right">
@@ -102,7 +102,7 @@
               <%= link_to "FAQ", faq_path, class: "nav-link" %>
             </div>
             <div style="display: flex; gap: 1rem; align-items: center; right: 1rem; position: absolute; top: 0; bottom: 0; margin: auto;">
-              <%= link_to "Login", login_path(redirect: request.fullpath), class: "nav-link" %>
+              <%= oauth_login_form(origin: request.fullpath, class: "nav-link") %>
             </div>
           </div>
         </nav>
