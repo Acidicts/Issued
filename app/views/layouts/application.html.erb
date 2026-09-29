@@ -85,6 +85,7 @@
         </div>
         <nav class="tabs"
              data-controller="navigation-tabs"
+             data-action="notifications:count@window->navigation-tabs#updateCount"
              data-navigation-tabs-current-path-value="<%= request.path %>"
              data-navigation-tabs-unread-count-value="<%= @unread_notification_count || 0 %>"
              data-navigation-tabs-is-admin-value="<%= current_user.admin? %>"

@@ -62,5 +62,6 @@ export default class extends Controller {
 
   updateCount(value) {
     if (this.hasCountTarget) this.countTarget.textContent = value
+    this.dispatch("count", { detail: { params: { count: value } } })
   }
 }
