@@ -73,7 +73,7 @@ From an admin perspective:
 
 - Ruby: `3.4.9`
 - Rails: `8.1.2.1`
-- Database: SQLite (`storage/*.sqlite3`)
+- Database: PostgreSQL (`issued_*` databases, configured in `config/database.yml`)
 - Assets: Propshaft + Importmap (no Node bundler required for app runtime)
 - Frontend behavior: Turbo + Stimulus
 - Auth: OmniAuth + custom Hack Club strategy
@@ -126,7 +126,7 @@ See `db/schema.rb` for source-of-truth schema details.
 
 - Ruby `3.4.9` (matches `.ruby-version`)
 - Bundler
-- SQLite3
+- PostgreSQL (client + server)
 
 Optional but useful:
 
@@ -343,7 +343,76 @@ Before using it:
 
 1. Replace placeholder hosts/registry values.
 2. Configure secrets (especially `RAILS_MASTER_KEY`) in `.kamal/secrets`.
-3. Validate persistent volume strategy (`issued_storage:/rails/storage`) for SQLite and Active Storage data.
+3. The app stores data in PostgreSQL (`issued_production`, plus `issued_production_queue` and
+   `issued_production_cable`). Set `DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`, and make sure
+   `bin/rails db:prepare` can reach the server; `bin/docker-entrypoint` runs it on boot unless
+   `SKIP_DB_PREPARE=1`.
+4. Set the Active Record encryption keys (`ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY`,
+   `ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY`, `ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT`)
+   before switching the app over to encrypted token storage — see
+   [Encrypting Existing OAuth Tokens](#encrypting-existing-oauth-tokens).
+
+### Encrypting Existing OAuth Tokens
+
+`User` declares `encrypts :hackclub_access_token` and `encrypts :hackclub_refresh_token`, but rows
+written before those keys existed are still plaintext in `users.hackclub_access_token` /
+`users.hackclub_refresh_token`. Once the keys are present, reading a plaintext row raises
+`ActiveRecord::Encryption::Errors::Decryption`, so the data has to be converted **before** the app
+boots with the keys.
+
+```bash
+# 1) Snapshot the database first (or take a managed snapshot / WAL archive).
+pg_dump "$DB_URL" > issued_pre_encryption.sql
+
+# 2) Generate keys, and put them somewhere safe (password manager / 1Password).
+bin/rails db:encryption:init
+
+# 3) Count what still needs converting. Encrypted values start with {"p":
+psql "$DB_URL" -c \
+  "select count(*) filter (where hackclub_access_token is not null
+     and hackclub_access_token not like '{\"p\":%') as access_plain,
+          count(*) filter (where hackclub_refresh_token is not null
+     and hackclub_refresh_token not like '{\"p\":%') as refresh_plain
+   from users;"
+
+# 4) Confirm the keys are visible to the app, then convert the rows
+#    (in the container that has database access).
+bin/rails runner 'puts ActiveRecord::Encryption.config.primary_key ? "keys OK" : "keys MISSING"'
+
+cat > /tmp/encrypt_tokens.rb <<'RUBY'
+columns = %w[hackclub_access_token hackclub_refresh_token]
+converted = 0
+
+User.find_in_batches do |users|
+  users.each do |user|
+    columns.each do |column|
+      type = User.type_for_attribute(column)
+      raw = user.read_attribute_before_type_cast(column)
+      next if raw.blank?
+      next if type.encrypted?(raw)
+      user.update_column(column, raw)
+      converted += 1
+    end
+  end
+end
+
+puts "converted #{converted} columns"
+RUBY
+
+bin/rails runner /tmp/encrypt_tokens.rb
+
+# 5) Verify nothing plaintext is left and every row still decrypts.
+psql "$DB_URL" -c \
+  "select count(*) from users
+   where (hackclub_access_token is not null and hackclub_access_token not like '{\"p\":%')
+      or (hackclub_refresh_token is not null and hackclub_refresh_token not like '{\"p\":%');"
+
+bin/rails runner 'User.find_each { |u| u.hackclub_access_token; u.hackclub_refresh_token }; puts "decrypt OK"'
+```
+
+The runner script is safe to re-run: rows that are already encrypted are skipped, and
+`update_column` re-writes the current value, so it never leaves a row double-encrypted or silently
+skipped.
 
 ## Project Structure
 

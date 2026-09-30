@@ -7,18 +7,28 @@ FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 
 WORKDIR /rails
 
-# Runtime dependencies only.
+# Runtime dependencies only. The base image is Debian trixie, so the libvips
+# runtime package is `libvips42t64` (on bookworm it is `libvips42`).
+# PostgreSQL client libs are required: the app uses the `pg` gem, not SQLite.
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
       ca-certificates \
       curl \
       libjemalloc2 \
-      libvips \
-      sqlite3 \
+      libvips42t64 \
+      libpq5 \
+      postgresql-client \
       tzdata \
       wget && \
-    ln -sf /usr/lib/$(uname -m)-linux-gnu/libjemalloc.so.2 /usr/local/lib/libjemalloc.so && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+# Preload jemalloc through ldconfig instead of a hardcoded
+# /usr/lib/$(uname -m)-linux-gnu path, which only resolves on amd64 and makes
+# the container abort on arm64 (Apple Silicon / any aarch64 builder).
+RUN ldconfig && \
+    echo "/usr/lib/$(dpkg-architecture --query DEB_HOST_MULTIARCH)" > /etc/ld.so.conf.d/$(uname -m)-linux-gnu.conf && \
+    ldconfig && \
+    rm -f /usr/local/lib/libjemalloc.so
 
 ENV RAILS_ENV="production" \
     RACK_ENV="production" \
@@ -28,15 +38,19 @@ ENV RAILS_ENV="production" \
     RAILS_LOG_TO_STDOUT="1" \
     RAILS_SERVE_STATIC_FILES="true" \
     PORT="3000" \
-    LD_PRELOAD="/usr/local/lib/libjemalloc.so"
+    LD_PRELOAD="libjemalloc.so.2"
 
 FROM base AS build
 
-RUN gem install bundler -v 4.0.4
-
-# Build dependencies for native gems.
+# Build dependencies for native gems. `libpq-dev` is what the `pg` gem compiles
+# against; without it `bundle install` fails on this app.
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git libyaml-dev pkg-config && \
+    apt-get install --no-install-recommends -y \
+      build-essential \
+      git \
+      libpq-dev \
+      libyaml-dev \
+      pkg-config && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 COPY Gemfile Gemfile.lock ./
@@ -52,7 +66,15 @@ COPY . .
 RUN bundle exec bootsnap precompile -j 1 app/ lib/
 
 # Precompile assets without needing RAILS_MASTER_KEY at build time.
-RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
+# config/initializers/active_storage.rb refuses to boot the production app
+# without R2 credentials, so pass build-time placeholders; real credentials are
+# injected by the platform at runtime and are never baked into the image.
+RUN SECRET_KEY_BASE_DUMMY=1 \
+    R2_ACCOUNT_ID=build-placeholder \
+    R2_BUCKET=build-placeholder \
+    R2_ACCESS_KEY_ID=build-placeholder \
+    R2_SECRET_ACCESS_KEY=build-placeholder \
+    ./bin/rails assets:precompile
 
 FROM base AS app
 

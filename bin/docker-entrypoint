@@ -1,8 +1,16 @@
 #!/bin/bash -e
 
-# If running the rails server then create or migrate existing database
-if [ "$1" = "./bin/rails" ] && [ "$2" = "server" ]; then
-  ./bin/rails db:prepare
+# Create or migrate the database before booting a server process. The generated
+# entrypoint only matched `bin/rails server`, but the image CMD (and both Kamal
+# and Coolify) start Puma directly, so the schema was never prepared.
+# Set SKIP_DB_PREPARE=1 to run replicas that must not migrate.
+if [ "${SKIP_DB_PREPARE}" != "1" ]; then
+  case "$*" in
+    *"puma"* | *"rails server"* | *thruster* | *bin/dev*)
+      echo "Preparing database..."
+      ./bin/rails db:prepare
+      ;;
+  esac
 fi
 
 exec "${@}"
