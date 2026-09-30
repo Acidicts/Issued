@@ -1,0 +1,75 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# One-off migration: rewrite plaintext OAuth token columns into Active Record
+# encrypted form.
+#
+# User declares `encrypts :hackclub_access_token` / `:hackclub_refresh_token`, but
+# rows written before the keys existed are still plaintext. Once the keys are
+# configured, reading a plaintext row raises
+# ActiveRecord::Encryption::Errors::Decryption, so run this in a process that has
+# the keys while the running app still does not:
+#
+#   bin/kamal app exec --reuse \
+#     -e ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=... \
+#     -e ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=... \
+#     -e ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=... \
+#     'bin/rails runner bin/encrypt-tokens'
+#
+#   bin/rails runner bin/encrypt-tokens -- --dry-run
+#
+# Columns are read raw (never through the attribute reader) and rewritten with
+# update_column, so callbacks, validations and updated_at are untouched. Rows that
+# are already encrypted are skipped, which makes re-runs safe.
+
+abort "Run me through Rails: bin/rails runner bin/encrypt-tokens" unless defined?(User)
+
+dry_run = ARGV.include?("--dry-run")
+columns = %w[hackclub_access_token hackclub_refresh_token]
+
+unless ActiveRecord::Encryption.config.has_primary_key? &&
+    ActiveRecord::Encryption.config.has_key_derivation_salt? &&
+    ActiveRecord::Encryption.config.has_deterministic_key?
+  abort "Encryption keys are not configured in this process. Set " \
+        "ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY, ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY and " \
+        "ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT before running this."
+end
+
+converted = 0
+skipped = 0
+verified = 0
+blank = 0
+
+User.find_in_batches do |users|
+  users.each do |user|
+    columns.each do |column|
+      type = User.type_for_attribute(column)
+      # Raw column value: this never decrypts, so plaintext rows are readable here.
+      raw = user.read_attribute_before_type_cast(column)
+
+      if raw.blank?
+        blank += 1
+        next
+      elsif type.encrypted?(raw)
+        skipped += 1
+        next
+      end
+
+      converted += 1
+      next if dry_run
+
+      user.update_column(column, raw)
+      # update_column rewrites the in-memory cast value but the reader only sees
+      # the new column contents after a reload.
+      user.reload
+      unless user.public_send(column) == raw
+        abort "Verification failed for user #{user.id} column #{column}"
+      end
+
+      verified += 1
+    end
+  end
+end
+
+puts "converted: #{converted}, already encrypted: #{skipped}, empty: #{blank}, verified: #{verified}"
+puts(dry_run ? "Dry run, nothing written." : "Done.")

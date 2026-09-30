@@ -360,11 +360,17 @@ written before those keys existed are still plaintext in `users.hackclub_access_
 `ActiveRecord::Encryption::Errors::Decryption`, so the data has to be converted **before** the app
 boots with the keys.
 
+The keys must come from the environment: `config/application.rb` assigns the three
+`ACTIVE_RECORD_ENCRYPTION_*` values unconditionally, and Rails splats those over the values it reads
+from `credentials.yml.enc`, so keys placed in credentials end up nil.
+
 ```bash
 # 1) Snapshot the database first (or take a managed snapshot / WAL archive).
 pg_dump "$DB_URL" > issued_pre_encryption.sql
 
-# 2) Generate keys, and put them somewhere safe (password manager / 1Password).
+# 2) Generate the three keys and put them in your password manager.
+#    Anything that generates 32 random alphanumeric characters per value works;
+#    bin/rails db:encryption:init just prints a YAML block.
 bin/rails db:encryption:init
 
 # 3) Count what still needs converting. Encrypted values start with {"p":
@@ -374,34 +380,37 @@ psql "$DB_URL" -c \
           count(*) filter (where hackclub_refresh_token is not null
      and hackclub_refresh_token not like '{\"p\":%') as refresh_plain
    from users;"
+```
 
-# 4) Confirm the keys are visible to the app, then convert the rows
-#    (in the container that has database access).
-bin/rails runner 'puts ActiveRecord::Encryption.config.primary_key ? "keys OK" : "keys MISSING"'
+Then run `bin/encrypt-tokens` **in a one-off process that has the keys, while the running app still
+does not have them** (the script refuses to run without keys, and the app is what actually needs to
+wait). It reports what it would do, converts each plaintext column, and re-reads every row to prove it
+still decrypts:
 
-cat > /tmp/encrypt_tokens.rb <<'RUBY'
-columns = %w[hackclub_access_token hackclub_refresh_token]
-converted = 0
+```bash
+# Kamal
+bin/kamal app exec --reuse \
+  -e ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=<key> \
+  -e ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=<key> \
+  -e ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=<key> \
+  'bin/rails runner bin/encrypt-tokens'
 
-User.find_in_batches do |users|
-  users.each do |user|
-    columns.each do |column|
-      type = User.type_for_attribute(column)
-      raw = user.read_attribute_before_type_cast(column)
-      next if raw.blank?
-      next if type.encrypted?(raw)
-      user.update_column(column, raw)
-      converted += 1
-    end
-  end
-end
+# Coolify: Application -> your app -> Terminal, then
+ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=<key> \
+ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=<key> \
+ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=<key> \
+bin/rails runner bin/encrypt-tokens
 
-puts "converted #{converted} columns"
-RUBY
+# Append -- --dry-run to either to report without writing.
+```
 
-bin/rails runner /tmp/encrypt_tokens.rb
+Once that prints `converted: N, ... verified: N`, add the three variables to the deployment
+environment (Coolify Environment Variables, or `.kamal/secrets`) and restart/redeploy. From that
+moment the app encrypts on write and decrypts on read.
 
-# 5) Verify nothing plaintext is left and every row still decrypts.
+Verify afterwards:
+
+```bash
 psql "$DB_URL" -c \
   "select count(*) from users
    where (hackclub_access_token is not null and hackclub_access_token not like '{\"p\":%')
@@ -410,9 +419,9 @@ psql "$DB_URL" -c \
 bin/rails runner 'User.find_each { |u| u.hackclub_access_token; u.hackclub_refresh_token }; puts "decrypt OK"'
 ```
 
-The runner script is safe to re-run: rows that are already encrypted are skipped, and
-`update_column` re-writes the current value, so it never leaves a row double-encrypted or silently
-skipped.
+The script is safe to re-run: already-encrypted columns are skipped, and `update_column` leaves
+callbacks, validations and `updated_at` untouched. The keys cannot be rotated afterwards without a
+second backfill, so store them properly from day one.
 
 ## Project Structure
 
