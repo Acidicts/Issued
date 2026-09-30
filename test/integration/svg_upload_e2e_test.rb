@@ -10,10 +10,16 @@ class SvgUploadE2ETest < ActiveSupport::TestCase
     </svg>
   SVG
 
+  VERIFY_DIR = Rails.root.join("tmp/verify")
+
+  setup do
+    FileUtils.mkdir_p(VERIFY_DIR)
+  end
+
   test "an svg naming a local file is rasterised without that file's contents" do
     require "vips"
     secret = Vips::Image.black(64, 64).add([ 255, 0, 0 ]).cast("uchar")
-    secret.write_to_file(Rails.root.join("tmp/verify/secret.png").to_s)
+    secret.write_to_file(VERIFY_DIR.join("secret.png").to_s)
 
     design = designs(:one)
     image = design.images.new(image_file: { io: StringIO.new(EVIL), filename: "evil.svg", content_type: "image/svg+xml" })
@@ -37,7 +43,7 @@ class SvgUploadE2ETest < ActiveSupport::TestCase
         "rendered output is red: the local file's pixels were read and returned")
     end
   ensure
-    FileUtils.rm_f(Rails.root.join("tmp/verify/secret.png"))
+    FileUtils.rm_f(VERIFY_DIR.join("secret.png"))
   end
 
   test "an svg labelled as png is still treated as a document" do
