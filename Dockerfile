@@ -32,6 +32,8 @@ ENV RAILS_ENV="production" \
 
 FROM base AS build
 
+RUN gem install bundler -v 4.0.4
+
 # Build dependencies for native gems.
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential git libyaml-dev pkg-config && \
