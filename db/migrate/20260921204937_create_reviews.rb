@@ -1,6 +1,6 @@
 class CreateReviews < ActiveRecord::Migration[8.1]
   def change
-    create_table :reviews do |t|
+    create_table :reviews, if_not_exists: true do |t|
       t.references :user, null: false, foreign_key: true
       t.references :reviewed, polymorphic: true, null: false
       t.text :comment

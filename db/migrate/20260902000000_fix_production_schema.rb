@@ -1,4 +1,8 @@
+require_relative "../migrate_helpers"
+
 class FixProductionSchema < ActiveRecord::Migration[8.1]
+  include MigrationHelpers
+
   def up
     # --- users ---
     unless column_exists?(:users, :guide)
@@ -31,9 +35,10 @@ class FixProductionSchema < ActiveRecord::Migration[8.1]
     end
 
     # --- designs (table should exist from schema:load, but ensure it's in schema_migrations) ---
-    unless column_exists?(:designs, :user_id)
-      # designs table exists but might be missing the user_id column
-      add_reference :designs, :user, null: false, foreign_key: true
+    if table_exists?(:designs) && !column_exists?(:designs, :user_id)
+      # designs table exists but might be missing the user_id column; existing
+      # designs have no way to recover a user from, so leave it nullable.
+      add_reference_backfilled :designs, :user, foreign_key: true
     end
 
     # --- variants ---
@@ -50,7 +55,7 @@ class FixProductionSchema < ActiveRecord::Migration[8.1]
     end
     unless column_exists?(:variants, :stock_by_region)
       add_column :variants, :stock_by_region, :jsonb, default: {}, null: false
-      add_index :variants, :stock_by_region, using: :gin
+      add_index :variants, :stock_by_region, using: :gin, if_not_exists: true
     end
     unless column_exists?(:variants, :size)
       add_column :variants, :size, :integer
@@ -84,8 +89,9 @@ class FixProductionSchema < ActiveRecord::Migration[8.1]
         t.timestamps
       end
     end
-    unless column_exists?(:order_print_areas, :design_id)
-      add_reference :order_print_areas, :design, null: false, foreign_key: true
+    if table_exists?(:order_print_areas) && !column_exists?(:order_print_areas, :design_id)
+      add_reference_backfilled :order_print_areas, :design, foreign_key: true,
+        backfill_sql: "SELECT o.design_id FROM orders AS o WHERE o.id = t.order_id"
     end
     unless column_exists?(:order_print_areas, :name)
       add_column :order_print_areas, :name, :string, default: ""

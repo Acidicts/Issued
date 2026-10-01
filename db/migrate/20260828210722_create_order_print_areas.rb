@@ -1,6 +1,6 @@
 class CreateOrderPrintAreas < ActiveRecord::Migration[8.1]
   def change
-    create_table :order_print_areas do |t|
+    create_table :order_print_areas, if_not_exists: true do |t|
       t.integer :rotation
       t.integer :x
       t.integer :y

@@ -1,15 +1,21 @@
+require_relative "../migrate_helpers"
+
 class AddUniqueIndexToDesignsUserIdName < ActiveRecord::Migration[8.1]
+  include MigrationHelpers
+
   # Duplicates predate the index (designs defaulted to "Untitled Design"), so
   # rename the later rows instead of dropping data, then add the index.
   def up
-    return if index_exists?(:designs, [ :user_id, :name ], unique: true)
-
-    dedupe_design_names!
-    add_index :designs, [ :user_id, :name ], unique: true
+    if_table_exists :designs do
+      dedupe_design_names!
+      add_index :designs, [ :user_id, :name ], unique: true, if_not_exists: true
+    end
   end
 
   def down
-    remove_index :designs, [ :user_id, :name ], unique: true if index_exists?(:designs, [ :user_id, :name ], unique: true)
+    if_table_exists :designs do
+      remove_index :designs, [ :user_id, :name ], if_exists: true
+    end
   end
 
   private

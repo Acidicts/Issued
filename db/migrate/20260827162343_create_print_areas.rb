@@ -1,6 +1,6 @@
 class CreatePrintAreas < ActiveRecord::Migration[8.1]
   def change
-    create_table :print_areas do |t|
+    create_table :print_areas, if_not_exists: true do |t|
       t.integer :image_x
       t.integer :image_y
       t.integer :image_wx

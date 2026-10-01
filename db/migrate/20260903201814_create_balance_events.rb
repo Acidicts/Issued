@@ -1,6 +1,6 @@
 class CreateBalanceEvents < ActiveRecord::Migration[8.1]
   def change
-    create_table :balance_events do |t|
+    create_table :balance_events, if_not_exists: true do |t|
       t.references :user, null: false, foreign_key: true
       t.integer :amount
       t.string :name
