@@ -1,458 +1,114 @@
 # Issued
+<code>A draft ysws for hackclub</code>
 
-Issued is a Rails 8 app for a Hack Club-style flow where users can design apparel with code, track effort through Hackatime, RSVP for an event/launch, and submit orders.
+This runs on ruby 3.4.9 using rails 8.1.12
 
-The app includes:
+### Features Include
+- Hackclub OAuth
+- Design management
+- Order system which takes your designs and allows you to put them on the clothes
+- Printful API compatability for live stock, importing clothes by id and getting variant of it
+- Ship flow (user submit -> reviewer -> admin -> payout)
+- Reviewer Panel for reviewing ships
+- Admin Panel for viewing general stats and managing roles, etc
+- Hackatime compatability for time tracking for devlogs and ships
+- Postgres DB with Redis Caching
+- S3 storage compatability 
 
-- Hack Club OAuth sign-in
-- RSVP flow with open/closed state toggles
-- User dashboard with design and order pipeline visibility
-- Design editor flow with optional Hackatime project linking
-- Admin area for user/product/order management plus RSVP CSV import
+### Dependencies
+- Rails
+- Propshaft
+- Puma 8.0.2
+- Importmap
+- Turbo
+- Stimulus
+- Jbuilder
+- OmniAuth
+- CSV
+- Redcarpet 
+- Ruby-Vips
+- ImageProcessing
+- AWS SDK S3 — S3-compatible storage/Cloudflare R2
+- PostgreSQL adapter
+- Redis
+- Solid Queue
+- Whenever
+- Bootsnap
+- Kamal
+- Thruster
+- TZInfo
 
-## Table of Contents
+### How to run
+~ Needs [Docker](https://www.docker.com/) for easy run
+1. Run `docker pull ghcr.io/acidicts/issued:latest`
+	If github needs authentication do:
+	```
+	echo "$GITHUB_TOKEN" | docker login ghcr.io -u Acidicts --password-stdin
+	docker pull ghcr.io/acidicts/issued:latest
+	```
+2. Download [.env.example](/.env.example)
+3. Rename `.env.example` to `.env`
+4. Create a docker compose file eg:
+	docker-compose.yml:
+	```
+	services:
+	  web:
+	    image: ghcr.io/acidicts/issued:latest
+	    env_file:
+	      - .env
+	    environment:
+	      RAILS_ENV: production
+	      RACK_ENV: production
+	      DB_HOST: db
+	      DB_PORT: 5432
+	      DB_USERNAME: postgres
+	      DB_PASSWORD: postgres
+	      REDIS_URL: redis://redis:6379/0
+	      PORT: 3000
+	    ports:
+	      - "3000:3000"
+	    depends_on:
+	      db:
+	        condition: service_healthy
+	      redis:
+	        condition: service_started
+	    restart: unless-stopped
+	
+	  db:
+	    image: postgres:17
+	    environment:
+	      POSTGRES_USER: postgres
+	      POSTGRES_PASSWORD: postgres
+	      POSTGRES_DB: issued_production
+	    volumes:
+	      - postgres_data:/var/lib/postgresql/data
+	    healthcheck:
+	      test: ["CMD-SHELL", "pg_isready -U postgres -d issued_production"]
+	      interval: 5s
+	      timeout: 5s
+	      retries: 10
+	
+	  redis:
+	    image: redis:7-alpine
+	    volumes:
+	      - redis_data:/data
+	
+	volumes:
+	  postgres_data:
+	  redis_data:
+	```
+4. Start the application with `docker compose up -d`
 
-- [What Is Issued](#what-is-issued)
-- [Current Feature Set](#current-feature-set)
-- [Tech Stack](#tech-stack)
-- [Architecture Overview](#architecture-overview)
-- [Data Model Snapshot](#data-model-snapshot)
-- [Local Setup](#local-setup)
-- [Environment Variables](#environment-variables)
-- [Authentication (Hack Club OAuth)](#authentication-hack-club-oauth)
-- [Developer Workflow](#developer-workflow)
-- [Testing, Linting, and Security](#testing-linting-and-security)
-- [Admin Operations](#admin-operations)
-- [Deployment](#deployment)
-- [Project Structure](#project-structure)
-- [Known Gaps / Notes](#known-gaps--notes)
-
-## What Is Issued
-
-YS: Make Designs with code using hackatime
-WS: Get custom clothes made with your designs
-
-From an admin perspective:
-
-- Manage users and roles.
-- Manage products.
-- View/manage orders (some order admin actions are currently stubs).
-- Import RSVP records via CSV.
-
-## Current Feature Set
-
-### Public Pages
-
-- Home page (`/`)
-- About page (`/about`)
-- FAQ page (`/faq`)
-- RSVP page (`/rsvp`)
-- RSVP count page (`/rsvps`)
-- Dynamic RSVP OG image (`/rsvps/og-image.svg`)
-
-### Auth
-
-- OAuth login entry (`/login`)
-- OmniAuth callback (`/auth/:provider/callback`)
-- Auth failure handler (`/auth/failure`)
-- Logout (`/logout`)
-
-### User Area
-
-- Dashboard (`/dashboard`)
-- Designs CRUD-ish flow (`/designs`, plus editor routes)
-- Orders pages (`/orders`, `/orders/new`, etc.)
-
-### Admin Area
-
-- Admin dashboard (`/admin`)
-- Admin users/products/orders resources
-- Admin RSVP listing/import/delete
-
-## Tech Stack
-
-- Ruby: `3.4.9`
-- Rails: `8.1.2.1`
-- Database: PostgreSQL (`issued_*` databases, configured in `config/database.yml`)
-- Assets: Propshaft + Importmap (no Node bundler required for app runtime)
-- Frontend behavior: Turbo + Stimulus
-- Auth: OmniAuth + custom Hack Club strategy
-- Background/cache/cable: Solid Queue, Solid Cache, Solid Cable
-- Deployment support: Docker + Kamal
-- Quality/security tooling: RuboCop, Brakeman, bundler-audit, importmap audit
-
-## Architecture Overview
-
-At a high level:
-
-- Controllers handle web flows for home/dashboard/designs/orders/rsvp/admin.
-- `SessionsController` + custom OmniAuth strategy manage Hack Club OAuth.
-- `HackatimeService` wraps Hackatime API calls for trust/project stats.
-- Models connect the design-order-user lifecycle.
-- Active Storage stores uploaded assets (SVG previews, product/design images).
-
-Key integration services:
-
-- Hack Club OAuth provider (`lib/omniauth/strategies/hackclub.rb`)
-- Hackatime API integration (`app/services/hackatime_service.rb`)
-
-## Data Model Snapshot
-
-Main entities:
-
-- `User`
-	- OAuth identity (`slack_id`, name, tokens)
-	- Role enum (`user`, `admin`, `superadmin`)
-	- Trust + verification + YSWS eligibility fields
-- `Design`
-	- Belongs to a user
-	- Optional Hackatime project metadata
-	- Active Storage attachments (`svg`, `image`)
-- `DesignEditSession`
-	- Tracks edit intervals and duration
-- `Product`
-	- Catalog item (with optional image)
-- `Order`
-	- Connects `User`, `Design`, and `Product`
-	- Status pipeline (`pending`, `processing`, `production`, `completed`, `cancelled`)
-- `Rsvp`
-	- Simple association to `User`
-
-See `db/schema.rb` for source-of-truth schema details.
-
-## Local Setup
-
-### Prerequisites
-
-- Ruby `3.4.9` (matches `.ruby-version`)
-- Bundler
-- PostgreSQL (client + server)
-
-Optional but useful:
-
-- Docker (for containerized runs)
-- `gh` CLI (if you use optional CI signoff flow)
-
-### 1) Clone and install
-
-```bash
-git clone https://github.com/Acidicts/Issued.git
-cd Issued
-bundle install
+Alternatively if you already have a postgres and redis instance you can do:
 ```
-
-### 2) Configure environment
-
-```bash
-cp .env.example .env
+docker run --rm \
+  --name issued \
+  --env-file .env \
+  -e DB_HOST=your-postgres-host \
+  -e DB_PORT=5432 \
+  -e DB_USERNAME=postgres \
+  -e DB_PASSWORD=your-password \
+  -e REDIS_URL=redis://your-redis-host:6379/0 \
+  -p 3000:3000 \
+  ghcr.io/acidicts/issued:latest
 ```
-
-Set at least OAuth variables (see [Environment Variables](#environment-variables)).
-
-### 3) Prepare database
-
-```bash
-bin/rails db:prepare
-```
-
-### 4) Start app
-
-```bash
-bin/dev
-```
-
-Then open `http://localhost:3000`.
-
-### One-command bootstrap
-
-If you prefer, use:
-
-```bash
-bin/setup
-```
-
-`bin/setup` installs dependencies, prepares DB, clears logs/tmp, and starts the dev server unless `--skip-server` is passed.
-
-## Environment Variables
-
-Environment is typically loaded via `dotenv-rails` in development/test.
-
-### Required for login
-
-- `HACKCLUB_CLIENT_ID`
-- `HACKCLUB_CLIENT_SECRET`
-
-Without these, `/login` redirects back with an OAuth-not-configured alert.
-
-### Strongly recommended
-
-- `APP_URL`
-	- The origin this app is served from, e.g. `https://issued.hackclub.com`. Builds absolute
-	  URLs/OG metadata in helpers and admin views, and is the origin the Hack Club OAuth
-	  `redirect_uri` is built from (`APP_URL + /auth/hackclub/callback`). Set it to the origin
-	  registered on the Hack Club app; the OAuth callback cannot be pointed elsewhere.
-
-### Hackatime integration
-
-- `HACKATIME_API_KEY`
-- `HACKATIME_START_DATE` (default is 30 days ago)
-- `HACKATIME_CACHE_TTL_SECONDS` (default `300`)
-- `HACKATIME_BYPASS_CACHE` (presence disables cache)
-
-### OAuth token fallback (optional)
-
-- `HACKCLUB_ACCESS_TOKEN`
-- `HACKCLUB_REFRESH_TOKEN`
-
-These are fallback sources if user/session tokens are unavailable.
-
-### RSVP/event state toggles
-
-- `RUNNING`
-- `ENDED`
-- `RSVP_OPEN`
-
-Used to drive RSVP and home-page CTA behavior.
-
-### Optional helper integrations
-
-- `EXCHANGE_RATE_API_KEY`
-	- Enables GBP->USD conversion utility used in product-related helpers.
-
-### Runtime/platform vars
-
-- `PORT` (Puma default is `3000`)
-- `PIDFILE` (optional)
-- `SOLID_QUEUE_IN_PUMA` (enables Solid Queue plugin inside Puma)
-- `RAILS_MASTER_KEY` (required for encrypted credentials in environments that need it)
-
-## Authentication (Hack Club OAuth)
-
-OAuth flow details:
-
-1. User visits `/login`.
-2. App redirects to `/auth/hackclub`.
-3. Callback hits `/auth/hackclub/callback`.
-4. Session is established (`session[:user_id]`, token fields).
-5. User record is created/updated from OAuth profile.
-
-Implementation files:
-
-- Initializer: `config/initializers/omniauth.rb`
-- Strategy: `lib/omniauth/strategies/hackclub.rb`
-- Controller: `app/controllers/sessions_controller.rb`
-
-## Developer Workflow
-
-### Common commands
-
-```bash
-# Start local server
-bin/dev
-
-# Rails console
-bin/rails console
-
-# Prepare DB
-bin/rails db:prepare
-
-# Reset DB (destructive)
-bin/setup --reset --skip-server
-```
-
-### Notes
-
-- `bin/dev` currently execs `bin/rails server` directly.
-- This app uses Importmap, so there is no JS bundler build step required for standard development.
-
-## Testing, Linting, and Security
-
-### Run everything (CI parity-ish)
-
-```bash
-bin/ci
-```
-
-`bin/ci` performs setup, style checks, security scans, tests, and seed replant in test.
-
-### Individual commands
-
-```bash
-# Tests
-bin/rails test
-bin/rails test:system
-
-# Style
-bin/rubocop
-
-# Security
-bin/brakeman --quiet --no-pager --exit-on-warn --exit-on-error --confidence-level 2
-bin/bundler-audit
-bin/importmap audit
-```
-
-### GitHub Actions
-
-Workflow at `.github/workflows/ci.yml` runs:
-
-- Ruby security scans
-- JS dependency audit (importmap)
-- RuboCop
-- Rails tests
-- Optional system tests when present
-
-## Admin Operations
-
-Admin access requires `current_user.admin?` (admin or superadmin role).
-
-### RSVP CSV import
-
-- Endpoint/UI: Admin RSVP page
-- Expected CSV headers:
-	- `slack_id` (required)
-	- `name` (optional)
-
-The importer creates or updates users by `slack_id`, then creates RSVP records if missing.
-
-### Role updates
-
-- Role changes in admin user update are restricted to `superadmin` users.
-
-## Deployment
-
-### Docker
-
-This repository ships a production-ready multi-stage `Dockerfile`.
-
-```bash
-docker build -t issued .
-docker run --rm -p 3000:3000 --env-file .env issued
-```
-
-Container details:
-
-- Entrypoint: `bin/docker-entrypoint` (prepares DB on startup)
-- Health endpoint: `/up`
-- Default server: Puma with `config/puma.rb`
-
-### Kamal
-
-`config/deploy.yml` is present for Kamal deploys.
-
-Before using it:
-
-1. Replace placeholder hosts/registry values.
-2. Configure secrets (especially `RAILS_MASTER_KEY`) in `.kamal/secrets`.
-3. The app stores data in PostgreSQL (`issued_production`, plus `issued_production_queue` and
-   `issued_production_cable`). Set `DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`, and make sure
-   `bin/rails db:prepare` can reach the server; `bin/docker-entrypoint` runs it on boot unless
-   `SKIP_DB_PREPARE=1`.
-4. Set the Active Record encryption keys (`ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY`,
-   `ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY`, `ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT`)
-   before switching the app over to encrypted token storage — see
-   [Encrypting Existing OAuth Tokens](#encrypting-existing-oauth-tokens).
-
-### Encrypting Existing OAuth Tokens
-
-`User` declares `encrypts :hackclub_access_token` and `encrypts :hackclub_refresh_token`, but rows
-written before those keys existed are still plaintext in `users.hackclub_access_token` /
-`users.hackclub_refresh_token`. Once the keys are present, reading a plaintext row raises
-`ActiveRecord::Encryption::Errors::Decryption`, so the data has to be converted **before** the app
-boots with the keys.
-
-The keys must come from the environment: `config/application.rb` assigns the three
-`ACTIVE_RECORD_ENCRYPTION_*` values unconditionally, and Rails splats those over the values it reads
-from `credentials.yml.enc`, so keys placed in credentials end up nil.
-
-```bash
-# 1) Snapshot the database first (or take a managed snapshot / WAL archive).
-pg_dump "$DB_URL" > issued_pre_encryption.sql
-
-# 2) Generate the three keys and put them in your password manager.
-#    Anything that generates 32 random alphanumeric characters per value works;
-#    bin/rails db:encryption:init just prints a YAML block.
-bin/rails db:encryption:init
-
-# 3) Count what still needs converting. Encrypted values start with {"p":
-psql "$DB_URL" -c \
-  "select count(*) filter (where hackclub_access_token is not null
-     and hackclub_access_token not like '{\"p\":%') as access_plain,
-          count(*) filter (where hackclub_refresh_token is not null
-     and hackclub_refresh_token not like '{\"p\":%') as refresh_plain
-   from users;"
-```
-
-Then run `bin/encrypt-tokens` **in a one-off process that has the keys, while the running app still
-does not have them** (the script refuses to run without keys, and the app is what actually needs to
-wait). It reports what it would do, converts each plaintext column, and re-reads every row to prove it
-still decrypts:
-
-```bash
-# Kamal
-bin/kamal app exec --reuse \
-  -e ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=<key> \
-  -e ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=<key> \
-  -e ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=<key> \
-  'bin/rails runner bin/encrypt-tokens'
-
-# Coolify: Application -> your app -> Terminal, then
-ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=<key> \
-ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=<key> \
-ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=<key> \
-bin/rails runner bin/encrypt-tokens
-
-# Append -- --dry-run to either to report without writing.
-```
-
-Once that prints `converted: N, ... verified: N`, add the three variables to the deployment
-environment (Coolify Environment Variables, or `.kamal/secrets`) and restart/redeploy. From that
-moment the app encrypts on write and decrypts on read.
-
-Verify afterwards:
-
-```bash
-psql "$DB_URL" -c \
-  "select count(*) from users
-   where (hackclub_access_token is not null and hackclub_access_token not like '{\"p\":%')
-      or (hackclub_refresh_token is not null and hackclub_refresh_token not like '{\"p\":%');"
-
-bin/rails runner 'User.find_each { |u| u.hackclub_access_token; u.hackclub_refresh_token }; puts "decrypt OK"'
-```
-
-The script is safe to re-run: already-encrypted columns are skipped, and `update_column` leaves
-callbacks, validations and `updated_at` untouched. The keys cannot be rotated afterwards without a
-second backfill, so store them properly from day one.
-
-## Project Structure
-
-```text
-app/
-	controllers/      # user, auth, RSVP, admin flows
-	models/           # User, Design, Order, Product, Rsvp, DesignEditSession
-	services/         # Hackatime integration
-	views/            # ERB templates
-config/
-	routes.rb         # route map
-	initializers/     # OmniAuth and framework setup
-db/
-	schema.rb         # current schema state
-lib/
-	omniauth/strategies/hackclub.rb
-bin/
-	setup, dev, ci, rails, rubocop, brakeman, bundler-audit
-```
-
-## Known Gaps / Notes
-
-- `Admin::OrdersController` methods are currently stubs and should be completed before relying on full admin order operations.
-- `Design` enforces global uniqueness for `hackatime_project`; if project sharing across users is desired, that constraint may need redesign.
-- `.env.example` includes some placeholders and may contain redundant entries; keep local `.env` aligned with actual variables used in code.
-
-## Contributing
-
-1. Create a branch.
-2. Make changes with tests.
-3. Run `bin/ci` locally.
-4. Open a PR.
-
-If you are introducing new env vars, migrations, or operational scripts, update this README in the same PR.
