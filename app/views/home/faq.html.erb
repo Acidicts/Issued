@@ -324,7 +324,7 @@
   </div>
 </div>
 
-<script>
+<script nonce="<%= content_security_policy_nonce %>">
   const openTimers = new WeakMap();
 
   document.querySelectorAll('.faq-item').forEach(item => {
