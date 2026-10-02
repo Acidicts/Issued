@@ -1,7 +1,7 @@
 # Issued
 <code>A draft ysws for hackclub</code>
 
-This runs on ruby 3.4.9 using rails 8.1.12
+A full stack `Ruby On Rails` application running on ruby 3.4.9 with rails 8.1.12
 
 ### Features Include
 - Hackclub OAuth
