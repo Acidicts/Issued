@@ -36,10 +36,12 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=ref,event=branch
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=sha,format=short
+            # Tag every main-branch push as :latest
+            type=raw,value=latest
+            # Also tag with the short commit SHA for pinning (e.g. :sha-a1b2c3d)
+            type=sha,prefix=sha-,format=short
+            # Tag with YYYY-MM-DD for date-based pinning (e.g. :2025-06-01)
+            type=schedule,pattern={{date 'YYYY-MM-DD'}}
 
       - name: Build and push
         uses: docker/build-push-action@v6
