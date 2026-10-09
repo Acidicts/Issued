@@ -1,5 +1,5 @@
 require "test_helper"
-
+require "base64"
 class DesignsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @design = designs(:one)
@@ -26,6 +26,22 @@ class DesignsControllerTest < ActionDispatch::IntegrationTest
   test "should get index" do
     get designs_path
     assert_response :success
+  end
+
+  test "index renders preview when design has an image" do
+    image = @design.images.create!
+    png_data = Base64.decode64("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADUlEQVR42mP8z8BQDwAFgwJ/lceL3wAAAABJRU5ErkJggg==")
+    blob = ActiveStorage::Blob.create_and_upload!(
+      io: StringIO.new(png_data.b),
+      filename: "preview.png",
+      content_type: "image/png"
+    )
+    image.image_file.attach(blob)
+
+    get designs_path
+
+    assert_response :success
+    assert_includes response.body, "Additional image for #{@design.name}"
   end
 
   test "should get new" do
