@@ -1,11 +1,13 @@
 <%= stylesheet_link_tag "pages/orders", "data-turbo-track": "reload" %>
 
 <% enabled_area_names = @product.print_areas.select { |pa| @order.print_areas[pa.name] == true }.map(&:name) %>
-<% preview_index = (params[:preview_area] || 0).to_i %>
-<% preview_index = [preview_index, enabled_area_names.size - 1].min %>
+<% preview_index = (params[:preview_area] || params.dig(:order, :preview_area) || 0).to_i %>
+<% preview_index = enabled_area_names.empty? ? 0 : [[preview_index, 0].max, enabled_area_names.size - 1].min %>
 <% current_area_name = enabled_area_names[preview_index] %>
 <% pa = @product.print_areas.find { |p| p.name == current_area_name } %>
 <% current_config = @print_area_configs[current_area_name] || {} %>
+<% current_config = current_config.to_unsafe_h if current_config.respond_to?(:to_unsafe_h) %>
+<% design_images = @design_images || {} %>
 
 <%= turbo_frame_tag "order_steps" do %>
   <div class="order-wrap">
@@ -22,11 +24,12 @@
           <%= hidden_field_tag "order[preview_area]", preview_index %>
           <%= hidden_field_tag "print_area", current_area_name %>
 
-          <% @product.print_areas.each do |pa| %>
-            <%= hidden_field_tag "order[print_areas][#{pa.name}]", @order.print_areas[pa.name] == true ? "1" : "0" %>
+          <% @product.print_areas.each do |area| %>
+            <%= hidden_field_tag "order[print_areas][#{area.name}]", @order.print_areas[area.name] == true ? "1" : "0" %>
           <% end %>
           <% @print_area_configs.each do |key, config| %>
-            <% config.each do |k, value| %>
+            <% config = config.to_unsafe_h if config.respond_to?(:to_unsafe_h) %>
+            <% (config.respond_to?(:each_pair) ? config : {}).each do |k, value| %>
               <%= hidden_field_tag "order[print_area_configs][#{key}][#{k}]", value %>
             <% end %>
           <% end %>
@@ -55,24 +58,26 @@
           <div class="form-group">
             <span class="form-label">Print Areas</span>
             <% @print_area_configs.each do |area_name, config| %>
-              <% design = @designs.find { |d| d.id.to_s == config["design_id"].to_s } %>
-              <% area_pa = @product.print_areas.find { |p| p.name == area_name.to_s } %>
+              <% config = config.to_unsafe_h if config.respond_to?(:to_unsafe_h) %>
+              <% config = config.respond_to?(:each_pair) ? config : {} %>
+              <% design_id = config["design_id"].nil? ? config[:design_id] : config["design_id"] %>
+              <% design = design_id.present? ? @designs.find { |d| d.id.to_s == design_id.to_s } : nil %>
               <div style="padding: 8px 0; border-bottom: 1px solid var(--border-light);">
-                <span class="print-area-badge"><%= area_name.humanize %> - <%= design.name %></span>
+                <span class="print-area-badge"><%= area_name.to_s.humanize %> - <%= design&.name || "None" %></span>
               </div>
             <% end %>
           </div>
         <% end %>
 
         <div class="form-actions">
-          <%= button_to "Back", new_step_orders_path, params: { order: { product_id: @product.id, color_hex: @order.color_hex, print_areas: @order.print_areas, print_area_configs: @print_area_configs }, back_step: "design" }, method: :post, data: { turbo_frame: "order_steps" }, class: "btn btn-secondary btn-outline" %>
+          <%= button_to "Back", new_step_orders_path, params: { order: { product_id: @product.id, color_hex: @order.color_hex, print_areas: @order.print_areas, print_area_configs: @print_area_configs }, back_step: "design", print_area: current_area_name }, method: :post, data: { turbo_frame: "order_steps" }, class: "btn btn-secondary btn-outline" %>
           <input type="submit" value="Place Order" form="confirmation-form" class="btn btn-secondary">
         </div>
       </div>
 
       <div class="order-preview-side">
         <div class="preview-label">Preview</div>
-        <div class="preview-canvas" style="position: relative;">
+        <div class="preview-canvas" style="position: relative; min-height: 360px;">
           <div class="preview-product">
             <div class="preview-product-image-container" style="position: relative;"
                  data-confirmation-preview
@@ -85,15 +90,15 @@
                  data-design-wx="<%= current_config["wx"] || pa&.image_wx %>"
                  data-design-wy="<%= current_config["wy"] || pa&.image_wy %>"
                  data-design-rotation="<%= current_config["rotation"] || 0 %>">
-              <% if pa&.template_image %>
+              <% if pa&.template_image&.attached? %>
                 <%= image_tag pa.template_image, alt: @product.type, class: "product_image_preview confirmation-image", style: "background-color: #{@order.color_hex}" %>
               <% elsif @product.image.attached? %>
                 <%= image_tag @product.image, alt: @product.type, class: "product_image_preview confirmation-image", style: "background-color: #{@order.color_hex}" %>
               <% else %>
                 <span class="preview-placeholder">No product image</span>
               <% end %>
-              <% if @design_images[current_area_name.to_s] %>
-                <%= image_tag @design_images[current_area_name.to_s], alt: "Design", class: "confirmation-design-image", data: { confirmation_design: true } %>
+              <% if current_area_name.present? && design_images[current_area_name.to_s] %>
+                <%= image_tag design_images[current_area_name.to_s], alt: "Design", class: "confirmation-design-image", data: { confirmation_design: true } %>
               <% end %>
             </div>
           </div>
@@ -115,70 +120,119 @@
       if (!container) return;
       var img = container.querySelector(".confirmation-image");
       var design = container.querySelector("[data-confirmation-design]");
-      if (!img || !design) return;
+      if (!design) return;
 
+      // Hide until positioned to avoid a flash of the unplaced design.
+      // Done here (not in the markup) so the design still shows if JS is blocked.
+      design.style.display = "none";
+
+      function num(value, fallback) {
+        var n = parseFloat(value);
+        return isNaN(n) ? fallback : n;
+      }
+
+      // No product image: nothing to align against, just show the design.
+      if (!img) {
+        design.style.position = "static";
+        design.style.display = "block";
+        design.style.maxWidth = "100%";
+        return;
+      }
+
+      var rafId = null;
+      var attempts = 0;
+
+      // Returns true once the design is placed. Never leaves it hidden:
+      // after a long wait we show it unpositioned rather than invisible.
       function positionDesign() {
-        if (!img.naturalWidth || !img.clientWidth) return;
+        if (!img.naturalWidth || !img.naturalHeight) return false;
+
+        var containerRect = container.getBoundingClientRect();
+        var imgRect = img.getBoundingClientRect();
+        if (!imgRect.width || !imgRect.height || !containerRect.width || !containerRect.height) return false;
 
         var imgAspect = img.naturalWidth / img.naturalHeight;
-        var boxAspect = img.clientWidth / img.clientHeight;
+        var boxAspect = imgRect.width / imgRect.height;
         var renderedW, renderedH, renderedX, renderedY;
         if (imgAspect >= boxAspect) {
-          renderedW = img.clientWidth;
-          renderedH = img.clientWidth / imgAspect;
+          renderedW = imgRect.width;
+          renderedH = imgRect.width / imgAspect;
         } else {
-          renderedH = img.clientHeight;
-          renderedW = img.clientHeight * imgAspect;
+          renderedH = imgRect.height;
+          renderedW = imgRect.height * imgAspect;
         }
-        renderedX = (img.clientWidth - renderedW) / 2;
-        renderedY = (img.clientHeight - renderedH) / 2;
+        renderedX = (imgRect.left - containerRect.left) + (imgRect.width - renderedW) / 2;
+        renderedY = (imgRect.top - containerRect.top) + (imgRect.height - renderedH) / 2;
         var scale = renderedW / img.naturalWidth;
-        var offsetX = renderedX;
-        var offsetY = renderedY;
 
-        var paX = parseFloat(container.dataset.paX) || 0;
-        var paY = parseFloat(container.dataset.paY) || 0;
-        var paWx = parseFloat(container.dataset.paWx) || img.naturalWidth;
-        var paWy = parseFloat(container.dataset.paWy) || img.naturalHeight;
+        // Print-area box in natural pixels, intersected with the image so
+        // stale or other-space coords can never push the design off-image.
+        var iw = img.naturalWidth, ih = img.naturalHeight;
+      var paL = num(container.dataset.paX, 0);
+      var paT = num(container.dataset.paY, 0);
+      var paR = Math.min(paL + num(container.dataset.paWx, iw), iw);
+      var paB = Math.min(paT + num(container.dataset.paWy, ih), ih);
+      paL = Math.max(paL, 0);
+      paT = Math.max(paT, 0);
+      if (!(paR > paL)) { paL = 0; paR = iw; }
+      if (!(paB > paT)) { paT = 0; paB = ih; }
 
-        var dX = parseFloat(container.dataset.designX) || paX;
-        var dY = parseFloat(container.dataset.designY) || paY;
-        var dWx = parseFloat(container.dataset.designWx) || paWx;
-        var dWy = parseFloat(container.dataset.designWy) || paWy;
-        var rotation = parseFloat(container.dataset.designRotation) || 0;
-
-        var left = offsetX + dX * scale;
-        var top = offsetY + dY * scale;
-        var width = dWx * scale;
-        var height = dWy * scale;
+        // Design box defaults to the print area, then is shrink-fit inside it
+        // (never enlarged) so oversized values can't swallow the product image.
+      var dX = num(container.dataset.designX, paL);
+      var dY = num(container.dataset.designY, paT);
+      var dW = num(container.dataset.designWx, paR - paL);
+      var dH = num(container.dataset.designWy, paB - paT);
+      if (!(dW > 0)) dW = paR - paL;
+      if (!(dH > 0)) dH = paB - paT;
+      var fit = Math.min(1, (paR - paL) / dW, (paB - paT) / dH);
+      dW *= fit;
+      dH *= fit;
+      dX = Math.min(Math.max(dX, paL), Math.max(paL, paR - dW));
+      dY = Math.min(Math.max(dY, paT), Math.max(paT, paB - dH));
+      var rotation = num(container.dataset.designRotation, 0);
 
         design.style.position = "absolute";
-        design.style.left = left + "px";
-        design.style.top = top + "px";
-        design.style.width = width + "px";
-        design.style.height = height + "px";
+        design.style.left = (renderedX + dX * scale) + "px";
+        design.style.top = (renderedY + dY * scale) + "px";
+        design.style.width = Math.max(1, dW * scale) + "px";
+        design.style.height = Math.max(1, dH * scale) + "px";
         design.style.transform = "rotate(" + rotation + "deg)";
         design.style.transformOrigin = "center center";
         design.style.objectFit = "contain";
         design.style.display = "block";
+        return true;
       }
 
-      function tryPosition() {
-        if (img.complete && img.naturalWidth) {
-          positionDesign();
-        } else {
-          img.addEventListener("load", positionDesign);
+      function loop() {
+        attempts += 1;
+        if (positionDesign()) { rafId = null; return; }
+        if (attempts > 1200) {
+          // Layout never settled (e.g. zero-size canvas): show it rather than hide it.
+          design.style.position = "static";
+          design.style.display = "block";
+          design.style.maxWidth = "100%";
+          rafId = null;
+          return;
         }
+        rafId = requestAnimationFrame(loop);
       }
 
-      if (img.complete && img.naturalWidth) {
-        requestAnimationFrame(tryPosition);
-      } else {
-        img.addEventListener("load", function() {
-          requestAnimationFrame(positionDesign);
-        });
+      function kick() {
+        attempts = 0;
+        if (rafId) return;
+        rafId = requestAnimationFrame(loop);
       }
-      window.addEventListener("resize", positionDesign);
+
+      img.addEventListener("load", kick);
+      img.addEventListener("error", kick);
+      window.addEventListener("resize", kick);
+      document.addEventListener("turbo:frame-load", kick);
+      document.addEventListener("turbo:load", kick);
+      if (window.ResizeObserver) {
+        new ResizeObserver(kick).observe(container);
+      }
+      kick();
     })();
   </script>
 <% end %>
