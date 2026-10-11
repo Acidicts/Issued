@@ -33,12 +33,12 @@ class Fufillment::QueueController < Fufillment::FufillmentController
     Order
       .joins(:batch)
       .where(status: :pending, batches: { status: :being_fufilled })
-      .includes(:product, order_print_areas: [:design, { preview_image_attachment: :blob }])
+      .includes(:product, order_print_areas: [ :design, { preview_image_attachment: :blob } ])
   end
 
   def set_order
     @order = Order
-      .includes(:user, :batch, :product, order_print_areas: [:design, { preview_image_attachment: :blob }])
+      .includes(:user, :batch, :product, order_print_areas: [ :design, { preview_image_attachment: :blob } ])
       .find(params[:id])
   end
 

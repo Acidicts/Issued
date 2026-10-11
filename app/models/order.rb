@@ -43,7 +43,6 @@ class Order < ApplicationRecord
   def add_to_batch
     return if batch.present?
     self.batch = Batch.filling.order(:created_at).first_or_create!
-    save!
   end
 
   def mark_batch_pending_if_full
