@@ -39,6 +39,10 @@
         <span class="order-show-value"><%= @order.order_print_areas.first&.design&.name %></span>
       </div>
       <div class="order-show-detail">
+        <span class="order-show-label">Batch</span>
+        <span class="order-show-value"><%= @order.batch&.number %> (<%= @order.batch&.status.humanize %>)</span>
+      </div>
+      <div class="order-show-detail">
         <span class="order-show-label">Print Areas</span>
         <span class="order-show-value"><%= @order.active_print_area_names.join(", ").presence || "None" %></span>
       </div>

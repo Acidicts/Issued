@@ -25,6 +25,7 @@
 class Order < ApplicationRecord
   belongs_to :user
   belongs_to :product
+  belongs_to :batch, optional: true
 
   attribute :step, :integer, default: 3
 
@@ -35,6 +36,19 @@ class Order < ApplicationRecord
   attribute :print_areas, :json, default: {}
 
   has_many :order_print_areas, dependent: :destroy
+
+  before_create :add_to_batch
+  after_create :mark_batch_pending_if_full
+
+  def add_to_batch
+    return if batch.present?
+    self.batch = Batch.filling.order(:created_at).first_or_create!
+    save!
+  end
+
+  def mark_batch_pending_if_full
+    batch&.transition_if_full
+  end
 
   def build_print_areas_from_product
     return if print_areas.present?

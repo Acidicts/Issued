@@ -1,0 +1,144 @@
+.batches-page {
+	--ink: #241D16;
+	--line: #B7A878;
+	--paper: #E4D9BC;
+	--card: #F2EAD3;
+	--muted: #B7A878;
+	--accent: #1F6F78;
+	--ok: #1F6F78;
+	--warn: #B97F19;
+
+	max-width: 1120px;
+	margin: 1.5rem auto 2rem;
+	padding: 1.25rem;
+	background: var(--paper);
+}
+
+@media (prefers-color-scheme: dark) {
+	.batches-page {
+		--ink: #E4D9BC;
+		--line: #B7A878;
+		--paper: #241D16;
+		--card: #241D16;
+		--muted: #B7A878;
+		--accent: #1F6F78;
+		--ok: #1F6F78;
+		--warn: #B97F19;
+
+		background: var(--paper);
+	}
+}
+
+.batches-header {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	justify-content: space-between;
+	align-items: center;
+	margin: 0 0 1rem;
+}
+
+.batches-header h1 {
+	margin: 0;
+	font-family: 'Archivo Black', 'Arial Black', sans-serif;
+	font-size: 1.25rem;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: var(--ink);
+}
+
+.batches-grid {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	border: rgb(from var(--line) r g b / 0.5) 2px solid;
+	border-radius: 6px;
+	padding: 12px;
+}
+
+.batch-link {
+	text-decoration: none;
+	color: inherit;
+}
+
+.batch {
+	display: flex;
+	align-items: flex-start;
+	gap: 14px;
+	padding: 14px;
+	background: var(--card);
+	border: 1.5px dashed var(--line);
+	border-radius: 6px;
+	transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.18s ease;
+}
+
+.batch:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 6px 0 -3px rgba(36, 29, 22, 0.15);
+	border-color: var(--accent);
+}
+
+.batch-info {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	min-width: 0;
+}
+
+.batch-id {
+	font-family: 'Archivo Black', 'Arial Black', sans-serif;
+	font-size: 0.8rem;
+	text-transform: uppercase;
+	letter-spacing: 0.12em;
+	color: var(--ink);
+}
+
+.batch-status {
+	display: inline-block;
+	align-self: flex-start;
+	font-family: 'Space Mono', 'Courier New', monospace;
+	font-size: 0.65rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	padding: 2px 8px;
+	border-radius: 3px;
+	background: var(--accent);
+	color: var(--card);
+}
+
+.batch-status--pending { background: var(--warn); }
+.batch-status--being_fufilled,
+.batch-status--being-fufilled { background: var(--accent); }
+.batch-status--completed { background: var(--ok); }
+
+.batch-meta {
+	display: flex;
+	gap: 6px;
+	align-items: baseline;
+}
+
+.batch-meta-label {
+	font-family: 'Space Mono', 'Courier New', monospace;
+	font-size: 0.6rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	color: var(--muted);
+}
+
+.batch-meta-value {
+	font-family: 'Space Mono', 'Courier New', monospace;
+	font-size: 0.8rem;
+	color: var(--ink);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+@media (max-width: 480px) {
+	.batch {
+		padding: 12px;
+		gap: 10px;
+	}
+}

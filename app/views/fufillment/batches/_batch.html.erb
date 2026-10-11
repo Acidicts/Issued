@@ -1,0 +1,16 @@
+<%= link_to edit_fufillment_batch_path(batch), class: "batch-link" do %>
+  <div class="batch">
+    <div class="batch-info">
+      <span class="batch-id">Batch #<%= batch.number || batch.id %></span>
+      <span class="batch-status batch-status--<%= batch.status %>"><%= batch.status.humanize %></span>
+      <div class="batch-meta">
+        <span class="batch-meta-label">Orders</span>
+        <span class="batch-meta-value"><%= batch.orders.size %></span>
+      </div>
+      <div class="batch-meta">
+        <span class="batch-meta-label">Created</span>
+        <span class="batch-meta-value"><%= l(batch.created_at.to_date, format: :short) if batch.created_at %></span>
+      </div>
+    </div>
+  </div>
+<% end %>

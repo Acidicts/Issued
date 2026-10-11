@@ -1,0 +1,81 @@
+.orders-queue-list {
+	--ink: #241D16;
+	--line: #B7A878;
+	--paper: #E4D9BC;
+	--card: #F2EAD3;
+	--muted: #B7A878;
+	--accent: #1F6F78;
+	--ok: #1F6F78;
+	--warn: #B97F19;
+
+	max-width: 1120px;
+	margin: 1.5rem auto 2rem;
+	padding: 1.25rem;
+	border-radius: 4px;
+	border: 1.5px dashed var(--ink);
+	background: var(--paper);
+}
+
+@media (prefers-color-scheme: dark) {
+	.orders-queue-list {
+		--ink: #E4D9BC;
+		--line: #B7A878;
+		--paper: #241D16;
+		--card: #241D16;
+		--muted: #B7A878;
+		--accent: #1F6F78;
+		--ok: #1F6F78;
+		--warn: #B97F19;
+
+		background: var(--paper);
+	}
+}
+
+.orders-queue-nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+
+    gap:8px;
+    width: fit-content;
+}
+
+.orders-queue-nav a {
+    background-color: var(--card);
+    color: var(--ink);
+    align-self: center;
+    text-decoration: none;
+
+    transition: all 0.2s ease;
+
+    border: solid var(--line) 2px;
+    padding: 4px;
+}
+
+.orders-queue-nav a:first-child {
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+}
+
+.orders-queue-nav a:last-child {
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+.orders-queue-nav a:hover {
+    background-color: var(--muted);
+    color: var(--accent);
+    align-self: center;
+    text-decoration: none;
+}
+
+.orders-queue-nav a.is-disabled {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.orders-queue-grid {
+    display: grid;
+    gap: 12px;
+    margin-top: 12px;
+}

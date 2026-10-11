@@ -1,0 +1,11 @@
+<%= stylesheet_link_tag "pages/fufillment/batches/index" %>
+
+<div class="batches-page">
+    <div class="batches-header">
+        <h1>Batches</h1>
+        <%= link_to "New Batch", new_fufillment_batch_path, class:"btn-primary" %>
+    </div>
+    <div class="batches-grid">
+        <%= render partial: "fufillment/batches/batch", collection: @batches %>    
+    </div>
+</div>

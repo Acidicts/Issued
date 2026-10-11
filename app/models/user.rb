@@ -31,7 +31,7 @@ class User < ApplicationRecord
 
   validates :ysws_eligible, inclusion: { in: [ true, false ] }
 
-  enum :role, { user: 0, admin: 1, superadmin: 2, reviewer: 3, system: 4 }, prefix: :role, default: :user
+  enum :role, { user: 0, admin: 1, superadmin: 2, reviewer: 3, fufillment: 4, system: 5 }, prefix: :role, default: :user
   attribute :veri_level, :integer
   attribute :email, :string
   attribute :threads, :integer, default: 0
@@ -46,6 +46,10 @@ class User < ApplicationRecord
 
   def admin?
     role == "admin" || role == "superadmin" || role == "system"
+  end
+
+  def fufillment?
+    role == "reviewer" || role == "fufillment" || role == "admin" || role == "superadmin" || role == "system"
   end
 
   def reviewer?

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_27_204801) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_04_211632) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -58,6 +58,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_27_204801) do
     t.index ["user_id"], name: "index_balance_events_on_user_id"
   end
 
+  create_table "batches", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "number"
+    t.integer "status"
+    t.datetime "updated_at", null: false
+  end
+
   create_table "comments", force: :cascade do |t|
     t.boolean "admin_only"
     t.text "body"
@@ -68,6 +75,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_27_204801) do
     t.bigint "user_id", null: false
     t.index ["commentable_type", "commentable_id"], name: "index_comments_on_commentable"
     t.index ["user_id"], name: "index_comments_on_user_id"
+  end
+
+  create_table "design_edit_sessions", force: :cascade do |t|
+    t.string "activity_type", default: "edit"
+    t.datetime "created_at", null: false
+    t.bigint "design_id", null: false
+    t.integer "duration_seconds", default: 0, null: false
+    t.datetime "ended_at"
+    t.datetime "started_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["design_id", "created_at"], name: "index_design_edit_sessions_on_design_id_and_created_at"
+    t.index ["design_id"], name: "index_design_edit_sessions_on_design_id"
+    t.index ["user_id", "created_at"], name: "index_design_edit_sessions_on_user_id_and_created_at"
+    t.index ["user_id"], name: "index_design_edit_sessions_on_user_id"
   end
 
   create_table "designs", force: :cascade do |t|
@@ -151,6 +173,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_27_204801) do
   end
 
   create_table "orders", force: :cascade do |t|
+    t.bigint "batch_id"
     t.string "color_hex"
     t.datetime "created_at", null: false
     t.jsonb "print_areas", default: {}, null: false
@@ -159,6 +182,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_27_204801) do
     t.integer "step"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["batch_id"], name: "index_orders_on_batch_id"
     t.index ["product_id"], name: "index_orders_on_product_id"
     t.index ["user_id"], name: "index_orders_on_user_id"
   end
@@ -274,6 +298,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_27_204801) do
   add_foreign_key "notifications", "users"
   add_foreign_key "order_print_areas", "designs"
   add_foreign_key "order_print_areas", "orders"
+  add_foreign_key "orders", "batches"
   add_foreign_key "orders", "products"
   add_foreign_key "orders", "users"
   add_foreign_key "print_areas", "products"

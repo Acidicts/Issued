@@ -1,0 +1,2 @@
+module Fufillment::BatchesHelper
+end

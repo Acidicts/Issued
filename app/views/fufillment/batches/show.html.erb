@@ -1,0 +1,12 @@
+<%= stylesheet_link_tag "pages/fufillment/batches/index", "pages/orders" %>
+
+<div class="batches-page">
+    <div class="batches-header">
+        <h1>Batch #<%= @batch.number || @batch.id %></h1>
+        <span class="batch-status batch-status--<%= @batch.status %>"><%= @batch.status.humanize %></span>
+        <%= link_to "Edit", edit_fufillment_batch_path(@batch), class: "btn-primary" %>
+    </div>
+    <div class="batches-grid">
+        <%= render partial: "orders/order", collection: @orders %>
+    </div>
+</div>

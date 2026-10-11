@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+# == Schema Information
+#
+# Table name: batches
+#
+#  id         :bigint           not null, primary key
+#  number     :integer
+#  status     :integer
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+one:
+  number: 1
+  status: 1
+
+two:
+  number: 1
+  status: 1

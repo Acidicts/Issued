@@ -1,0 +1,23 @@
+<%= stylesheet_link_tag "components/forms" %>
+
+<div class="form-card">
+  <div class="form-header">
+    <h2>New Batch</h2>
+    <p>Create a new batch.</p>
+  </div>
+
+  <%= form_with model: [:fufillment, @batch] do |f| %>
+    <div class="form-group <%= 'has-error' if @batch.errors[:number].present? %>">
+      <%= f.label :number, class: "form-label" %>
+      <%= f.number_field :number, class: "form-input" %>
+      <% if @batch.errors[:number].present? %>
+        <div class="form-error"><%= @batch.errors[:number].join(", ") %></div>
+      <% end %>
+    </div>
+
+    <div class="form-actions">
+      <%= f.submit "Create Batch", class: "btn btn-primary" %>
+      <%= link_to "Back", fufillment_batches_path, class: "btn btn-outline" %>
+    </div>
+  <% end %>
+</div>

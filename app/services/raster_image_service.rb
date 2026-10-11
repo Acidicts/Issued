@@ -39,7 +39,7 @@ class RasterImageService
 
   def call
     bytes = read_bytes
-    raise UnprocessableImage, "file is empty" if bytes.blank?
+    raise UnprocessableImage, "file is empty" if bytes.nil? || bytes.empty?
 
     if SvgSanitizer.svg_like?(bytes)
       convert_svg(bytes)
@@ -89,7 +89,10 @@ class RasterImageService
     return nil unless source.respond_to?(:read)
 
     source.rewind if source.respond_to?(:rewind)
-    source.read
+    # .b matters: IO#read tags its result with the default external encoding (UTF-8),
+    # and an image's bytes are almost never valid UTF-8, so anything downstream that
+    # matches a UTF-8 regexp against them (String#blank?) raises ArgumentError.
+    source.read&.b
   rescue SystemCallError
     nil
   end

@@ -1,6 +1,6 @@
-<%= link_to order_path(order), class: "order-link" do %>
+<%= link_to order_path(order), data: { turbo_frame: "_top" }, class: "order-link" do %>
     <div class="order">
-        <% if order.order_print_areas.first.preview_image.attached? %>
+        <% if order.order_print_areas.first&.preview_image&.attached? %>
             <div class="order-thumb" style="background-color: <%= order.color_hex %>;">
                 <%= image_tag order.order_print_areas.first.preview_image, alt: "Order #{order.id} preview" %>
             </div>

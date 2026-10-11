@@ -36,7 +36,7 @@
           </div>
 
         <div class="nb-form-group">
-          <%= form.submit class: "nb-btn nb-btn-primary", disabled: !@design.can_make_ship_request?, onclick: "document.getElementById('ship-request-new-page').classList.add('hidden');" %>
+          <%= form.submit class: "nb-btn nb-btn-primary", disabled: !@design.can_make_ship_request?, data: { action: "popup#close" } %>
         </div>
       </div>
     </div>

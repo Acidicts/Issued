@@ -1,0 +1,23 @@
+<%= stylesheet_link_tag "components/forms" %>
+
+<div class="form-card">
+  <div class="form-header">
+    <h2>Edit Batch</h2>
+    <p>Update the batch status.</p>
+  </div>
+
+  <%= form_with model: [:fufillment, @batch] do |f| %>
+    <div class="form-group <%= 'has-error' if @batch.errors[:status].present? %>">
+      <%= f.label :status, class: "form-label" %>
+      <%= f.select :status, Batch.statuses.keys.map { |s| [s.humanize, s] }, {}, class: "form-select" %>
+      <% if @batch.errors[:status].present? %>
+        <div class="form-error"><%= @batch.errors[:status].join(", ") %></div>
+      <% end %>
+    </div>
+
+    <div class="form-actions">
+      <%= f.submit "Update Batch", class: "btn btn-primary" %>
+      <%= link_to "Back", fufillment_batches_path, class: "btn btn-outline" %>
+    </div>
+  <% end %>
+</div>

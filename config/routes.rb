@@ -126,4 +126,12 @@ Rails.application.routes.draw do
     resources :ship_requests, only: %i[index show new edit update]
     resources :user, only: %i[show]
   end
+
+  # Fufillment
+  namespace :fufillment do
+    get "/", to: "fufillment#index", as: :dashboard
+
+    resources :batches, only: %i[index show new create edit update]
+    resources :queue, only: %i[index show edit update]
+  end
 end

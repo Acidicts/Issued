@@ -6,7 +6,7 @@ class HackclubAuthService
 
   def initialize(user)
     @user = user
-    @access_token = user.access_token
+    @access_token = user.respond_to?(:hackclub_access_token) ? user.hackclub_access_token : user.access_token
   end
 
   # me function from github.com/hackclub/stardance in app/services/hca_service.rb edited to remove need for access_token param

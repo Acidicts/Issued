@@ -58,7 +58,7 @@
     <%= stylesheet_link_tag "components/layouts/application" %>
   </head>
 
-  <body class="<%= @nav != nil ? 'has-nav' : '' %>">
+  <body class="<%= @nav != nil ? 'has-nav' : '' %>" data-controller="popup">
     <%= render "todo", show: true %>
     <% if signed_in? %>
       <header class="tag-header">
@@ -89,6 +89,7 @@
              data-navigation-tabs-current-path-value="<%= request.path %>"
              data-navigation-tabs-unread-count-value="<%= @unread_notification_count || 0 %>"
              data-navigation-tabs-is-admin-value="<%= current_user.admin? %>"
+             data-navigation-tabs-is-fufillment-value="<%= current_user.fufillment? %>"
              data-navigation-tabs-is-reviewer-value="<%= current_user.reviewer? %>"
              data-navigation-tabs-target="list">
         </nav>

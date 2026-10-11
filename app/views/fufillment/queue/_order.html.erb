@@ -1,0 +1,21 @@
+<%= link_to fufillment_queue_path(order), data: { turbo_frame: "_top" }, class: "order-link" do %>
+    <div class="order">
+        <% if order.order_print_areas.first&.preview_image&.attached? %>
+            <div class="order-thumb" style="background-color: <%= order.color_hex %>;">
+                <%= image_tag order.order_print_areas.first.preview_image, alt: "Order #{order.id} preview" %>
+            </div>
+        <% end %>
+        <div class="order-info">
+            <span class="order-id">Order #<%= @orders.index(order) + 1 %></span>
+            <span class="order-status order-status--<%= order.status %>"><%= order.status.humanize %></span>
+            <div class="order-meta">
+                <span class="order-meta-label">Product</span>
+                <span class="order-meta-value"><%= order.product.type %></span>
+            </div>
+            <div class="order-meta">
+                <span class="order-meta-label">Design</span>
+                <span class="order-meta-value"><%= order.order_print_areas.first&.design&.name %></span>
+            </div>
+        </div>
+    </div>
+<% end %>

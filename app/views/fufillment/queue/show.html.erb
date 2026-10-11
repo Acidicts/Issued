@@ -1,0 +1,94 @@
+<%= stylesheet_link_tag "pages/orders", "components/forms" %>
+
+<div class="order-show">
+  <div class="order-show-image">
+    <%
+      images_array = @order.order_print_areas.filter_map do |area|
+        area.preview_image if area.preview_image.attached?
+      end
+    %>
+    <% if images_array.any? %>
+      <%
+        preview_index = (params[:preview_area] || 0).to_i
+        preview_index = [[preview_index, 0].max, images_array.size - 1].min
+      %>
+      <%= image_tag images_array[preview_index], alt: "Order preview", style: "background-color: #{@order.color_hex}" %>
+      <% if images_array.size > 1 %>
+        <div style="display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 12px;">
+          <%= link_to raw("&larr;"), fufillment_queue_path(@order, preview_area: [preview_index - 1, 0].max), class: "btn btn-tertiary", disabled: preview_index <= 0 %>
+          <span><%= preview_index + 1 %> / <%= images_array.size %></span>
+          <%= link_to raw("&rarr;"), fufillment_queue_path(@order, preview_area: [preview_index + 1, images_array.size - 1].min), class: "btn btn-tertiary", disabled: preview_index >= images_array.size - 1 %>
+        </div>
+      <% end %>
+    <% else %>
+      <span class="order-show-placeholder">No preview available</span>
+    <% end %>
+  </div>
+  <div class="order-show-info">
+    <div class="order-show-header">
+      <h3>Order <%= @order.id %></h3>
+      <%= render "orders/status_pill", order: @order %>
+    </div>
+    <div class="order-show-details">
+      <div class="order-show-detail">
+        <span class="order-show-label">Product</span>
+        <span class="order-show-value"><%= @order.product.type %></span>
+      </div>
+      <div class="order-show-detail">
+        <span class="order-show-label">Design</span>
+        <span class="order-show-value"><%= @order.order_print_areas.first&.design&.name %></span>
+      </div>
+      <div class="order-show-detail">
+        <span class="order-show-label">Colour</span>
+        <span class="order-show-value"><%= @order.color_hex.presence || "—" %></span>
+      </div>
+      <div class="order-show-detail">
+        <span class="order-show-label">Batch</span>
+        <span class="order-show-value"><%= @order.batch ? "##{@order.batch.number || @order.batch.id} (#{@order.batch.status.humanize})" : "None" %></span>
+      </div>
+      <div class="order-show-detail">
+        <span class="order-show-label">Print Areas</span>
+        <span class="order-show-value"><%= @order.active_print_area_names.join(", ").presence || "None" %></span>
+      </div>
+      <div class="order-show-detail">
+        <span class="order-show-label">Placed</span>
+        <span class="order-show-value"><%= @order.created_at.strftime("%b %d, %Y") %></span>
+      </div>
+    </div>
+    <div class="inline-flex jc-space-evenly g-16p">
+      <%= link_to "Back to queue", fufillment_queue_index_path, class: "btn btn-secondary" %>
+      <%= link_to "Edit", edit_fufillment_queue_path(@order), class: "btn btn-secondary" %>
+    </div>
+  </div>
+</div>
+
+<div class="form-card" style="margin-top: 16px;">
+  <div class="form-header">
+    <h2>Recipient</h2>
+    <p>Buyer details and shipping addresses from Hack Club auth.</p>
+  </div>
+
+  <div class="order-show-details">
+    <div class="order-show-detail">
+      <span class="order-show-label">Name</span>
+      <span class="order-show-value"><%= @order.user.name %></span>
+    </div>
+    <div class="order-show-detail">
+      <span class="order-show-label">Email</span>
+      <span class="order-show-value"><%= @order.user.email %></span>
+    </div>
+  </div>
+
+  <% if @addresses.any? %>
+    <% @addresses.each_with_index do |address, index| %>
+      <fieldset class="form-fieldset">
+        <legend>Address <%= index + 1 %></legend>
+        <% fulfillment_address_lines(address).each do |line| %>
+          <div class="order-show-value"><%= line %></div>
+        <% end %>
+      </fieldset>
+    <% end %>
+  <% else %>
+    <p class="form-hint">No shipping addresses found for this user.</p>
+  <% end %>
+</div>
