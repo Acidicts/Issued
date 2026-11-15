@@ -92,6 +92,10 @@ group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
   gem "annotaterb"
+  gem "rails_live_reload"
+  gem "faker"
+  gem "ruby-lsp", require: false
+  gem "ruby-lsp-rails", require: false
 end
 
 group :test do
@@ -104,6 +108,3 @@ end
 gem "pg", "~> 1.5"
 gem "redis"
 
-gem "faker", group: :development
-gem "ruby-lsp", require: false, group: :development
-gem "ruby-lsp-rails", require: false, group: :development
