@@ -15,6 +15,10 @@ Rails.application.configure do
   # Allow dev.bing-bong.uk in development host authorization.
   config.hosts.clear
 
+  # Coder / Docker proxies hit the app from a private-network gateway
+  # (e.g. 172.18.0.1), which web-console rejects by default.
+  config.web_console.permissions = %w[127.0.0.0/8 ::1 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16]
+
   # Enable server timing.
   config.server_timing = true
 

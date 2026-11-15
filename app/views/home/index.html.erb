@@ -1,82 +1,241 @@
+<%= stylesheet_link_tag "components/layouts/theme.css" %>
+
 <style>
   body {
-    font-family: 'Space Mono', 'Courier New', monospace;
+    font-family: 'SourGummy', 'Courier New', monospace;
     margin: 0;
     padding: 0;
-    background:
-      radial-gradient(circle at 1px 1px, rgba(36, 29, 22, 0.05) 1px, transparent 1px) 0 0/14px 14px,
-      #E4D9BC;
-    color: #241D16;
+    background-color: var(--bg);
+    background-image: repeating-linear-gradient(
+      2deg,
+      transparent 0,
+      transparent 31px,
+      var(--line_color) 31px,
+      var(--line_color) 32px
+    );
+  }
+
+  .btns {
+    display: flex;
+    flex-direction: row;
+    gap: 32px;
   }
 
   #container {
-    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+    min-height: 75vh;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    align-items: center;
+    gap: var(--space-6);
+    padding: var(--space-6) 2rem 4rem 112px;
+    margin: 0;
+  }
+
+  #hero-copy {
+    flex: 0 1 40%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
     align-items: flex-start;
-    padding: 5rem 2rem 3rem;
-    gap: 1.75rem;
-    margin: 5rem 5rem;
+    gap: 0;
+    margin: 5rem auto 0;
   }
 
   #title {
-    font-family: 'Archivo Black', 'Arial Black', sans-serif;
+    font-family: "PaperCrown";
     font-size: clamp(5rem, 10vw, 12rem);
     font-weight: 700;
     line-height: 1;
     letter-spacing: -0.02em;
-    margin: 0;
+    margin: 0 0 var(--space-1) 0;
+    color: var(--accent-text-color);
   }
 
   #descriptors {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
-    margin-bottom: 0.75rem;
+    gap: var(--space-1);
   }
 
   #descriptor0,
   #descriptor1 {
-    font-size: clamp(1rem, 2.4vw, 1.5rem);
+    font-family: "Crayon";
+    font-size: clamp(2rem, 4.8vw, 3.5rem);
     font-weight: 400;
+    line-height: 1.15;
     margin: 0;
+  }
+
+  #margin-note {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-1);
+    margin: var(--space-2) 0 0 0;
+    transform: rotate(-2deg);
+  }
+
+  #margin-note .note-arrow {
+    flex: none;
+    width: 32px;
+    height: 24px;
+    margin-top: 2px;
+    color: var(--red-pen);
+  }
+
+  #descriptor2 {
+    font-family: var(--hand-font, 'Patrick Hand', 'Comic Sans MS', cursive);
+    font-size: 1rem;
+    line-height: 1.4;
+    margin: 0;
+    color: var(--red-pen);
   }
 
   #btns {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem;
+    align-items: flex-start;
+    gap: var(--space-2);
+    margin: auto;
+    margin-top: var(--space-3);
+    margin-bottom: var(--space-3);
+    width: 100%;
+    align-items: center;
+    justify-content: center;
   }
 
-  .btn {
-    border: 1.5px dashed #241D16;
-    background: #F2EAD3;
-    color: #241D16;
-    font-size: 1rem;
-    font-weight: 600;
-    border-radius: 4px;
-    padding: 0.75rem 0.6rem;
-    cursor: pointer;
-    min-width: 6rem;
-    transition: background 0.14s ease;
-    text-decoration: none;
+  #btns .btn,
+  #btns .button-secondary {
+    min-height: 44px;
+  }
+
+  #btns .btn:focus-visible,
+  #btns .button-secondary:focus-visible {
+    outline: 2px dashed var(--brand-primary, #2f5fd0);
+    outline-offset: 3px;
+  }
+
+  #hero-visual {
+    flex: 1 1 60%;
+    min-width: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: var(--space-2);
+  }
+
+  #hero-visual .hero-notes {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: var(--space-3);
+    transform: rotate(2deg);
+    transform-origin: center;
+  }
+
+  .blank-note {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.6rem;
+    width: min(46%, 300px);
+    min-height: 300px;
+    background: var(--note-yellow, #ffe66d);
+    border: 0;
+    border-radius: 2px 2px 3px 14px / 2px 2px 3px 6px;
+    box-shadow:
+        1px 2px 3px rgba(43, 42, 51, 0.25),
+        0 9px 8px -7px rgba(43, 42, 51, 0.3);
+    padding: var(--space-3) var(--space-2);
+    font-family: var(--hand-font, 'Patrick Hand', 'Comic Sans MS', cursive);
+    font-size: 1.35rem;
+    line-height: 1.45;
+    color: var(--ink);
     text-align: center;
   }
 
-  .btn:hover {
-    background: #E4D9BC;
+  .blank-note-title {
+    top: 0.5rem;
+    font-weight: 900;
+    font-size: 1.6rem;
+    border-bottom: var(--text) 2px solid;
+    text-align: center;
+    font-family: "SourGummy"
   }
 
-  .btn:focus-visible {
-    outline: 2px solid #1F6F78;
-    outline-offset: 2px;
+  .blank-note-text {
+    font-weight: 500;
+    font-size: 1.3rem;
+    text-align: center;
+    overflow-wrap: normal;
+    word-break: normal;
+    margin: auto;
   }
 
-  @media (max-width: 750px) {
+  .blank-note code {
+    display: inline-block;
+    font-family: var(--utility-font, 'Space Mono', 'Courier New', monospace);
+    font-size: 0.85em;
+    background: rgba(43, 42, 51, 0.1);
+    padding: 0.1em 0.35em;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .hero-notes .blank-note:first-child {
+    transform: rotate(-4deg) translateY(48px);
+  }
+
+  .hero-notes .blank-note:last-child {
+    transform: rotate(3deg) translateY(-16px);
+  }
+
+  .notes-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    margin-top: 3rem;
+    margin-bottom: 6rem;
+  }
+
+  .notes-container .blank-note:nth-child(0) {
+    transform: translateY(31px) rotate(10deg);
+  }
+
+  .notes-container .blank-note:nth-child(1) {
+    transform: translateY(-10px) rotate(-5deg);
+  }
+
+  .notes-container .blank-note:nth-child(2) {
+    transform: translateY(12px) rotate(2deg);
+  }
+
+  .notes-title-hiw {
+    text-align: center;
+    margin: 3rem auto -2rem;
+    font-size: 4rem;
+  }
+
+  .rsvp-here {
+    margin: 4rem auto;
+    border-radius: 2rem;
+    background-color: var(--bg);
+    width: max(50%, 700px);
+    padding: 1.5rem;
+    border: var(--brand-border) 2px solid;
+  }
+
+  @media (max-width: 768px) {
     #container {
+      flex-direction: column;
       align-items: stretch;
-      padding: 2rem 1rem;
+      padding: 2rem 1rem 2rem 2rem;
+      gap: var(--space-3);
+    }
+
+    #hero-copy {
+      flex: none;
     }
 
     #title {
@@ -84,62 +243,79 @@
     }
 
     #btns {
-      justify-content: center;
+      justify-content: flex-start;
     }
 
-    .btn {
+    #btns .btn,
+    #btns .button-secondary {
       width: 100%;
       max-width: 260px;
       text-align: center;
     }
+
+    #hero-visual {
+      flex: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #btns .btn,
+    #btns .button-secondary {
+      transition: none;
+    }
   }
 
   @media (prefers-color-scheme: dark) {
-    body {
-      background:
-        radial-gradient(circle at 1px 1px, rgba(232, 223, 208, 0.05) 1px, transparent 1px) 0 0/14px 14px,
-        #241D16;
-      color: #e8dfd0;
-    }
-
-    .btn {
-      border-color: #5a4f3e;
-      background: #241D16;
-      color: #e8dfd0;
-    }
-
-    .btn:hover {
-      background: #3d3528;
-    }
-
-    .btn:focus-visible {
-      outline-color: #2a8a96;
+    .blank-note {
+      background: var(--note-yellow, #ffe66d);
     }
   }
 </style>
 
 
 <div id="container">
-    <div class="workbench" id="title">Issued</div>
-    
-    <br id="break">
-
-    <div id="container2">
-        <div id="descriptors">
-            <div class="offside" id="descriptor0">Make Designs With Code</div>
-            <div class="offside" id="descriptor1">Get Custom Apparel</div>
-            <div class="offside" id="descriptor2">Note this is a ysws draft waiting for a sponsor</div>
-        </div>
-        <div id="btns">
-            <% if !signed_in? && (ENV["RUNNING"] == "true" && ENV["RSVP_OPEN"] == "false") || params["demo"]=="true" %>
-              <%= oauth_login_form(origin: dashboard_path, label: "Start", class: "btn") %>
-            <% elsif (ENV["RUNNING"] == "true" && ENV["RSVP_OPEN"]) == "false" || params["demo"]=="true" %>
-              <%= link_to "Start", dashboard_path, class: "btn" %>
-            <% else %>
-              <%= link_to "RSVP", rsvp_path, class: "btn disabled" %>
-            <% end %>
-            <%= link_to "About", about_path, class: "btn btn-tertiary" %>
-            <%= link_to "FAQ", faq_path, class: "btn btn-tertiary" %>
-        </div>
+    <div id="hero-copy">
+        <div class="workbench" id="title">Issued</div>
     </div>
+    <div style="font-size: 2rem; font-family: 'SourGummy';">Make Designs, Get Clothes</div>
+    <div class="btns">
+      <% if ENV["RSVP_OPEN"] == "true" && ENV["RUNNING"] != "true" %>
+        <%= link_to 'RSVP', rsvp_path, class: 'btn btn-secondary', style: "--b-fill: var(--note-blue); --b-hover: var(--note-blue-hover); --b-fg: #000;" %>
+      <% elsif ENV["RUNNING"] == "true" && current_user.nil? %>
+        <%= oauth_login_form(origin: request.fullpath, label: "Login", class: "btn btn-secondary", style: "--b-fill: var(--note-pink); --b-hover: var(--note-pink-hover); --b-fg: #000;") %>
+      <% elsif ENV["RUNNING"] == "true" && current_user %>
+        <%= link_to "Dashboard", dashboard_path, class:"btn btn-secondary", style: "--b-fill: var(--note-yellow); --b-hover: var(--note-yellow-hover); --b-fg: #000;" %>
+      <% end %>
+      <%= link_to "Hackclub", hackclub_path, class: "btn btn-tertiary", style: "--b-fill: #ec3750; --b-hover: #d12b45; --b-fg: #fff;" %>
+    </div>
+</div>
+
+<div class="container reveal">
+  <h2 class="notes-title-hiw">How it Works</h2>
+  <div class="notes-container">
+    <div class="blank-note" style="background-color: var(--note-blue)">
+      <div class="blank-note-title">Make your design</div>
+      <div class="blank-note-text">
+        Make many designs and fine tune each one
+      </div>
+    </div>
+    <div class="blank-note">
+      <div class="blank-note-title">Ship it</div>
+      <div class="blank-note-text">
+        Submit for review, to get yourself threads!
+      </div>
+    </div>
+    <div class="blank-note" style="background-color: var(--note-pink)">
+      <div class="blank-note-title">Get your swag!</div>
+      <div class="blank-note-text">
+        Spend those threads on getting custom swag!
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="rsvp-here">
+  <h2>Ready to weave some swag?</h2>
+  <p>Start thinking, save your drawing, and RSVP to support this ysws.</p>
+  <%= link_to 'RSVP here', rsvp_path, class: 'btn btn-tertiary' %>
 </div>

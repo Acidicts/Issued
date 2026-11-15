@@ -6,19 +6,44 @@
     <title>Issued</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Patrick+Hand&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <%= stylesheet_link_tag "components/oauth_handoff" %>
+    <%= stylesheet_link_tag "components/tokens" %>
+    <%= stylesheet_link_tag "components/misc" %>
+    <%= stylesheet_link_tag "components/buttons" %>
+    <%= stylesheet_link_tag "components/animation.css" %>
+    <%= stylesheet_link_tag "components/layouts/theme.css" %>
 
     <style>
       * { box-sizing: border-box; }
 
       body {
-        font-family: 'Space Mono', 'Courier New', monospace;
+        font-family: 'Crayon', 'Courier New', monospace;
         margin: 0;
         padding: 0;
         color: #241D16;
-        background: #E4D9BC;
+        background-color: var(--bg);
+        background-image: repeating-linear-gradient(
+          2deg,
+          transparent 0,
+          transparent 31px,
+          var(--line_color) 31px,
+          var(--line_color) 32px
+        );
         transition: background 0.3s ease, color 0.3s ease;
+      }
+
+      body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 80px;
+        width: 2px;
+        background: var(--margin-red);
+        z-index: 0;
+        pointer-events: none;
+        transform: rotate(2deg);
       }
 
       body.has-nav {
@@ -31,18 +56,25 @@
         left: 0;
         right: 0;
         z-index: 50;
-        background: #F2EAD3;
-        border-bottom: 1.5px dashed #B7A878;
-        padding: 0.65rem 1.5rem;
+        background-color: var(--bg);
+        background-image: repeating-linear-gradient(
+          -1.5deg,
+          transparent 0,
+          transparent 31px,
+          var(--line_color) 31px,
+          var(--line_color) 32px
+        );
+        border-bottom: 3px solid var(--line_color);
+        padding: 0.65rem 1.5rem 0;
         display: flex;
-        align-items: center;
+        align-items: stretch;
         justify-content: space-between;
         gap: 1rem;
       }
 
       .home-nav .nav-left {
         display: flex;
-        align-items: center;
+        align-items: stretch;
         gap: 1.5rem;
       }
 
@@ -51,16 +83,23 @@
         font-size: 18px;
         text-decoration: none;
         color: #241D16;
+        display: inline-flex;
+        align-items: center;
+        padding: 0.65rem 0;
       }
 
       .home-nav .wordmark .dot { color: #D6402C; }
 
       .home-nav .nav-links {
         display: flex;
+        align-items: stretch;
         gap: 0.25rem;
       }
 
       .home-nav .nav-link {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
         font-family: 'Space Mono', 'Courier New', monospace;
         font-size: 12px;
         font-weight: 700;
@@ -68,8 +107,9 @@
         letter-spacing: 0.8px;
         color: #4B4133;
         text-decoration: none;
-        padding: 0.4rem 0.65rem;
-        border-radius: 2px;
+        padding: 0.65rem 0.65rem calc(0.65rem + 3px);
+        margin-bottom: -3px;
+        border-radius: 5px 5px 0 0;
         transition: background 0.15s ease, color 0.15s ease;
       }
 
@@ -86,18 +126,81 @@
 
       .home-nav .nav-right {
         display: flex;
-        align-items: center;
+        align-items: stretch;
         gap: 0.75rem;
       }
 
+      .home-nav .nav-right .nav-link {
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .home-nav .nav-right .oauth-handoff-form {
+        align-self: center;
+      }
+
+      .home-nav .nav-login {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 0.4rem 1.1rem;
+        font-family: var(--hand-font, 'Patrick Hand', 'Comic Sans MS', cursive);
+        font-size: 16px;
+        color: #1F6F78;
+        background: transparent;
+        border: 2px solid #1F6F78;
+        border-radius: 255px 16px 225px 16px / 16px 225px 16px 255px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background 0.15s ease, color 0.15s ease, transform 0.12s ease;
+
+        margin-top: -2px;
+        margin-bottom: 3px;
+      }
+
+      .home-nav .nav-login:hover {
+        background: rgba(31, 111, 120, 0.12);
+        transform: rotate(-1deg);
+      }
+
+      .home-nav .nav-login:focus-visible {
+        outline: 2px dashed #1F6F78;
+        outline-offset: 3px;
+      }
+
+      .home-nav-icon {
+        font-weight: 700;
+        font-size: 2rem;
+        margin: 0 -0.2rem;
+        color: var(--accent-text-color)
+      }
+
+      .show-on-scroll {
+        opacity: 0;
+        visibility: hidden;
+        animation: reveal linear both;
+        animation-timeline: scroll(root);
+        animation-range: 0 150px; /* fully visible after 150px of scrolling */
+      }
+
+      @keyframes reveal {
+        to {
+          opacity: 1;
+          visibility: visible;
+        }
+      }
+
       @media (prefers-color-scheme: dark) {
-        body { background: #241D16; color: #e8dfd0; }
-        .home-nav { background: #241d16; border-bottom-color: #5a4f3e; }
+        body { color: #e8dfd0; }
+        .home-nav { border-bottom-color: #5a4f3e; }
         .home-nav .wordmark { color: #e8dfd0; }
         .home-nav .nav-link { color: #b8a890; }
         .home-nav .nav-link:hover,
         .home-nav .nav-link:focus-visible { background: rgba(42, 138, 150, 0.2); color: #2a8a96; }
         .home-nav .nav-link.active { background: #1F6F78; color: #F2EAD3; }
+        .home-nav .nav-login { color: #2a8a96; border-color: #2a8a96; }
+        .home-nav .nav-login:focus-visible { outline-color: #2a8a96; }
       }
     </style>
 
@@ -106,12 +209,12 @@
 
   <body class="<%= @nav.present? ? 'has-nav' : '' %>">
     <% if @nav.present? %>
-      <header class="home-nav">
+      <header class="home-nav <%= "show-on-scroll" if current_path == "/" %>">
         <div class="nav-left">
-          <%= link_to root_path, class: "wordmark" do %>
-            issued<span class="dot">.</span>
+          <%= link_to root_path, class: "paper-crown home-nav-icon highlighter-hover" do %>
+            issued
           <% end %>
-          <nav class="nav-links">
+          <nav class="nav-links" aria-label="Primary">
             <%= link_to "Home", root_path, class: "nav-link #{"active" if @nav == "home" && request.path == "/"}" %>
             <%= link_to "About", about_path, class: "nav-link #{"active" if controller.action_name == "about"}" %>
             <%= link_to "FAQ", faq_path, class: "nav-link #{"active" if controller.action_name == "faq"}" %>
@@ -121,7 +224,7 @@
           <% if signed_in? %>
             <%= link_to "Dashboard", dashboard_path, class: "nav-link" %>
           <% else %>
-            <%= oauth_login_form(origin: request.fullpath, class: "nav-link") %>
+            <%= oauth_login_form(origin: request.fullpath, label: "Login", class: "nav-login") %>
           <% end %>
         </div>
       </header>

@@ -1,67 +1,271 @@
+@import url("https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap");
+
+/* Hand-drawn buttons. Same class names and colour tokens as before;
+   only the look changes. Everything is driven by five custom properties
+   (--b-fill, --b-fg, --b-ink, --b-shadow, --b-hover) set per variant. */
+
+:root {
+    --hand-font: "Patrick Hand", "Comic Sans MS", cursive;
+    --wobble-a: 255px 18px 225px 18px / 18px 225px 18px 255px;
+    --wobble-b: 18px 255px 18px 225px / 225px 18px 255px 18px;
+    --wobble-c: 30px 200px 20px 240px / 200px 22px 240px 24px;
+}
+
 /* ── Base button ── */
 
-.btn {
+.btn,
+.btn-primary,
+.button-primary,
+.button-secondary,
+.design-form .button {
+    --b-fill: var(--brand-surface, var(--surface));
+    --b-fg: var(--brand-text, var(--ink));
+    --b-ink: var(--brand-text, var(--ink));
+    --b-shadow: var(--b-ink);
+    --b-hover: var(--brand-surface-alt, var(--line));
+
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    font-family: var(--brand-font);
-    font-weight: 700;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    padding: 11px 20px;
-    border-radius: var(--brand-radius-sm);
-    border: 1.5px solid transparent;
+    gap: 10px;
+    min-height: 3rem;
+    padding: 0.5rem 1.6rem;
+    font-family: var(--hand-font);
+    font-size: 1.2rem;
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    color: var(--b-fg);
+    background: var(--b-fill);
+    border: 3px solid var(--b-ink);
+    border-radius: var(--wobble-a);
+    box-shadow: 4px 4px 0 var(--b-shadow);
     cursor: pointer;
-    transition: background .15s ease, color .15s ease, border-color .15s ease, transform .1s ease;
+    transition: background-color .15s ease, color .15s ease,
+                transform .12s ease, box-shadow .12s ease;
+}
+
+/* vary neighbours so a row never looks stamped */
+.btn:nth-child(even),
+.button-secondary:nth-child(even) {
+    border-radius: var(--wobble-b);
+}
+
+.btn:nth-child(3n),
+.btn-danger {
+    border-radius: var(--wobble-c);
+}
+
+.btn:hover,
+.btn-primary:hover,
+.button-primary:hover,
+.button-secondary:hover,
+.design-form .button:hover {
+    background: var(--b-hover);
+    transform: translate(-2px, -2px);
+    box-shadow: 7px 7px 0 var(--b-shadow);
+}
+
+.btn:active,
+.btn-primary:active,
+.button-primary:active,
+.button-secondary:active,
+.design-form .button:active {
+    transform: translate(4px, 4px);
+    box-shadow: 0 0 0 var(--b-shadow);
+}
+
+.btn:focus-visible,
+.btn-primary:focus-visible,
+.button-primary:focus-visible,
+.button-secondary:focus-visible,
+.design-form .button:focus-visible {
+    outline: 3px dashed var(--brand-primary, var(--stamp-red));
+    outline-offset: 4px;
+}
+
+/* ── Variants ── */
+
+.btn-primary {
+    --b-fill: var(--brand-text);
+    --b-fg: var(--brand-surface);
+    --b-ink: var(--brand-text);
+    --b-shadow: var(--brand-primary);
+    --b-hover: var(--brand-secondary);
+}
+
+.btn-outline {
+    --b-fill: transparent;
+    --b-ink: var(--brand-border);
+    --b-shadow: var(--brand-border);
+    --b-hover: var(--brand-surface-alt);
+}
+
+.btn-outline:hover:not(:disabled) {
+    border-color: var(--brand-text);
+    box-shadow: 7px 7px 0 var(--brand-text);
+}
+
+/* ── Tertiary: post-it note ── */
+
+.btn-tertiary {
+    --b-fill: var(--note-yellow, #ffe66d);
+    --b-fg: var(--brand-text);
+    --b-ink: transparent;
+    --b-hover: var(--note-yellow-hover, #ffee94);
+
+    min-height: 2.75rem;
+    padding: 0.7rem 1.3rem 0.9rem;   /* extra bottom padding, like the sticky strip */
+    font-size: 1.1rem;
+    color: var(--b-fg);
+    background: var(--b-fill);
+    border: 0;
+    border-radius: 2px 2px 3px 14px / 2px 2px 3px 6px;   /* tiny curl at bottom right */
+    box-shadow:
+        1px 2px 3px rgba(43, 42, 51, 0.25),
+        0 9px 8px -7px rgba(43, 42, 51, 0.3);          /* lifted bottom edge */
+    transform: rotate(-1.5deg);
     text-decoration: none;
 }
 
-.btn:active {
-    transform: translateY(1px);
+.btn-tertiary:nth-child(even) {
+    border-radius: 2px 2px 3px 14px / 2px 2px 3px 6px;
+    transform: rotate(1.2deg);
 }
 
-.btn:focus-visible {
-    outline: 2px solid var(--brand-primary);
-    outline-offset: 2px;
+.btn-tertiary:nth-child(3n) {
+    border-radius: 2px 2px 3px 14px / 2px 2px 3px 6px;
+    transform: rotate(-0.6deg);
 }
 
-.btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
+/* peels up and straightens on hover */
+.btn-tertiary:hover:not(:disabled) {
+    color: var(--brand-text);
+    background: var(--b-hover);
+    text-decoration: none;
+    transform: rotate(0deg) translateY(-3px);
+    box-shadow:
+        2px 4px 6px rgba(43, 42, 51, 0.25),
+        0 14px 10px -9px rgba(43, 42, 51, 0.35);
 }
 
-/* ── Disabled states ── */
-
-.btn-primary:disabled {
-    background: var(--brand-text);
-    border-color: var(--brand-text);
-    color: var(--brand-surface);
+/* pressed back onto the page */
+.btn-tertiary:active:not(:disabled) {
+    transform: rotate(0deg) translateY(1px) scale(0.98);
+    box-shadow: 0 1px 2px rgba(43, 42, 51, 0.3);
 }
 
-.btn-outline:disabled {
-    border-color: var(--brand-border);
-    color: var(--brand-text-secondary);
-    background: transparent;
-}
-
+/* used-up grey note */
 .btn-tertiary:disabled {
     color: var(--brand-text-secondary);
-    background: transparent;
-    border-color: transparent;
+    background: #e4e0d4;
+    border: 0;
+    box-shadow: none;
+    transform: rotate(0deg);
 }
 
-.btn-danger:disabled {
-    background: var(--brand-danger);
-    border-color: var(--brand-danger);
-    color: var(--brand-surface);
+.btn-danger {
+    --b-fill: var(--brand-danger);
+    --b-fg: var(--brand-surface);
+    --b-ink: var(--brand-text);
+    --b-shadow: var(--brand-text);
+    --b-hover: var(--brand-text);
 }
 
-.btn-link:disabled {
+/* Design-form / standalone family (--ink, --paper, --stamp-red tokens) */
+
+.button-primary,
+.design-form .button-primary {
+    --b-fill: var(--ink);
+    --b-fg: var(--paper);
+    --b-ink: var(--ink);
+    --b-shadow: var(--stamp-red);
+    --b-hover: var(--stamp-red);
+}
+
+.button-secondary,
+.design-form .button-secondary {
+    --b-fill: var(--surface);
+    --b-fg: var(--ink);
+    --b-ink: var(--ink);
+    --b-shadow: var(--ink);
+    --b-hover: var(--line);
+}
+
+.btn.button-highlight,
+.button-secondary.button-highlight {
+    background: var(--primary-highlight, #ffd84d);
+}
+
+.btn.button-highlight:hover,
+.button-secondary.button-highlight:hover {
+    background: var(--primary-highlight-hover, #ffe582);
+}
+
+/* ── Hero sticky notes: soft shadow, no hard outline ── */
+
+#btns .note-start,
+#btns .note-examples {
+    border: 0;
+    box-shadow:
+        1px 2px 3px rgba(43, 42, 51, 0.25),
+        0 9px 8px -7px rgba(43, 42, 51, 0.3);
+}
+
+#btns .note-start {
+    font-size: 1.5rem;
+    padding: 0.9rem 2rem 1.1rem;
+}
+
+#btns .note-start:nth-child(1) { transform: rotate(-1.5deg); }
+#btns .note-examples:nth-child(2),
+#btns .note-rsvp:nth-child(1):last-child { transform: rotate(1.2deg); }
+#btns .note-examples:nth-child(3) { transform: rotate(-0.6deg); }
+
+#btns .note-start:hover {
+    transform: rotate(0deg) translateY(-3px);
+    box-shadow:
+        2px 4px 6px rgba(43, 42, 51, 0.25),
+        0 14px 10px -9px rgba(43, 42, 51, 0.35);
+}
+
+#btns .note-start:active {
+    transform: rotate(0deg) translateY(1px) scale(0.98);
+    box-shadow: 0 1px 2px rgba(43, 42, 51, 0.3);
+}
+
+/* Design actions: same button, icon gap, full width on small screens */
+
+.design-actions .button-primary,
+.design-actions .btn-primary {
+    gap: 0.5rem;
+}
+
+/* ── Link button: scribbled underline ── */
+
+.btn-link {
+    background: none;
+    border: none;
+    box-shadow: none;
+    min-height: 0;
+    padding: 4px 0;
     color: var(--brand-text-secondary);
-    text-decoration: none;
+    font-size: 1.1rem;
+    text-decoration: underline wavy;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 4px;
+}
+
+.btn-link:hover:not(:disabled) {
+    color: var(--brand-primary);
+    background: none;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-block {
+    width: 100%;
 }
 
 /* ── Close / cross button ── */
@@ -70,25 +274,65 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
+    width: 36px;
+    height: 36px;
     padding: 0;
-    border-radius: 50%;
-    border: none;
+    border: 3px solid transparent;
+    border-radius: 52% 48% 55% 45% / 48% 55% 45% 52%;
     background: transparent;
     color: var(--brand-text-secondary);
     font-size: 18px;
     line-height: 1;
     cursor: pointer;
-    transition: fill .15s ease, color .15s ease;
+    transition: fill .15s ease, color .15s ease, border-color .15s ease, transform .12s ease;
 }
 
 .btn-cross svg {
     transition: fill .15s ease, color .15s ease;
 }
 
+.btn-cross:hover:not(:disabled) {
+    border-color: var(--brand-text);
+    transform: rotate(-6deg);
+}
+
 .btn-cross:hover:not(:disabled) svg {
     fill: var(--brand-text);
+}
+
+.btn-cross:focus-visible {
+    outline: 3px dashed var(--brand-primary);
+    outline-offset: 3px;
+}
+
+/* ── Disabled: flat, dashed, no lift ── */
+
+.btn:disabled,
+.btn-primary:disabled,
+.button-primary:disabled,
+.button-secondary:disabled,
+.design-form .button:disabled,
+.btn-primary.disabled,
+.button-primary.disabled,
+.button-secondary.disabled {
+    background: var(--brand-surface-alt, var(--line));
+    color: var(--brand-text-secondary, var(--ink));
+    border: 3px dashed var(--brand-text-secondary, var(--ink));
+    box-shadow: none;
+    transform: none;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.btn-tertiary:disabled {
+    background: transparent;
+    border-color: transparent;
+}
+
+.btn-link:disabled {
+    background: none;
+    border: none;
+    text-decoration: none;
 }
 
 .btn-cross:disabled {
@@ -96,250 +340,35 @@
     cursor: not-allowed;
 }
 
-/* ── Button variants ── */
-
-.btn-primary {
-    background: var(--brand-text);
-    color: var(--brand-surface);
-    border-color: var(--brand-text);
-}
-
-.btn-primary:hover:not(:disabled) {
-    background: var(--brand-secondary);
-    border-color: var(--brand-secondary);
-}
-
-.btn-outline {
-    background: transparent;
-    color: var(--brand-text);
-    border-color: var(--brand-border);
-}
-
-.btn-outline:hover:not(:disabled) {
-    border-color: var(--brand-text);
-    background: var(--brand-surface-alt);
-}
-
-.btn-tertiary {
-    background: transparent;
-    color: var(--brand-primary);
-    border-color: transparent;
-    padding: 6px 12px;
-    font-size: 11px;
-}
-
-.btn-tertiary:hover:not(:disabled) {
-    background: var(--brand-surface-alt);
-    color: var(--brand-primary-dark);
-}
-
-.btn-danger {
-    background: var(--brand-danger);
-    color: var(--brand-surface);
-    border-color: var(--brand-danger);
-}
-
-.btn-danger:hover:not(:disabled) {
-    background: var(--brand-text);
-    border-color: var(--brand-text);
-}
-
-.btn-link {
-    background: none;
-    border: none;
-    color: var(--brand-text-secondary);
-    text-decoration: underline;
-    text-transform: none;
-    letter-spacing: normal;
-    font-weight: 400;
-    padding: 4px 0;
-}
-
-.btn-link:hover {
-    color: var(--brand-primary);
-}
-
-.btn-block {
-    width: 100%;
-}
-
-/* ── Design form buttons ── */
-
-.design-form .button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 3rem;
-    padding: 0.35rem 1.45rem;
-    border-radius: 4px;
-    border: 1.5px solid var(--ink);
-    font-size: 0.96rem;
-    font-weight: 800;
-    letter-spacing: 0.02em;
-    text-decoration: none;
-    cursor: pointer;
-    transition: background-color 0.16s ease;
-    font-family: inherit;
-}
-
-.design-form .button-primary {
-    background: var(--ink);
-    color: var(--paper);
-}
-
-.design-form .button-primary:hover,
-.design-form .button-primary:focus-visible {
-    background: var(--stamp-red);
-}
-
-.design-form .button-secondary {
-    background: var(--surface);
-    color: var(--ink);
-    border-color: var(--ink);
-}
-
-.design-form .button-secondary:hover,
-.design-form .button-secondary:focus-visible {
-    background: var(--line);
-}
-
-.design-form .button:disabled,
-.design-form .button-primary:disabled,
-.design-form .button-secondary:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-}
-
-.design-form .button-primary:disabled {
-    background: var(--ink);
-    color: var(--paper);
-}
-
-.design-form .button-secondary:disabled {
-    background: var(--surface);
-    color: var(--ink);
-    border-color: var(--ink);
-}
-
-/* ── Standalone primary button ── */
-
-.button-primary,
-.btn-primary {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.85rem 1.6rem;
-    border-radius: 4px;
-    background: var(--ink);
-    color: var(--paper);
-    border: 1.5px solid var(--ink);
-    font-weight: 700;
-    font-size: 0.95rem;
-    letter-spacing: 0.02em;
-    text-decoration: none;
-    transition: background-color 0.16s ease, transform 0.12s ease;
-}
-
-.button-primary:hover,
-.btn-primary:hover,
-.button-primary:focus,
-.btn-primary:focus {
-    background: var(--stamp-red);
-    border-color: var(--stamp-red);
-    transform: translateY(-1px);
-}
-
-.button-primary:disabled,
-.btn-primary:disabled,
-.button-primary.disabled,
-.btn-primary.disabled {
-    background: var(--ink);
-    border-color: var(--ink);
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-    pointer-events: none;
-}
-
-/* ── Standalone secondary button ── */
-
-.button-secondary {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.85rem 1.6rem;
-    border-radius: 4px;
-    background: var(--surface);
-    color: var(--ink);
-    border: 1.5px solid var(--ink);
-    font-weight: 700;
-    font-size: 0.95rem;
-    letter-spacing: 0.02em;
-    text-decoration: none;
-    transition: background-color 0.16s ease, transform 0.12s ease;
-}
-
-.button-secondary:hover,
-.button-secondary:focus {
-    background: var(--line);
-    transform: translateY(-1px);
-}
-
-.button-secondary:disabled,
-.button-secondary.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-    pointer-events: none;
-}
-
-/* ── Design actions button ── */
-
-.design-actions .button-primary,
-.design-actions .btn-primary {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 0.7rem 1.5rem;
-    border-radius: 4px;
-    background: var(--ink);
-    color: var(--paper);
-    border: 1.5px solid var(--ink);
-    font-size: 0.85rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    text-decoration: none;
-    transition: background-color 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease;
-}
-
-.design-actions .button-primary:hover,
-.design-actions .btn-primary:hover {
-    background: var(--stamp-red);
-    border-color: var(--stamp-red);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(214, 64, 44, 0.25);
-}
-
-.design-actions .button-primary:disabled,
-.design-actions .btn-primary:disabled,
-.design-actions .button-primary.disabled,
-.design-actions .btn-primary.disabled {
-    background: var(--ink);
-    border-color: var(--ink);
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-    pointer-events: none;
-}
-
 @media (max-width: 480px) {
     .design-actions .button-primary,
     .design-actions .btn-primary {
         width: 100%;
         justify-content: center;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .btn,
+    .btn-primary,
+    .button-primary,
+    .button-secondary,
+    .design-form .button,
+    .btn-cross {
+        transition: none;
+        transform: none;
+    }
+
+    .btn:hover,
+    .btn:active,
+    #btns .note-start:hover,
+    #btns .note-start:active {
+        transform: none;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .btn-tertiary {
+        color: var(--brand-text);
     }
 }
