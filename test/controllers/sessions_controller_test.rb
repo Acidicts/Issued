@@ -65,7 +65,9 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
       assert_select "form.oauth-handoff-form input[name=authenticity_token]"
 
       token = css_select("form.oauth-handoff-form input[name=authenticity_token]").first&.[]("value")
-      post "/auth/hackclub?origin=#{CGI.escape(about_path)}", params: { authenticity_token: token }
+      post "/auth/hackclub?origin=#{CGI.escape(about_path)}",
+           params: { authenticity_token: token },
+           headers: { "HTTP_ORIGIN" => "http://www.example.com" }
 
       assert_response :redirect
       assert_match(%r{\Ahttps://auth\.hackclub\.com/oauth/authorize}, response.location)
@@ -94,7 +96,9 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
       token = css_select("form#oauth-handoff input[name=authenticity_token]").first&.[]("value")
       assert token.present?, "the handoff form has to carry a token for the request phase"
 
-      post "/auth/hackclub?origin=#{CGI.escape(dashboard_path)}", params: { authenticity_token: token }
+      post "/auth/hackclub?origin=#{CGI.escape(dashboard_path)}",
+           params: { authenticity_token: token },
+           headers: { "HTTP_ORIGIN" => "http://www.example.com" }
 
       # OmniAuth's own token scheme is gone, so the request phase has to accept the one Rails
       # issues. Before it did, every login died with "Attack prevented by
@@ -115,7 +119,9 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     with_forgery_protection do
       get login_url
       token = css_select("form#oauth-handoff input[name=authenticity_token]").first&.[]("value")
-      post "/auth/hackclub", params: { authenticity_token: token }
+      post "/auth/hackclub",
+           params: { authenticity_token: token },
+           headers: { "HTTP_ORIGIN" => "http://www.example.com" }
 
       assert_response :redirect
       assert_match(%r{\Ahttps://auth\.hackclub\.com/oauth/authorize}, response.location)
