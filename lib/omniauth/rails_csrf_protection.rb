@@ -1,4 +1,5 @@
 require "action_controller"
+require "uri"
 
 module OmniAuth
   # OmniAuth 2 checks its request phase with Rack::Protection::AuthenticityToken, which mints
@@ -31,8 +32,14 @@ module OmniAuth
       if request.respond_to?(:origin_verified?) && ActionController::Base.allow_forgery_protection
         request.origin_verified?
       else
-        request.origin == request.base_url
+        origin = URI.parse(request.origin)
+        base_url = URI.parse(request.base_url)
+        origin.scheme == base_url.scheme &&
+          origin.hostname == base_url.hostname &&
+          origin.port == base_url.port
       end
+    rescue URI::InvalidURIError
+      false
     end
 
     def token_valid?(controller, request)
