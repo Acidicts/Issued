@@ -17,7 +17,7 @@ module OmniAuth
       # The request phase must be verified even when global forgery protection is disabled
       # (e.g. test environment), so check origin and token explicitly rather than relying on
       # helpers that short-circuit when protection is off.
-      origin_valid?(request) && token_valid?(controller, request)
+      origin_valid?(request) && token_valid?(controller)
     rescue StandardError => e
       Rails.logger.warn("OmniAuth request phase CSRF check errored: #{e.class} #{e.message}")
       false
@@ -42,26 +42,10 @@ module OmniAuth
       false
     end
 
-    def token_valid?(controller, request)
-      # Force Rails' token comparison even when protection is enabled: this request is
-      # validated by OmniAuth before Rails dispatches it through the controller callbacks.
-      forced_token_valid?(controller, request)
-    end
-
-    def forced_token_valid?(controller, request)
-      tokens = []
-      param = request.params[request_forgery_protection_token]
-      tokens << param if param.present?
-      header = request.headers["X-CSRF-Token"]
-      tokens << header if header.present?
-      return false if tokens.empty?
-
-      session = request.session
-      tokens.any? { |token| controller.send(:valid_authenticity_token?, session, token) }
-    end
-
-    def request_forgery_protection_token
-      ActionController::Base.request_forgery_protection_token || :authenticity_token
+    def token_valid?(controller)
+      # Use Rails' complete token handling (including per-form tokens and headers) even
+      # when global forgery protection is disabled in the test environment.
+      controller.send(:any_authenticity_token_valid?)
     end
 
     # Rails skips token verification entirely when forgery protection is off (the test
