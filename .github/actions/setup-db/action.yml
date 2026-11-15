@@ -1,0 +1,19 @@
+name: Setup DB
+description: Prepare the test database from the schema for the RSpec run.
+
+runs:
+  using: composite
+  steps:
+    - name: Prepare test database
+      shell: bash
+      env:
+        DATABASE_URL: postgres://postgres:postgres@localhost:5432/halfmoon_test
+        REDIS_URL: redis://localhost:6379
+        RAILS_ENV: test
+        # Throwaway keys so CI never depends on a .env file (which is
+        # gitignored). These decrypt nothing real -- CI rebuilds its database
+        # from schema on every run. Never reuse these values outside test.
+        ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY: e3thjpxBEMSXvniHfQnAafG+fKhQKv3nu/5Mdh3iAyo=
+        ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY: z1N3uzTWwPeRhv8EvYtSavEmLD/07uhLw4h4iYui6Po=
+        ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT: jcp77SZdceuWLZ08+CRQVZ0ro6cNnxnOf9jz7OYO4Mk=
+      run: bin/rails db:prepare

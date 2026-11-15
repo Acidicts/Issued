@@ -1,0 +1,14 @@
+name: Setup Ruby
+description: Install Ruby, cache gems, and install system dependencies.
+
+runs:
+  using: composite
+  steps:
+    - name: Install system dependencies
+      shell: bash
+      run: sudo apt-get update && sudo apt-get install -y libvips-dev libpq-dev postgresql-client
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
