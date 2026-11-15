@@ -8,7 +8,12 @@ Rails.application.config.middleware.use OmniAuth::Builder do
   provider :hackclub,
            ENV.fetch("HACKCLUB_CLIENT_ID", ""),
            ENV.fetch("HACKCLUB_CLIENT_SECRET", ""),
-           scope: "profile email name slack_id verification_status"
+           scope: "profile email name slack_id verification_status",
+           setup: lambda { |env|
+             strategy = env["omniauth.strategy"]
+             strategy.options.client_id = ENV.fetch("HACKCLUB_CLIENT_ID", "")
+             strategy.options.client_secret = ENV.fetch("HACKCLUB_CLIENT_SECRET", "")
+           }
 end
 
 # The request phase must be a POST carrying a CSRF token. Leaving it open to GET with
