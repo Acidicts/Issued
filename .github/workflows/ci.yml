@@ -81,7 +81,6 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-
     services:
       postgres:
         image: postgres:17
@@ -172,7 +171,7 @@ jobs:
   
   build:
     name: Build & Push Docker Image
-    needs: [scan_ruby, scan_js, lint, tests]
+    needs: [scan_ruby, scan_js, lint, test, system-test]
     # Only push on main branch, not on pull requests
     if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
@@ -219,19 +218,24 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
   approval:
-    needs: [ build, scan_ruby, scan_js, lint, tests ]
+    needs: [build]
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
     steps:
-    - uses: trstringer/manual-approval@v1
-    with:
-      secret: ${{ github.TOKEN }}
-      approvers: Acidicts
-      minimum-approvals: 1
-      issue-title: "Deployment Approval Needed"
-      issue-body: "Please approve or deny this deployment."
+      - name: Wait for manual approval
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ secrets.GITHUB_TOKEN }}
+          approvers: Acidicts
+          minimum-approvals: 1
+          issue-title: "Deployment Approval Needed"
+          issue-body: "Please approve or deny this deployment."
+
   deploy:
-    needs: [ build, approval ]
+    needs: [build, approval]
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Coolify redeploy
