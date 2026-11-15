@@ -10,12 +10,55 @@ module OmniAuth
     module_function
 
     def valid?(env)
-      controller = controller_for(ActionDispatch::Request.new(env))
+      request = ActionDispatch::Request.new(env)
+      controller = controller_for(request)
 
-      controller.send(:valid_request_origin?) && controller.send(:any_authenticity_token_valid?)
+      # The request phase must be verified even when global forgery protection is disabled
+      # (e.g. test environment), so check origin and token explicitly rather than relying on
+      # helpers that short-circuit when protection is off.
+      origin_valid?(request) && token_valid?(controller, request)
     rescue StandardError => e
       Rails.logger.warn("OmniAuth request phase CSRF check errored: #{e.class} #{e.message}")
       false
+    end
+
+    def origin_valid?(request)
+      # Match ActionController::RequestForgeryProtection's origin check: a missing Origin
+      # header is accepted (some non-browser clients), otherwise it must match base_url.
+      # Fall back to the standard helper when protection state allows it to be meaningful.
+      return true if request.origin.blank?
+
+      if request.respond_to?(:origin_verified?) && ActionController::Base.allow_forgery_protection
+        request.origin_verified?
+      else
+        request.origin == request.base_url
+      end
+    end
+
+    def token_valid?(controller, request)
+      # Prefer Rails' own comparison (handles masked tokens, per-form tokens, header, etc.)
+      # but force the check even if protect_against_forgery? would be false.
+      if ActionController::Base.allow_forgery_protection
+        controller.send(:any_authenticity_token_valid?)
+      else
+        forced_token_valid?(controller, request)
+      end
+    end
+
+    def forced_token_valid?(controller, request)
+      tokens = []
+      param = request.params[request_forgery_protection_token]
+      tokens << param if param.present?
+      header = request.headers["X-CSRF-Token"]
+      tokens << header if header.present?
+      return false if tokens.empty?
+
+      session = request.session
+      tokens.any? { |token| controller.send(:valid_authenticity_token?, session, token) }
+    end
+
+    def request_forgery_protection_token
+      ActionController::Base.request_forgery_protection_token || :authenticity_token
     end
 
     # Rails skips token verification entirely when forgery protection is off (the test
