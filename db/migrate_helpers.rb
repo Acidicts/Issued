@@ -12,7 +12,14 @@ module MigrationHelpers
     column = :"#{reference}_id"
 
     if foreign_key
-      options[:foreign_key] = { if_not_exists: true }.merge(foreign_key.is_a?(Hash) ? foreign_key : { to_table: foreign_key })
+      options[:foreign_key] =
+        if foreign_key == true
+          { if_not_exists: true }
+        elsif foreign_key.is_a?(Hash)
+          { if_not_exists: true }.merge(foreign_key)
+        else
+          { to_table: foreign_key, if_not_exists: true }
+        end
     end
 
     add_reference table, reference, null: true, if_not_exists: true, **options
