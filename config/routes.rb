@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get "/hackclub", to: redirect("https://hackclub.com")
+
   get "reviews/show"
   get "reviews/update"
   get "reviews/create"

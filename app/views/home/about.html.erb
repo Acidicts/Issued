@@ -3,12 +3,20 @@
     font-family: 'Space Mono', 'Courier New', monospace;
     margin: 0;
     padding: 2rem;
-    background: #F2EAD3;
     color: #222222;
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
+    
+    background-color: var(--bg);
+    background-image: repeating-linear-gradient(
+      2deg,
+      transparent 0,
+      transparent 31px,
+      var(--line_color) 31px,
+      var(--line_color) 32px
+    );
   }
 
   #container {
@@ -25,6 +33,16 @@
     letter-spacing: -0.01em;
   }
 
+  #title {
+    font-family: "PaperCrown";
+    font-size: clamp(5rem, 10vw, 12rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin: 0;
+    color: var(--accent-text-color);
+  }
+
   p {
     font-size: 1rem;
     line-height: 1.6;
@@ -33,11 +51,29 @@
   }
 
   .section {
-    margin: 3rem 0;
-    padding: 2rem;
-    border-left: 1.5px dashed #241D16;
+    width: min(70%, 600px);
+    aspect-ratio: 1 / 0.3;
+    background: var(--note-yellow, #ffe66d);
+    border: 0;
+    border-radius: 2px 2px 3px 14px / 2px 2px 3px 6px;
+    box-shadow:
+        1px 2px 3px rgba(43, 42, 51, 0.25),
+        0 9px 8px -7px rgba(43, 42, 51, 0.3);
+    padding: var(--space-3) var(--space-2);
+    font-family: var(--hand-font, 'Patrick Hand', 'Comic Sans MS', cursive);
+    font-size: 1.35rem;
+    line-height: 1.45;
+    color: var(--ink);
     text-align: left;
-    background: #ebe3ca;
+    margin: 1rem auto;
+  }
+
+  .section:first-child {
+    transform: rotate(-4deg) translateX(48px);
+  }
+
+  .section:last-child {
+    transform: rotate(3deg) translateX(-48px) translateY(20px);
   }
 
   .section h2 {
@@ -91,16 +127,18 @@
 </style>
 
 <div id="container">
-  <h1>Issued</h1>
+  <div class="workbench" id="title">Issued</div>
   <p>A hackclub clothing YSWS.</p>
 
-  <div class="section">
-    <h2>YS Designs</h2>
-    <p>Create and share your unique design coded to existance.</p>
-  </div>
+  <div class="sections">
+    <div class="section">
+      <h2>YS Designs</h2>
+      <p>Create and share your unique design coded to existance.</p>
+    </div>
 
-  <div class="section">
-    <h2>WS Clothes</h2>
-    <p>We order your designs for you to wear.</p>
+    <div class="section">
+      <h2>WS Clothes</h2>
+      <p>We order your designs for you to wear.</p>
+    </div>
   </div>
 </div>

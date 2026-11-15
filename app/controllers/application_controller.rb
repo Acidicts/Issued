@@ -7,14 +7,14 @@ class ApplicationController < ActionController::Base
   # Changes to the importmap will invalidate the etag for HTML responses
   stale_when_importmap_changes
 
-  helper_method :current_user, :signed_in?, :unread_notification_count, :current_maker, :admin?, :reviewer?
+  helper_method :current_user, :current_path, :signed_in?, :unread_notification_count, :current_maker, :admin?, :reviewer?
 
   layout "application"
 
   before_action :set_current_oauth_tokens
   before_action :set_nav
-  before_action :current_url
   before_action :current_path
+  before_action :current_url
   before_action :current_threads
   before_action :user_exists
   before_action :set_unread_notifications

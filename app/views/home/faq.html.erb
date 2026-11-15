@@ -3,12 +3,20 @@
     font-family: 'Space Mono', 'Courier New', monospace;
     margin: 0;
     padding: 1.25rem;
-    background: #F2EAD3;
     color: #222222;
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
+    
+    background-color: var(--bg);
+    background-image: repeating-linear-gradient(
+      2deg,
+      transparent 0,
+      transparent 31px,
+      var(--line_color) 31px,
+      var(--line_color) 32px
+    );
   }
 
   #container {
@@ -24,6 +32,16 @@
     margin: 0 0 0.25rem 0;
     letter-spacing: -0.01em;
     text-align: center;
+  }
+
+  #title {
+    font-family: "PaperCrown";
+    font-size: clamp(5rem, 10vw, 12rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin: 0;
+    color: var(--accent-text-color);
   }
 
   .intro {
@@ -241,7 +259,7 @@
 </style>
 
 <div id="container">
-  <h1>Issued</h1>
+  <div class="workbench" id="title">Issued</div>
   
   <div class="intro">
     <p>Get them questions ready, cuz i'm ready!</p>

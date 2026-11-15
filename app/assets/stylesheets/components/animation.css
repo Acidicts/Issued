@@ -1,0 +1,30 @@
+.highlight-hover,
+.highlighter-hover {
+  background-image: linear-gradient(120deg, #ffe066, #ffd43b);
+  background-repeat: no-repeat;
+  background-position: 0 40%;   /* anchor to the left, near the baseline */
+  background-size: 0% 50%;      /* start with zero width */
+  transition: background-size 0.2s ease-out;
+
+  /* keeps the effect intact if the text wraps onto multiple lines */
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+.highlight-hover,
+.highlighter-hover:hover {
+  background-size: 110% 50%;    /* sweep across */
+  background-position: -5% 40%; 
+}
+
+.reveal {
+  opacity: 0;
+  animation: fade-in linear forwards;
+  animation-timeline: view();
+  animation-range: entry 50% entry 80%;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: none; }
+}

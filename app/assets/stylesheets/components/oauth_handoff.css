@@ -6,16 +6,18 @@
     margin: 0;
 }
 
-.oauth-handoff-form button {
+.oauth-handoff-form button.nav-link {
     appearance: none;
     -webkit-appearance: none;
     background: transparent;
-}
-
-/* .nav-link sets no font-size or border, so a button would otherwise pick up the user-agent
-   default size and a visible border. */
-.oauth-handoff-form button.nav-link {
     border: 0;
     font-size: inherit;
     line-height: inherit;
+}
+
+.oauth-handoff-form button.nav-login {
+    appearance: none;
+    -webkit-appearance: none;
+    font: inherit;
+    cursor: pointer;
 }
