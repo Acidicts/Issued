@@ -43,13 +43,9 @@ module OmniAuth
     end
 
     def token_valid?(controller, request)
-      # Prefer Rails' own comparison (handles masked tokens, per-form tokens, header, etc.)
-      # but force the check even if protect_against_forgery? would be false.
-      if ActionController::Base.allow_forgery_protection
-        controller.send(:any_authenticity_token_valid?)
-      else
-        forced_token_valid?(controller, request)
-      end
+      # Force Rails' token comparison even when protection is enabled: this request is
+      # validated by OmniAuth before Rails dispatches it through the controller callbacks.
+      forced_token_valid?(controller, request)
     end
 
     def forced_token_valid?(controller, request)
