@@ -2,7 +2,7 @@
 
 # Production image for Coolify and Cloudflare Tunnel deployments.
 # Make sure RUBY_VERSION matches the version in .ruby-version.
-ARG RUBY_VERSION=4.0.7
+ARG RUBY_VERSION=4.0.10
 FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 
 WORKDIR /rails
