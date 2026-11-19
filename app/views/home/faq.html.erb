@@ -20,8 +20,8 @@
       2deg,
       transparent 0,
       transparent 31px,
-      var(--line_color) 31px,
-      var(--line_color) 32px
+      var(--line_color, #ddd5b8) 31px,
+      var(--line_color, #ddd5b8) 32px
     );
   }
 
@@ -199,7 +199,6 @@
 
   @media (prefers-color-scheme: dark) {
     body {
-      background: #0f0f0f;
       color: #f5f5f5;
     }
 
