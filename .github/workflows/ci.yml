@@ -169,7 +169,6 @@ jobs:
           path: ${{ github.workspace }}/tmp/screenshots
           if-no-files-found: ignore
   approval:
-    needs: [scan_ruby, scan_js, lint, test, system-test]
     runs-on: ubuntu-latest
     permissions:
       issues: write
@@ -185,7 +184,7 @@ jobs:
 
   build:
     name: Build & Push Docker Image
-    needs: approval
+    needs: [scan_ruby, scan_js, lint, test, system-test, approval]
     # Only push on main branch, not on pull requests
     if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
