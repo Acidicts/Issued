@@ -68,7 +68,7 @@ gem "thruster", require: false
 gem "image_processing", "~> 1.2"
 
 # S3-compatible object storage for Active Storage, used to reach Cloudflare R2.
-gem "aws-sdk-s3", "~> 1.48"
+gem "aws-sdk-s3", "~> 1.245"
 
 group :development, :test do  # Load environment variables from .env for local development
   gem "dotenv-rails", require: "dotenv/load"
