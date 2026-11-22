@@ -225,29 +225,44 @@
     margin: 4rem auto;
     border-radius: 2rem;
     background-color: var(--bg);
-    width: max(50%, 700px);
+    width: min(calc(100% - 2rem), 700px);
     padding: 1.5rem;
     border: var(--brand-border) 2px solid;
+    box-sizing: border-box;
+  }
+
+  .hero-tagline {
+    font-size: 2rem;
+    font-family: 'SourGummy', 'Courier New', monospace;
+    text-align: center;
   }
 
   @media (max-width: 768px) {
     #container {
       flex-direction: column;
-      align-items: stretch;
-      padding: 2rem 1rem 2rem 2rem;
+      align-items: center;
+      padding: 2rem 1rem 2rem 2.5rem;
       gap: var(--space-3);
+      min-height: auto;
     }
 
     #hero-copy {
       flex: none;
+      margin: 2rem auto 0;
+      align-items: center;
+      text-align: center;
     }
 
     #title {
       font-size: clamp(4rem, 14vw, 7rem);
     }
 
+    .hero-tagline {
+      font-size: 1.5rem;
+    }
+
     #btns {
-      justify-content: flex-start;
+      justify-content: center;
     }
 
     #btns .btn,
@@ -259,6 +274,39 @@
 
     #hero-visual {
       flex: none;
+    }
+
+    .notes-title-hiw {
+      font-size: clamp(2.5rem, 10vw, 4rem);
+      margin: 2rem 1rem 1rem;
+    }
+
+    .notes-container {
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      margin-top: 2rem;
+      margin-bottom: 3rem;
+      padding: 0 1rem 0 2.5rem;
+    }
+
+    .notes-container .blank-note,
+    .notes-container .blank-note:nth-child(1),
+    .notes-container .blank-note:nth-child(2) {
+      width: min(100%, 320px);
+      min-height: 0;
+      transform: none;
+    }
+
+    .rsvp-here {
+      width: calc(100% - 3.5rem);
+      margin: 2rem 1rem 3rem 2.5rem;
+      padding: 1.25rem;
+    }
+
+    .rsvp-here h2 {
+      font-size: 1.5rem;
+      margin-top: 0;
     }
   }
 
@@ -281,7 +329,7 @@
     <div id="hero-copy">
         <div class="workbench" id="title">Issued</div>
     </div>
-    <div style="font-size: 2rem; font-family: 'SourGummy';">Make Designs, Get Clothes</div>
+    <div class="hero-tagline">Make Designs, Get Clothes</div>
     <div class="btns">
       <% if ENV["RSVP_OPEN"] == "true" && ENV["RUNNING"] != "true" %>
         <%= link_to 'RSVP', rsvp_path, class: 'btn btn-secondary', style: "--b-fill: var(--note-blue); --b-hover: var(--note-blue-hover); --b-fg: #000;" %>

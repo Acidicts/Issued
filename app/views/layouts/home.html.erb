@@ -191,6 +191,50 @@
         }
       }
 
+      @media (max-width: 768px) {
+        body::before {
+          left: 16px;
+        }
+
+        .home-nav {
+          padding: 0.5rem 0.75rem 0 2rem;
+          gap: 0.5rem;
+        }
+
+        .home-nav .nav-left {
+          gap: 0.75rem;
+          min-width: 0;
+        }
+
+        .home-nav .nav-links {
+          gap: 0;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        .home-nav .nav-link {
+          font-size: 11px;
+          padding: 0.65rem 0.45rem calc(0.65rem + 3px);
+          letter-spacing: 0.4px;
+          white-space: nowrap;
+        }
+
+        .home-nav .nav-right {
+          gap: 0.5rem;
+          flex-shrink: 0;
+        }
+
+        .home-nav .nav-login {
+          min-height: 40px;
+          padding: 0.35rem 0.8rem;
+          font-size: 14px;
+        }
+
+        .home-nav-icon {
+          font-size: 1.6rem;
+        }
+      }
+
       @media (prefers-color-scheme: dark) {
         body { color: #e8dfd0; }
         .home-nav { border-bottom-color: #5a4f3e; }
